@@ -40,11 +40,16 @@
   nav button.yoga.active{background:var(--teal)}
 
   main{padding:8px 14px 20px}
-  .intro{font-size:12px;color:var(--muted);margin:2px 0 14px;text-align:center}
+  .introbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 14px}
+  .intro{font-size:12px;color:var(--muted);flex:1}
+  .editbtn{flex:0 0 auto;border:1px solid var(--terra);background:#fff;color:var(--terra);
+    font-size:12px;font-weight:700;padding:7px 12px;border-radius:20px;cursor:pointer}
+  .editbtn.on{background:var(--terra);color:#fff}
 
   .block{background:#fff;border-radius:16px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;border:1px solid var(--line)}
-  .block-h{padding:11px 14px;font-size:13px;font-weight:700;color:var(--terra);background:var(--sand);letter-spacing:.3px;text-transform:uppercase}
+  .block-h{padding:11px 14px;font-size:13px;font-weight:700;color:var(--terra);background:var(--sand);letter-spacing:.3px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;gap:8px}
   .yoga .block-h{color:var(--teal)}
+  .block-h input{flex:1;font:inherit;font-size:13px;font-weight:700;text-transform:uppercase;color:var(--terra);border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:#fff}
   .ex{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border-top:1px solid var(--line)}
   .ex:first-child{border-top:none}
   .cbx{flex:0 0 auto;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);
@@ -62,6 +67,19 @@
   .ex-note input:focus{outline:none;border-color:var(--terra);background:#fff}
   .star{color:var(--terra);font-size:11px}
 
+  /* Edición */
+  .ed-row{display:flex;flex-direction:column;gap:6px;flex:1}
+  .ed-row input{border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px;font-family:inherit;background:var(--cream);color:var(--ink)}
+  .ed-row input:focus{outline:none;border-color:var(--terra);background:#fff}
+  .ed-opts{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+  .ed-opts label{display:flex;align-items:center;gap:5px;cursor:pointer}
+  .trash{flex:0 0 auto;background:none;border:none;font-size:18px;cursor:pointer;padding:2px 4px;margin-top:2px}
+  .addex{width:100%;border:1px dashed var(--terra);background:#fff;color:var(--terra);font-weight:700;
+    font-size:13px;padding:10px;cursor:pointer;border-top:1px solid var(--line)}
+  .addblock{width:100%;border:1px dashed var(--muted);background:#fff;color:var(--muted);font-weight:700;
+    font-size:13px;padding:12px;cursor:pointer;border-radius:14px;margin-bottom:14px}
+  .restore{width:100%;background:none;border:none;color:#c0392b;font-size:12px;padding:10px;cursor:pointer;text-decoration:underline}
+
   .save{
     position:fixed;left:14px;right:14px;bottom:16px;z-index:30;
     background:var(--terra);color:#fff;border:none;border-radius:14px;padding:15px;
@@ -70,7 +88,6 @@
   .save:active{transform:scale(.99)}
   .save.yoga{background:var(--teal);box-shadow:0 4px 16px rgba(47,125,120,.35)}
 
-  /* Historial */
   .hitem{background:#fff;border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line);padding:12px 14px;margin-bottom:10px}
   .hitem-h{display:flex;justify-content:space-between;align-items:center}
   .hitem-t{font-weight:700;font-size:14px}
@@ -80,7 +97,6 @@
   .hitem-logs b{color:var(--terra-dark);font-weight:600}
   .del{background:none;border:none;color:#c0392b;font-size:12px;cursor:pointer;padding:4px}
   .empty{text-align:center;color:var(--muted);font-size:13px;padding:40px 20px}
-  .badge{display:inline-block;background:var(--teal-light);color:var(--teal);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px}
   .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
     padding:11px 20px;border-radius:30px;font-size:13px;z-index:50;opacity:0;transition:.3s;pointer-events:none}
   .toast.show{opacity:1}
@@ -116,19 +132,19 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ---------- CONTENIDO DE LAS RUTINAS ---------- */
-const CAL = {t:"🔥 Calentamiento (~7 min)", ex:[
+/* ---------- CONTENIDO POR DEFECTO ---------- */
+function CAL(){return {t:"🔥 Calentamiento (~7 min)", ex:[
   {n:"Círculos de muñeca + apoyos de palma", d:"30 seg c/dirección"},
   {n:"Círculos de hombro + dislocaciones con banda", d:"1 min"},
   {n:"Colgarse (dead hang)", d:"2 × 30 seg"},
   {n:"Retracción escapular colgada", d:"2 × 8"},
   {n:"Sentadillas al aire lentas", d:"2 × 15"},
   {n:"Balanceo de piernas (adelante + lateral)", d:"10 c/pierna"},
-]};
+]};}
 
-const ROUTINES = {
+const DEFAULT_ROUTINES = {
   parqueA:{nombre:"Parque A · Tirón + Handstand", emoji:"🅰️", yoga:false, blocks:[
-    CAL,
+    CAL(),
     {t:"💪 Fuerza (~25 min)", ex:[
       {n:"Dominadas", d:"4 × máx", log:true},
       {n:"Fondos en paralelas", d:"3 × 8", log:true},
@@ -144,7 +160,7 @@ const ROUTINES = {
     ]},
   ]},
   parqueB:{nombre:"Parque B · Empuje + Piernas + L-sit", emoji:"🅱️", yoga:false, blocks:[
-    CAL,
+    CAL(),
     {t:"💪 Fuerza (~25 min)", ex:[
       {n:"Flexiones", d:"4 × máx", log:true},
       {n:"Dominadas", d:"3 × máx", log:true},
@@ -160,7 +176,7 @@ const ROUTINES = {
     ]},
   ]},
   casa:{nombre:"Casa · full-body (backup)", emoji:"🏠", yoga:false, blocks:[
-    CAL,
+    CAL(),
     {t:"💪 Fuerza", ex:[
       {n:"Dominadas en tu barra", d:"4 × máx", log:true},
       {n:"Flexiones", d:"4 × máx", log:true},
@@ -194,76 +210,135 @@ const ROUTINES = {
 
 /* ---------- ESTADO ---------- */
 const KEY="entreno_diana_v1";
-const GOAL=36; // meta 3/sem x 12 sem
+const GOAL=36;
 let data=load();
 let currentTab="parqueA";
-let draft={}; // {exName: {done:bool, note:string}}
+let editMode=false;
+let draft={};
 
 function load(){
-  try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.sessions)return d;}catch(e){}
-  return {start:new Date().toISOString(), sessions:[]};
+  let d={};
+  try{d=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
+  if(!d.start)d.start=new Date().toISOString();
+  if(!d.sessions)d.sessions=[];
+  if(!d.routines)d.routines=JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
+  return d;
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(data));}
 
-/* ---------- RENDER ---------- */
 const main=document.getElementById("main");
 const saveBtn=document.getElementById("saveBtn");
-
-function render(){
-  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===currentTab));
-  if(currentTab==="hist"){renderHist();saveBtn.style.display="none";return;}
-  saveBtn.style.display="block";
-  const r=ROUTINES[currentTab];
-  const isYoga=r.yoga;
-  saveBtn.className="save"+(isYoga?" yoga":"");
-  document.body.className=isYoga?"yoga":"";
-  let html=`<div class="intro">${r.emoji} <b>${r.nombre}</b> · marca cada ejercicio y anota tus reps/seg</div>`;
-  if(isYoga) html+=`<div class="tip">💡 Ideal para días de descanso o de terreno. Respira lento y sin prisa.</div>`;
-  r.blocks.forEach(bl=>{
-    html+=`<div class="block${isYoga?' yoga':''}"><div class="block-h">${bl.t}</div>`;
-    bl.ex.forEach(ex=>{
-      const id=exId(ex.n);
-      const st=draft[ex.n]||{};
-      const nameHtml=ex.n.startsWith("★")?`<span class="star">★</span> ${ex.n.slice(1).trim()}`:ex.n;
-      html+=`<div class="ex">
-        <div class="cbx ${st.done?'on':''}" data-cb="${id}"></div>
-        <div class="ex-body">
-          <div class="ex-name">${nameHtml}</div>
-          <div class="ex-dose">${ex.d}</div>
-          ${ex.log?`<div class="ex-note"><input type="text" data-note="${id}" placeholder="anota reps / seg logrados…" value="${st.note||''}"></div>`:''}
-        </div></div>`;
-    });
-    html+=`</div>`;
-  });
-  main.innerHTML=html;
-
-  main.querySelectorAll("[data-cb]").forEach(el=>{
-    el.onclick=()=>{const n=nameFromId(el.dataset.cb);draft[n]=draft[n]||{};draft[n].done=!draft[n].done;el.classList.toggle("on",draft[n].done);};
-  });
-  main.querySelectorAll("[data-note]").forEach(el=>{
-    el.oninput=()=>{const n=nameFromId(el.dataset.note);draft[n]=draft[n]||{};draft[n].note=el.value;};
-  });
-}
-
 let idMap={};
 function exId(n){const id="e"+Object.keys(idMap).length;idMap[id]=n;return id;}
-function nameFromId(id){return idMap[id];}
+
+function render(){
+  idMap={};
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===currentTab));
+  if(currentTab==="hist"){editMode=false;renderHist();saveBtn.style.display="none";return;}
+  const r=data.routines[currentTab];
+  const isYoga=r.yoga;
+  document.body.className=isYoga?"yoga":"";
+  saveBtn.style.display=editMode?"none":"block";
+  saveBtn.className="save"+(isYoga?" yoga":"");
+
+  let html=`<div class="introbar">
+    <div class="intro">${r.emoji} <b>${esc(r.nombre.split(' · ')[0])}</b> · ${editMode?'edita, borra o agrega ejercicios':'marca y anota tus reps/seg'}</div>
+    <button class="editbtn ${editMode?'on':''}" id="editToggle">${editMode?'✓ Listo':'✏️ Editar'}</button>
+  </div>`;
+  if(isYoga && !editMode) html+=`<div class="tip">💡 Ideal para días de descanso o de terreno. Respira lento y sin prisa.</div>`;
+
+  r.blocks.forEach((bl,bi)=>{
+    html+=`<div class="block${isYoga?' yoga':''}"><div class="block-h">`;
+    html+= editMode ? `<input value="${esc(bl.t)}" data-btitle="${bi}">` : bl.t;
+    html+=`</div>`;
+    bl.ex.forEach((ex,ei)=>{
+      if(editMode){
+        html+=`<div class="ex">
+          <div class="ed-row">
+            <input value="${esc(ex.n)}" data-en="${bi}_${ei}" placeholder="Nombre del ejercicio">
+            <input value="${esc(ex.d||'')}" data-ed="${bi}_${ei}" placeholder="Series × reps / dosis">
+            <div class="ed-opts"><label><input type="checkbox" data-el="${bi}_${ei}" ${ex.log?'checked':''}> anotar reps/seg</label></div>
+          </div>
+          <button class="trash" data-del="${bi}_${ei}">🗑️</button>
+        </div>`;
+      }else{
+        const id=exId(ex.n);
+        const st=draft[ex.n]||{};
+        const nm=ex.n.startsWith("★")?`<span class="star">★</span> ${esc(ex.n.slice(1).trim())}`:esc(ex.n);
+        html+=`<div class="ex">
+          <div class="cbx ${st.done?'on':''}" data-cb="${id}"></div>
+          <div class="ex-body">
+            <div class="ex-name">${nm}</div>
+            ${ex.d?`<div class="ex-dose">${esc(ex.d)}</div>`:''}
+            ${ex.log?`<div class="ex-note"><input type="text" data-note="${id}" placeholder="anota reps / seg logrados…" value="${esc(st.note||'')}"></div>`:''}
+          </div></div>`;
+      }
+    });
+    if(editMode) html+=`<button class="addex" data-addex="${bi}">+ Agregar ejercicio aquí</button>`;
+    html+=`</div>`;
+  });
+
+  if(editMode){
+    html+=`<button class="addblock" id="addBlock">+ Agregar bloque nuevo</button>`;
+    html+=`<button class="restore" id="restore">↺ Restaurar esta rutina original</button>`;
+  }
+  main.innerHTML=html;
+  bind();
+}
+
+function bind(){
+  const et=document.getElementById("editToggle");
+  if(et)et.onclick=()=>{editMode=!editMode;draft={};render();};
+
+  if(!editMode){
+    main.querySelectorAll("[data-cb]").forEach(el=>{
+      el.onclick=()=>{const n=idMap[el.dataset.cb];draft[n]=draft[n]||{};draft[n].done=!draft[n].done;el.classList.toggle("on",draft[n].done);};
+    });
+    main.querySelectorAll("[data-note]").forEach(el=>{
+      el.oninput=()=>{const n=idMap[el.dataset.note];draft[n]=draft[n]||{};draft[n].note=el.value;};
+    });
+    return;
+  }
+  // edición
+  const R=data.routines[currentTab];
+  main.querySelectorAll("[data-btitle]").forEach(el=>{
+    el.oninput=()=>{R.blocks[+el.dataset.btitle].t=el.value;save();};
+  });
+  main.querySelectorAll("[data-en]").forEach(el=>{
+    el.oninput=()=>{const p=el.dataset.en.split("_").map(Number);R.blocks[p[0]].ex[p[1]].n=el.value;save();};
+  });
+  main.querySelectorAll("[data-ed]").forEach(el=>{
+    el.oninput=()=>{const p=el.dataset.ed.split("_").map(Number);R.blocks[p[0]].ex[p[1]].d=el.value;save();};
+  });
+  main.querySelectorAll("[data-el]").forEach(el=>{
+    el.onchange=()=>{const p=el.dataset.el.split("_").map(Number);R.blocks[p[0]].ex[p[1]].log=el.checked;save();};
+  });
+  main.querySelectorAll("[data-del]").forEach(el=>{
+    el.onclick=()=>{const p=el.dataset.del.split("_").map(Number);
+      if(confirm("¿Borrar este ejercicio?")){R.blocks[p[0]].ex.splice(p[1],1);save();render();}};
+  });
+  main.querySelectorAll("[data-addex]").forEach(el=>{
+    el.onclick=()=>{const b=+el.dataset.addex;R.blocks[b].ex.push({n:"Nuevo ejercicio",d:"",log:true});save();render();};
+  });
+  const ab=document.getElementById("addBlock");
+  if(ab)ab.onclick=()=>{R.blocks.push({t:"NUEVO BLOQUE",ex:[{n:"Nuevo ejercicio",d:"",log:true}]});save();render();};
+  const rs=document.getElementById("restore");
+  if(rs)rs.onclick=()=>{if(confirm("Esto devuelve esta rutina a su versión original. ¿Seguro?")){
+    data.routines[currentTab]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[currentTab]));save();render();toast("Rutina restaurada ↺");}};
+}
 
 function renderHist(){
   document.body.className="";
   const s=[...data.sessions].reverse();
   if(!s.length){main.innerHTML=`<div class="empty">Todavía no registras sesiones.<br>¡Anda al parque y guarda la primera! 💪</div>`;return;}
-  let html=`<div class="intro">📊 Tu historial · ${data.sessions.length} sesiones registradas</div>`;
+  let html=`<div class="intro" style="margin-bottom:14px">📊 Tu historial · ${data.sessions.length} sesiones registradas</div>`;
   s.forEach(sess=>{
-    const emoji=(ROUTINES[sess.tipo]||{}).emoji||"🏋️";
-    const nombre=(ROUTINES[sess.tipo]||{}).nombre||sess.tipo;
-    let logs="";
-    (sess.logs||[]).forEach(l=>{logs+=`<div><b>${l.n}:</b> ${l.v}</div>`;});
+    const R=data.routines[sess.tipo]||DEFAULT_ROUTINES[sess.tipo]||{};
+    const emoji=R.emoji||"🏋️"; const nombre=esc((R.nombre||sess.tipo).split(' · ')[0]);
+    let logs=""; (sess.logs||[]).forEach(l=>{logs+=`<div><b>${esc(l.n)}:</b> ${esc(l.v)}</div>`;});
     html+=`<div class="hitem">
-      <div class="hitem-h">
-        <div><span class="hitem-t">${emoji} ${nombre.split(' · ')[0]}</span></div>
-        <button class="del" data-del="${sess.id}">Borrar</button>
-      </div>
+      <div class="hitem-h"><span class="hitem-t">${emoji} ${nombre}</span>
+        <button class="del" data-del="${sess.id}">Borrar</button></div>
       <div class="hitem-d">${fmtDate(sess.date)} · ${sess.count} ejercicios hechos</div>
       ${logs?`<div class="hitem-logs">${logs}</div>`:''}
     </div>`;
@@ -274,28 +349,21 @@ function renderHist(){
   });
 }
 
-/* ---------- GUARDAR ---------- */
 saveBtn.onclick=()=>{
-  const r=ROUTINES[currentTab];
   const done=Object.entries(draft).filter(([n,v])=>v.done);
   if(!done.length){toast("Marca al menos un ejercicio ✏️");return;}
   const logs=[];
   Object.entries(draft).forEach(([n,v])=>{if(v.note&&v.note.trim())logs.push({n:n.replace('★','').trim(),v:v.note.trim()});});
   data.sessions.push({id:Date.now(),date:new Date().toISOString(),tipo:currentTab,count:done.length,logs});
-  save();
-  draft={};
-  updateStats();
+  save();draft={};updateStats();
   toast("¡Sesión guardada! 🎉 Vas "+data.sessions.length);
   currentTab="hist";render();
 };
 
-/* ---------- STATS ---------- */
 function updateStats(){
   const total=data.sessions.length;
   document.getElementById("s-total").textContent=total;
-  // ciclo actual de 14 dias desde el inicio
-  const start=new Date(data.start);
-  const now=new Date();
+  const start=new Date(data.start), now=new Date();
   const days=Math.floor((now-start)/86400000);
   const cycleStart=new Date(start.getTime()+Math.floor(days/14)*14*86400000);
   const inCycle=data.sessions.filter(s=>new Date(s.date)>=cycleStart).length;
@@ -306,24 +374,21 @@ function updateStats(){
   document.getElementById("progtxt").textContent=`${total} / ${GOAL} sesiones · ${pct}% del plan`;
 }
 
-/* ---------- UTILS ---------- */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmtDate(iso){const d=new Date(iso);const m=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
   return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
 let toastT;
 function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2200);}
 
-/* ---------- NAV ---------- */
 document.querySelectorAll("#nav button").forEach(b=>{
   b.onclick=()=>{
-    if(currentTab!=="hist"&&Object.values(draft).some(v=>v.done)){
-      if(!confirm("Tienes ejercicios marcados sin guardar. ¿Cambiar de todos modos? (se perderán)")) return;
+    if(!editMode && currentTab!=="hist" && Object.values(draft).some(v=>v.done)){
+      if(!confirm("Tienes ejercicios marcados sin guardar. ¿Cambiar de todos modos?")) return;
     }
-    draft={};
-    currentTab=b.dataset.tab;render();
+    draft={};editMode=false;currentTab=b.dataset.tab;render();
   };
 });
 
-/* INIT */
 updateStats();
 render();
 </script>
