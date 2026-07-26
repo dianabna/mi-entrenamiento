@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#c1663f">
+<title>Mi Entrenamiento · Diana</title>
+<style>
+  :root{
+    --terra:#c1663f; --terra-dark:#9e4f2f; --sand:#f4ece2; --cream:#fbf7f1;
+    --teal:#2f7d78; --teal-light:#e0efed; --ink:#2c2723; --muted:#8a7f74;
+    --line:#e6dccf; --ok:#4a8f5a; --shadow:0 2px 10px rgba(80,55,35,.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--cream);color:var(--ink);line-height:1.45;padding-bottom:90px;
+  }
+  header{
+    background:linear-gradient(135deg,var(--terra),var(--terra-dark));
+    color:#fff;padding:18px 16px 16px;position:sticky;top:0;z-index:20;box-shadow:var(--shadow);
+  }
+  header h1{margin:0;font-size:19px;font-weight:700;letter-spacing:.2px}
+  header p{margin:2px 0 0;font-size:12px;opacity:.9}
+  .stats{display:flex;gap:8px;margin-top:12px}
+  .stat{flex:1;background:rgba(255,255,255,.15);border-radius:12px;padding:8px 6px;text-align:center;backdrop-filter:blur(4px)}
+  .stat b{display:block;font-size:20px;line-height:1}
+  .stat span{font-size:10px;opacity:.9;display:block;margin-top:3px}
+  .progwrap{margin-top:10px}
+  .progbar{height:7px;background:rgba(255,255,255,.25);border-radius:20px;overflow:hidden}
+  .progfill{height:100%;background:#fff;border-radius:20px;transition:width .4s}
+  .progtxt{font-size:10px;opacity:.9;margin-top:4px;text-align:center}
+
+  nav{display:flex;gap:6px;padding:12px 12px 4px;overflow-x:auto;position:sticky;top:0;background:var(--cream);z-index:10}
+  nav button{
+    flex:0 0 auto;border:none;background:var(--sand);color:var(--ink);
+    padding:9px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;
+  }
+  nav button.active{background:var(--terra);color:#fff}
+  nav button.yoga.active{background:var(--teal)}
+
+  main{padding:8px 14px 20px}
+  .intro{font-size:12px;color:var(--muted);margin:2px 0 14px;text-align:center}
+
+  .block{background:#fff;border-radius:16px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;border:1px solid var(--line)}
+  .block-h{padding:11px 14px;font-size:13px;font-weight:700;color:var(--terra);background:var(--sand);letter-spacing:.3px;text-transform:uppercase}
+  .yoga .block-h{color:var(--teal)}
+  .ex{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border-top:1px solid var(--line)}
+  .ex:first-child{border-top:none}
+  .cbx{flex:0 0 auto;width:26px;height:26px;border-radius:8px;border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;margin-top:1px;background:#fff}
+  .cbx.on{background:var(--ok);border-color:var(--ok)}
+  .cbx.on::after{content:"✓";color:#fff;font-size:15px;font-weight:800}
+  .ex-body{flex:1;min-width:0}
+  .ex-name{font-size:14.5px;font-weight:600}
+  .ex-dose{font-size:12px;color:var(--muted);margin-top:1px}
+  .ex-note{margin-top:7px}
+  .ex-note input{
+    width:100%;border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:13px;
+    background:var(--cream);color:var(--ink);font-family:inherit;
+  }
+  .ex-note input:focus{outline:none;border-color:var(--terra);background:#fff}
+  .star{color:var(--terra);font-size:11px}
+
+  .save{
+    position:fixed;left:14px;right:14px;bottom:16px;z-index:30;
+    background:var(--terra);color:#fff;border:none;border-radius:14px;padding:15px;
+    font-size:15px;font-weight:700;box-shadow:0 4px 16px rgba(160,79,47,.35);cursor:pointer;
+  }
+  .save:active{transform:scale(.99)}
+  .save.yoga{background:var(--teal);box-shadow:0 4px 16px rgba(47,125,120,.35)}
+
+  /* Historial */
+  .hitem{background:#fff;border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line);padding:12px 14px;margin-bottom:10px}
+  .hitem-h{display:flex;justify-content:space-between;align-items:center}
+  .hitem-t{font-weight:700;font-size:14px}
+  .hitem-d{font-size:12px;color:var(--muted)}
+  .hitem-logs{margin-top:8px;font-size:12px;color:var(--ink)}
+  .hitem-logs div{padding:2px 0;border-top:1px dashed var(--line)}
+  .hitem-logs b{color:var(--terra-dark);font-weight:600}
+  .del{background:none;border:none;color:#c0392b;font-size:12px;cursor:pointer;padding:4px}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:40px 20px}
+  .badge{display:inline-block;background:var(--teal-light);color:var(--teal);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px}
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
+    padding:11px 20px;border-radius:30px;font-size:13px;z-index:50;opacity:0;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1}
+  .tip{background:var(--teal-light);border-radius:12px;padding:10px 13px;font-size:12px;color:var(--teal);margin-bottom:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏔️ Mi Entrenamiento</h1>
+  <p>Diana · Plan 3 meses · San Pedro</p>
+  <div class="stats">
+    <div class="stat"><b id="s-total">0</b><span>sesiones</span></div>
+    <div class="stat"><b id="s-cycle">0/6</b><span>este ciclo (14d)</span></div>
+    <div class="stat"><b id="s-days">0</b><span>de 90 días</span></div>
+  </div>
+  <div class="progwrap">
+    <div class="progbar"><div class="progfill" id="progfill" style="width:0%"></div></div>
+    <div class="progtxt" id="progtxt">Meta: 36 sesiones en 3 meses</div>
+  </div>
+</header>
+
+<nav id="nav">
+  <button data-tab="parqueA" class="active">🅰️ Parque A</button>
+  <button data-tab="parqueB">🅱️ Parque B</button>
+  <button data-tab="casa">🏠 Casa</button>
+  <button data-tab="yoga" class="yoga">🧘 Yoga</button>
+  <button data-tab="hist">📊 Historial</button>
+</nav>
+
+<main id="main"></main>
+
+<button class="save" id="saveBtn">✓ Guardar sesión de hoy</button>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- CONTENIDO DE LAS RUTINAS ---------- */
+const CAL = {t:"🔥 Calentamiento (~7 min)", ex:[
+  {n:"Círculos de muñeca + apoyos de palma", d:"30 seg c/dirección"},
+  {n:"Círculos de hombro + dislocaciones con banda", d:"1 min"},
+  {n:"Colgarse (dead hang)", d:"2 × 30 seg"},
+  {n:"Retracción escapular colgada", d:"2 × 8"},
+  {n:"Sentadillas al aire lentas", d:"2 × 15"},
+  {n:"Balanceo de piernas (adelante + lateral)", d:"10 c/pierna"},
+]};
+
+const ROUTINES = {
+  parqueA:{nombre:"Parque A · Tirón + Handstand", emoji:"🅰️", yoga:false, blocks:[
+    CAL,
+    {t:"💪 Fuerza (~25 min)", ex:[
+      {n:"Dominadas", d:"4 × máx", log:true},
+      {n:"Fondos en paralelas", d:"3 × 8", log:true},
+      {n:"Búlgara", d:"3 × 10 c/lado", log:true},
+      {n:"Peso muerto rumano 1 pierna (con banda)", d:"3 × 10 c/lado", log:true},
+    ]},
+    {t:"🤸 Skills + Core", ex:[
+      {n:"Handstand (énfasis)", d:"5 pateos + 3 mantenciones 20-30 seg", log:true},
+      {n:"L-sit (mantención)", d:"Tuck L-sit 3 × 20 seg", log:true},
+      {n:"Core: elevación piernas colgada (rectas)", d:"3 × 10", log:true},
+      {n:"★ Core extra: elevación a un lado (oblicuos)", d:"3 × 10 c/lado", log:true},
+      {n:"Cierre: colgarse relajada", d:"30 seg"},
+    ]},
+  ]},
+  parqueB:{nombre:"Parque B · Empuje + Piernas + L-sit", emoji:"🅱️", yoga:false, blocks:[
+    CAL,
+    {t:"💪 Fuerza (~25 min)", ex:[
+      {n:"Flexiones", d:"4 × máx", log:true},
+      {n:"Dominadas", d:"3 × máx", log:true},
+      {n:"Sentadilla (progresa a 1 pierna/pistol)", d:"3 × 12", log:true},
+      {n:"Nordic curl (o rumano 1 pierna con banda)", d:"3 × 6-8", log:true},
+    ]},
+    {t:"🤸 Skills + Core", ex:[
+      {n:"L-sit (énfasis)", d:"Tuck 3 × máx + una pierna 3× c/lado + compresión 3×10", log:true},
+      {n:"Handstand (mantención)", d:"3 pateos + 2 mantenciones 20 seg", log:true},
+      {n:"Core: elevación piernas colgada (rectas)", d:"3 × 10", log:true},
+      {n:"★ Core extra: Toes-to-bar", d:"3 × máx", log:true},
+      {n:"Cierre: colgarse relajada", d:"30 seg"},
+    ]},
+  ]},
+  casa:{nombre:"Casa · full-body (backup)", emoji:"🏠", yoga:false, blocks:[
+    CAL,
+    {t:"💪 Fuerza", ex:[
+      {n:"Dominadas en tu barra", d:"4 × máx", log:true},
+      {n:"Flexiones", d:"4 × máx", log:true},
+      {n:"Búlgara (pie en cama/sofá)", d:"3 × 10 c/lado", log:true},
+      {n:"Peso muerto rumano 1 pierna (con banda)", d:"3 × 10 c/lado", log:true},
+    ]},
+    {t:"🤸 Skills + Core", ex:[
+      {n:"Handstand contra la muralla", d:"5 pateos + 3 mantenciones 20-30 seg", log:true},
+      {n:"L-sit en bloques", d:"Tuck L-sit 3 × 20 seg", log:true},
+      {n:"Core: hollow body + elevación piernas colgada", d:"3 × 30 seg / 3 × 10", log:true},
+      {n:"★ Core extra: hollow rocks o plancha", d:"3 × 12  /  3 × 45 seg", log:true},
+      {n:"Cierre: colgarse relajada", d:"30 seg"},
+    ]},
+  ]},
+  yoga:{nombre:"Yoga · movilidad y recuperación", emoji:"🧘", yoga:true, blocks:[
+    {t:"🧘 Secuencia (~20 min)", ex:[
+      {n:"Centrado + respiración", d:"10 respiraciones"},
+      {n:"Gato-vaca", d:"8 ciclos lentos"},
+      {n:"Perro boca abajo", d:"5 respiraciones"},
+      {n:"Saludo al Sol A", d:"3 rondas"},
+      {n:"Guerrero II", d:"5 resp. c/lado"},
+      {n:"Triángulo", d:"5 resp. c/lado"},
+      {n:"Anjaneyasana (estocada baja)", d:"5 resp. c/lado"},
+      {n:"Paloma (caderas)", d:"8 resp. c/lado"},
+      {n:"Torsión sentada (espalda alta)", d:"5 resp. c/lado"},
+      {n:"Postura del niño", d:"8 respiraciones"},
+      {n:"Savasana", d:"2-3 min"},
+    ]},
+  ]},
+};
+
+/* ---------- ESTADO ---------- */
+const KEY="entreno_diana_v1";
+const GOAL=36; // meta 3/sem x 12 sem
+let data=load();
+let currentTab="parqueA";
+let draft={}; // {exName: {done:bool, note:string}}
+
+function load(){
+  try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.sessions)return d;}catch(e){}
+  return {start:new Date().toISOString(), sessions:[]};
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));}
+
+/* ---------- RENDER ---------- */
+const main=document.getElementById("main");
+const saveBtn=document.getElementById("saveBtn");
+
+function render(){
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===currentTab));
+  if(currentTab==="hist"){renderHist();saveBtn.style.display="none";return;}
+  saveBtn.style.display="block";
+  const r=ROUTINES[currentTab];
+  const isYoga=r.yoga;
+  saveBtn.className="save"+(isYoga?" yoga":"");
+  document.body.className=isYoga?"yoga":"";
+  let html=`<div class="intro">${r.emoji} <b>${r.nombre}</b> · marca cada ejercicio y anota tus reps/seg</div>`;
+  if(isYoga) html+=`<div class="tip">💡 Ideal para días de descanso o de terreno. Respira lento y sin prisa.</div>`;
+  r.blocks.forEach(bl=>{
+    html+=`<div class="block${isYoga?' yoga':''}"><div class="block-h">${bl.t}</div>`;
+    bl.ex.forEach(ex=>{
+      const id=exId(ex.n);
+      const st=draft[ex.n]||{};
+      const nameHtml=ex.n.startsWith("★")?`<span class="star">★</span> ${ex.n.slice(1).trim()}`:ex.n;
+      html+=`<div class="ex">
+        <div class="cbx ${st.done?'on':''}" data-cb="${id}"></div>
+        <div class="ex-body">
+          <div class="ex-name">${nameHtml}</div>
+          <div class="ex-dose">${ex.d}</div>
+          ${ex.log?`<div class="ex-note"><input type="text" data-note="${id}" placeholder="anota reps / seg logrados…" value="${st.note||''}"></div>`:''}
+        </div></div>`;
+    });
+    html+=`</div>`;
+  });
+  main.innerHTML=html;
+
+  main.querySelectorAll("[data-cb]").forEach(el=>{
+    el.onclick=()=>{const n=nameFromId(el.dataset.cb);draft[n]=draft[n]||{};draft[n].done=!draft[n].done;el.classList.toggle("on",draft[n].done);};
+  });
+  main.querySelectorAll("[data-note]").forEach(el=>{
+    el.oninput=()=>{const n=nameFromId(el.dataset.note);draft[n]=draft[n]||{};draft[n].note=el.value;};
+  });
+}
+
+let idMap={};
+function exId(n){const id="e"+Object.keys(idMap).length;idMap[id]=n;return id;}
+function nameFromId(id){return idMap[id];}
+
+function renderHist(){
+  document.body.className="";
+  const s=[...data.sessions].reverse();
+  if(!s.length){main.innerHTML=`<div class="empty">Todavía no registras sesiones.<br>¡Anda al parque y guarda la primera! 💪</div>`;return;}
+  let html=`<div class="intro">📊 Tu historial · ${data.sessions.length} sesiones registradas</div>`;
+  s.forEach(sess=>{
+    const emoji=(ROUTINES[sess.tipo]||{}).emoji||"🏋️";
+    const nombre=(ROUTINES[sess.tipo]||{}).nombre||sess.tipo;
+    let logs="";
+    (sess.logs||[]).forEach(l=>{logs+=`<div><b>${l.n}:</b> ${l.v}</div>`;});
+    html+=`<div class="hitem">
+      <div class="hitem-h">
+        <div><span class="hitem-t">${emoji} ${nombre.split(' · ')[0]}</span></div>
+        <button class="del" data-del="${sess.id}">Borrar</button>
+      </div>
+      <div class="hitem-d">${fmtDate(sess.date)} · ${sess.count} ejercicios hechos</div>
+      ${logs?`<div class="hitem-logs">${logs}</div>`:''}
+    </div>`;
+  });
+  main.innerHTML=html;
+  main.querySelectorAll("[data-del]").forEach(el=>{
+    el.onclick=()=>{if(confirm("¿Borrar esta sesión?")){data.sessions=data.sessions.filter(x=>x.id!=el.dataset.del);save();updateStats();renderHist();}};
+  });
+}
+
+/* ---------- GUARDAR ---------- */
+saveBtn.onclick=()=>{
+  const r=ROUTINES[currentTab];
+  const done=Object.entries(draft).filter(([n,v])=>v.done);
+  if(!done.length){toast("Marca al menos un ejercicio ✏️");return;}
+  const logs=[];
+  Object.entries(draft).forEach(([n,v])=>{if(v.note&&v.note.trim())logs.push({n:n.replace('★','').trim(),v:v.note.trim()});});
+  data.sessions.push({id:Date.now(),date:new Date().toISOString(),tipo:currentTab,count:done.length,logs});
+  save();
+  draft={};
+  updateStats();
+  toast("¡Sesión guardada! 🎉 Vas "+data.sessions.length);
+  currentTab="hist";render();
+};
+
+/* ---------- STATS ---------- */
+function updateStats(){
+  const total=data.sessions.length;
+  document.getElementById("s-total").textContent=total;
+  // ciclo actual de 14 dias desde el inicio
+  const start=new Date(data.start);
+  const now=new Date();
+  const days=Math.floor((now-start)/86400000);
+  const cycleStart=new Date(start.getTime()+Math.floor(days/14)*14*86400000);
+  const inCycle=data.sessions.filter(s=>new Date(s.date)>=cycleStart).length;
+  document.getElementById("s-cycle").textContent=inCycle+"/6";
+  document.getElementById("s-days").textContent=Math.min(days+1,90);
+  const pct=Math.min(100,Math.round(total/GOAL*100));
+  document.getElementById("progfill").style.width=pct+"%";
+  document.getElementById("progtxt").textContent=`${total} / ${GOAL} sesiones · ${pct}% del plan`;
+}
+
+/* ---------- UTILS ---------- */
+function fmtDate(iso){const d=new Date(iso);const m=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+let toastT;
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2200);}
+
+/* ---------- NAV ---------- */
+document.querySelectorAll("#nav button").forEach(b=>{
+  b.onclick=()=>{
+    if(currentTab!=="hist"&&Object.values(draft).some(v=>v.done)){
+      if(!confirm("Tienes ejercicios marcados sin guardar. ¿Cambiar de todos modos? (se perderán)")) return;
+    }
+    draft={};
+    currentTab=b.dataset.tab;render();
+  };
+});
+
+/* INIT */
+updateStats();
+render();
+</script>
+</body>
+</html>
