@@ -101,6 +101,30 @@
     padding:11px 20px;border-radius:30px;font-size:13px;z-index:50;opacity:0;transition:.3s;pointer-events:none}
   .toast.show{opacity:1}
   .tip{background:var(--teal-light);border-radius:12px;padding:10px 13px;font-size:12px;color:var(--teal);margin-bottom:14px}
+
+  /* Cronómetro */
+  .timer-fab{position:fixed;right:16px;bottom:78px;z-index:40;width:54px;height:54px;border-radius:50%;
+    background:var(--teal);color:#fff;border:none;font-size:24px;box-shadow:0 4px 14px rgba(47,125,120,.45);cursor:pointer}
+  .timer-fab:active{transform:scale(.95)}
+  .timer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:55;opacity:0;pointer-events:none;transition:.25s}
+  .timer-backdrop.open{opacity:1;pointer-events:auto}
+  .timer-sheet{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-radius:22px 22px 0 0;
+    box-shadow:0 -4px 24px rgba(0,0,0,.18);padding:18px 16px 26px;transform:translateY(115%);transition:transform .28s ease}
+  .timer-sheet.open{transform:translateY(0)}
+  .timer-close{position:absolute;top:12px;right:16px;border:none;background:none;font-size:20px;color:var(--muted);cursor:pointer}
+  .timer-title{font-weight:700;font-size:14px;margin:0 0 12px;color:var(--teal)}
+  .timer-tabs{display:flex;gap:8px;margin-bottom:14px}
+  .timer-tabs button{flex:1;border:none;background:var(--sand);padding:10px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;color:var(--ink)}
+  .timer-tabs button.active{background:var(--teal);color:#fff}
+  .timer-presets{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+  .timer-presets button{border:1px solid var(--line);background:#fff;padding:8px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}
+  .timer-presets button.sel{border-color:var(--teal);background:var(--teal-light);color:var(--teal)}
+  .timer-display{font-size:58px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:1px;margin:4px 0 14px;color:var(--ink)}
+  .timer-display.warn{color:var(--terra)}
+  .timer-ctrls{display:flex;gap:10px}
+  .timer-ctrls button{flex:1;border:none;padding:15px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+  .tc-main{background:var(--teal);color:#fff}
+  .tc-sec{background:var(--sand);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -129,6 +153,30 @@
 <main id="main"></main>
 
 <button class="save" id="saveBtn">✓ Guardar sesión de hoy</button>
+
+<button class="timer-fab" id="timerFab">⏱️</button>
+<div class="timer-backdrop" id="timerBackdrop"></div>
+<div class="timer-sheet" id="timerSheet">
+  <button class="timer-close" id="timerClose">✕</button>
+  <div class="timer-title">⏱️ Cronómetro</div>
+  <div class="timer-tabs">
+    <button data-tm="sw" class="active">Cronómetro</button>
+    <button data-tm="cd">Descanso</button>
+  </div>
+  <div class="timer-presets" id="tmPresets" style="display:none">
+    <button data-sec="20">20 s</button>
+    <button data-sec="30" class="sel">30 s</button>
+    <button data-sec="45">45 s</button>
+    <button data-sec="60">1 min</button>
+    <button data-sec="90">90 s</button>
+    <button data-sec="120">2 min</button>
+  </div>
+  <div class="timer-display" id="tmDisplay">00:00</div>
+  <div class="timer-ctrls">
+    <button class="tc-main" id="tmStart">Iniciar</button>
+    <button class="tc-sec" id="tmReset">Reiniciar</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -152,6 +200,7 @@ const DEFAULT_ROUTINES = {
       {n:"Peso muerto rumano 1 pierna (con banda)", d:"3 × 10 c/lado", log:true},
     ]},
     {t:"🤸 Skills + Core", ex:[
+      {n:"Pull-over (progresión)", d:"Negativas 3 × 3-5 · o práctica 5 min", log:true},
       {n:"Handstand (énfasis)", d:"5 pateos + 3 mantenciones 20-30 seg", log:true},
       {n:"L-sit (mantención)", d:"Tuck L-sit 3 × 20 seg", log:true},
       {n:"Core: elevación piernas colgada (rectas)", d:"3 × 10", log:true},
@@ -211,6 +260,7 @@ const DEFAULT_ROUTINES = {
 /* ---------- ESTADO ---------- */
 const KEY="entreno_diana_v1";
 const GOAL=36;
+const ROUTINES_VERSION=2;
 let data=load();
 let currentTab="parqueA";
 let editMode=false;
@@ -221,8 +271,16 @@ function load(){
   try{d=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
   if(!d.start)d.start=new Date().toISOString();
   if(!d.sessions)d.sessions=[];
-  if(!d.routines)d.routines=JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
+  if(!d.routines){d.routines=JSON.parse(JSON.stringify(DEFAULT_ROUTINES));d.routinesVersion=ROUTINES_VERSION;}
   return d;
+}
+function checkRoutinesUpdate(){
+  if(data.routinesVersion!==ROUTINES_VERSION){
+    if(confirm("🆕 Hay una versión nueva del plan (ahora incluye el Pull-over en Parque A).\n\n¿Actualizar tus rutinas a la nueva versión?\n\n⚠️ Reemplaza las ediciones que hayas hecho en las rutinas. Tus sesiones registradas NO se pierden.")){
+      data.routines=JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
+    }
+    data.routinesVersion=ROUTINES_VERSION;save();render();
+  }
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(data));}
 
@@ -389,8 +447,65 @@ document.querySelectorAll("#nav button").forEach(b=>{
   };
 });
 
+/* ---------- CRONÓMETRO ---------- */
+(function(){
+  const fab=document.getElementById("timerFab");
+  const sheet=document.getElementById("timerSheet");
+  const backdrop=document.getElementById("timerBackdrop");
+  const disp=document.getElementById("tmDisplay");
+  const presets=document.getElementById("tmPresets");
+  const startBtn=document.getElementById("tmStart");
+  const resetBtn=document.getElementById("tmReset");
+  let mode="sw", running=false, iv=null;
+  let swElapsed=0, swStart=0;
+  let cdSet=30000, cdEnd=0, cdRemain=30000;
+  let actx=null;
+
+  function ensureAudio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();}catch(e){}}
+  function beep(){try{ensureAudio();for(let i=0;i<3;i++){const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=880;const t=actx.currentTime+i*0.28;g.gain.setValueAtTime(0.35,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.22);o.start(t);o.stop(t+0.22);}}catch(e){}if(navigator.vibrate)navigator.vibrate([200,100,200,100,300]);}
+  function fmt(ms,ceil){let s=ceil?Math.ceil(ms/1000):Math.floor(ms/1000);if(s<0)s=0;const m=Math.floor(s/60);s=s%60;return String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');}
+  function draw(){
+    if(mode==="sw"){disp.textContent=fmt(swElapsed,false);disp.classList.remove("warn");}
+    else{disp.textContent=fmt(cdRemain,true);disp.classList.toggle("warn",cdRemain<=5000&&cdRemain>0);}
+  }
+  function tick(){
+    if(mode==="sw"){swElapsed=Date.now()-swStart;draw();}
+    else{cdRemain=cdEnd-Date.now();if(cdRemain<=0){cdRemain=0;draw();stop();beep();cdRemain=cdSet;setTimeout(draw,800);return;}draw();}
+  }
+  function start(){
+    running=true;startBtn.textContent="Pausar";ensureAudio();
+    if(mode==="sw"){swStart=Date.now()-swElapsed;}
+    else{if(cdRemain<=0)cdRemain=cdSet;cdEnd=Date.now()+cdRemain;}
+    iv=setInterval(tick,100);
+  }
+  function stop(){running=false;startBtn.textContent="Iniciar";if(iv){clearInterval(iv);iv=null;}}
+  function reset(){stop();if(mode==="sw"){swElapsed=0;}else{cdRemain=cdSet;}draw();}
+
+  fab.onclick=()=>{sheet.classList.add("open");backdrop.classList.add("open");};
+  function close(){sheet.classList.remove("open");backdrop.classList.remove("open");}
+  document.getElementById("timerClose").onclick=close;
+  backdrop.onclick=close;
+  startBtn.onclick=()=>{running?stop():start();};
+  resetBtn.onclick=reset;
+
+  document.querySelectorAll("#timerSheet [data-tm]").forEach(b=>{
+    b.onclick=()=>{stop();mode=b.dataset.tm;
+      document.querySelectorAll("#timerSheet [data-tm]").forEach(x=>x.classList.toggle("active",x===b));
+      presets.style.display=mode==="cd"?"flex":"none";
+      if(mode==="cd"){cdRemain=cdSet;}else{swElapsed=0;}
+      draw();};
+  });
+  document.querySelectorAll("#tmPresets [data-sec]").forEach(b=>{
+    b.onclick=()=>{cdSet=(+b.dataset.sec)*1000;cdRemain=cdSet;stop();
+      document.querySelectorAll("#tmPresets [data-sec]").forEach(x=>x.classList.toggle("sel",x===b));
+      draw();};
+  });
+  draw();
+})();
+
 updateStats();
 render();
+checkRoutinesUpdate();
 </script>
 </body>
 </html>
