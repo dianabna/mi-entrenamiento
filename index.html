@@ -234,7 +234,6 @@
   <button data-tab="yoga" class="yoga">🧘 Yoga</button>
   <button data-tab="lib">📚 Ejercicios</button>
   <button data-tab="prog">📈 Progreso</button>
-  <button data-tab="comida">🍲 Comida</button>
   <button data-tab="hist">📊 Historial</button>
 </nav>
 
@@ -427,81 +426,6 @@ const LIB={
     err:["Arquear la zona lumbar.","Cadera muy arriba o muy abajo en la plancha."],q:"rueda abdominal de rodillas principiante técnica"},
 };
 
-/* ---------- RECETARIO ---------- */
-const RECETAS=[
-  {cat:"⚡ Antes de entrenar (7:30)",items:[
-    {n:"Leche de soja tibia con canela y dátiles",m:"~150 kcal · 7 g prot",
-      ing:["1 taza de leche de soja","Canela y una pizca de cardamomo","2 dátiles (o ½ plátano)"],
-      prep:["Entibia la leche con las especias (no hervir).","Cómete los dátiles con la leche, 30-45 min antes del gym."],
-      nota:"Dulce, tibio y liviano: energía rápida sin pesadez. Ideal para Vata."},
-    {n:"Plátano con mantequilla de maní",m:"~150 kcal · 4 g prot",
-      ing:["½ plátano","1 cdta de mantequilla de maní o almendra","Canela"],
-      prep:["Corta el plátano, úntalo, espolvorea canela."],nota:"Opción si tienes prisa."},
-  ]},
-  {cat:"☀️ Después de entrenar (desayuno)",items:[
-    {n:"Avena proteica tibia",m:"~440 kcal · 34 g prot",
-      ing:["40 g de avena (½ taza)","200 ml de leche de soja","1 medida de proteína en polvo (sin sabor o vainilla)","Canela, cardamomo, jengibre en polvo","1 cda de almendras picadas (remojadas si puedes)","½ plátano o 2 dátiles picados"],
-      prep:["Cocina la avena en la leche de soja con las especias, 4-5 min.","Apaga el fuego y espera 1 min.","Agrega la proteína revolviendo rápido (si la echas hirviendo se hacen grumos).","Arriba: almendras y plátano."],
-      nota:"Tu desayuno estrella: dulce, tibio, denso (calma Vata) y con la proteína que te faltaba."},
-    {n:"Arroz con leche proteico",m:"~330 kcal · 26 g prot",
-      ing:["¾ taza de arroz ya cocido (sobras)","200 ml de leche de soja","1 medida de proteína vainilla","Canela, cardamomo, clavo de olor","1 cda de pasas"],
-      prep:["Calienta el arroz con la leche y las especias 5 min hasta que espese.","Fuera del fuego, agrega la proteína y las pasas."],
-      nota:"Aprovecha el arroz del día anterior."},
-    {n:"Revuelto de huevos con verduras y tostada",m:"~300 kcal · 24 g prot",
-      ing:["2 huevos + 2 claras","Espinaca, zapallo italiano o lo que tengas","1 cdta de aceite de oliva","1 rebanada de pan integral","Comino, cúrcuma, pimienta"],
-      prep:["Saltea las verduras con el aceite y las especias.","Agrega los huevos batidos y revuelve a fuego bajo.","Sirve con la tostada."],
-      nota:"Salado y tibio, también es bueno para Vata. Para días en que no quieres dulce."},
-  ]},
-  {cat:"🍽️ Almuerzo en el casino (guía del plato)",items:[
-    {n:"Cómo armar tu plato",m:"~550 kcal · 35-40 g prot",
-      ing:["½ plato: verduras, idealmente cocidas o tibias","¼ plato: proteína = 1 palma y media (pescado, huevo, legumbres, tofu)","¼ plato: carbohidrato = 1 puño (arroz, papa, camote, fideos)","1 cdta de grasa (aceite, palta o semillas)"],
-      prep:["Pide la proteína primero y que sea la porción más generosa del plato.","Si solo hay ensalada fría: acompáñala con algo tibio (sopa, crema, té).","Postre: si hay antojo, fruta o 1 cuadradito de chocolate 80% + té de hinojo."],
-      nota:"Aquí está tu mayor aporte de proteína del día. Si hay legumbres, cuentan como proteína Y carbohidrato."},
-  ]},
-  {cat:"🌙 Cenas tibias y proteicas",items:[
-    {n:"Kitchari con huevo",m:"~530 kcal · 30 g prot",
-      ing:["60 g de lentejas rojas (o mung/porotos verdes partidos)","30 g de arroz","Zanahoria y zapallo en cubos","1 cdta de aceite de oliva (o ghee)","Comino, cúrcuma, jengibre, pimienta, sal","2 huevos (pochados o cocidos)"],
-      prep:["Tuesta las especias 30 seg en el aceite.","Agrega lentejas, arroz, verduras y 3 tazas de agua.","Cocina 25 min hasta que quede cremoso.","Sirve con los huevos encima."],
-      nota:"El plato clásico ayurvédico para digerir bien y calmar Vata. Rinde para guardar 1 porción más."},
-    {n:"Pescado con zapallo y camote asado",m:"~330 kcal · 32 g prot",
-      ing:["150 g de pescado blanco (reineta, merluza)","150 g de zapallo y camote en cubos","1 cdta de aceite de oliva","Limón, eneldo o comino, sal"],
-      prep:["Asa el zapallo y el camote 25 min (horno o sartén tapada).","Cocina el pescado a la plancha 3-4 min por lado.","Termina con limón."],
-      nota:"Liviano, alto en proteína y tibio."},
-    {n:"Salteado de tofu con arroz y verduras",m:"~420 kcal · 29 g prot",
-      ing:["200 g de tofu firme en cubos","½ taza de arroz cocido","Verduras en tiras (zanahoria, zapallo italiano, repollo)","1 cdta de aceite de sésamo o de oliva","Salsa de soya, jengibre rallado, 1 cdta de sésamo"],
-      prep:["Seca el tofu con papel y dóralo en la sartén 6-8 min.","Agrega verduras y jengibre, saltea 4 min.","Salsa de soya al final y sirve sobre el arroz con sésamo."],
-      nota:"Proteína vegetal completa, rápida de hacer."},
-  ]},
-  {cat:"🥚 Con lo que hay en el negocio (huevos, atún, bistec)",items:[
-    {n:"Omelette de claras con atún",m:"~220 kcal · 30 g prot",
-      ing:["1 huevo entero + 3 claras","½ lata de atún al agua, escurrido","Cebolla, tomate, espinaca o zapallo italiano picados","½ cdta de aceite de oliva","Comino, pimienta, orégano"],
-      prep:["Saltea las verduras 3 min con el aceite y las especias.","Bate el huevo con las claras, agrega el atún.","Vierte sobre las verduras, tapa y cocina a fuego bajo 4-5 min."],
-      nota:"Guarda las yemas que sobran (ver abajo)."},
-    {n:"Bistec magro con verduras salteadas",m:"~290 kcal · 30 g prot",
-      ing:["120 g de bistec magro (posta o asiento, sin grasa visible)","Zapallo italiano, zanahoria, cebolla en tiras","1 cdta de aceite de oliva","Ajo, comino, pimienta, sal"],
-      prep:["Sella el bistec en sartén bien caliente 2-3 min por lado y déjalo reposar.","En la misma sartén saltea las verduras con ajo y especias.","Corta el bistec en tiras sobre las verduras."],
-      nota:"La carne roja es pesada para Vata: mejor al almuerzo o cena temprana, con verduras cocidas y especias digestivas (comino, jengibre)."},
-    {n:"Qué hacer con las yemas",m:"1 yema ≈ 55 kcal · 3 g prot · 4,5 g grasa",
-      ing:["Guárdalas en un frasco, cubiertas con un poco de agua, en el refri: duran hasta 2 días."],
-      prep:["En la avena: fuera del fuego, bate 1 yema con una cucharada de la avena caliente y luego mézclala toda. Queda cremosa, como natilla.","En el revuelto del desayuno: 1 huevo + 1 yema + 2 claras.","En el kitchari o una sopa: bátela al final, fuera del fuego, para espesar.","Postre tibio: 1 yema + 1 taza de leche de soja + canela y vainilla, cocinado a fuego bajo revolviendo hasta que espese."],
-      nota:"No tienes que comer solo claras: la yema trae vitaminas y grasas buenas. Úsalas los días en que la grasa te da margen."},
-  ]},
-  {cat:"🍯 Snacks proteicos",items:[
-    {n:"Bolitas de dátil, almendra y proteína",m:"2 bolitas ≈ 175 kcal · 12 g prot",
-      ing:["10 dátiles sin cuesco (≈80 g)","60 g de almendras","2 medidas de proteína en polvo","2 cdas de sésamo","Canela y cacao (opcional)","Agua, de a cucharadas"],
-      prep:["Procesa almendras y dátiles hasta formar una pasta.","Agrega proteína, sésamo y especias; si está seco, una cucharada de agua a la vez.","Forma 10 bolitas y guárdalas en el refri (1 semana)."],
-      nota:"Para el antojo dulce de después de almuerzo: dulce + grasa + proteína."},
-    {n:"Leche dorada proteica",m:"~200 kcal · 29 g prot",
-      ing:["250 ml de leche de soja","1 medida de proteína vainilla","Tu polvo de leche dorada (cúrcuma, pimienta, jengibre, canela)"],
-      prep:["Entibia la leche con el polvo de leche dorada.","Fuera del fuego, bate con la proteína."],
-      nota:"De noche ayuda a dormir y suma proteína si quedaste corta en el día."},
-    {n:"Huevos duros tibios con sal de hierbas",m:"2 huevos ≈ 140 kcal · 12 g prot",
-      ing:["2 huevos","Sal, pimienta, comino u orégano"],prep:["Cuece varios el domingo y guárdalos en el refri.","Entíbialos en agua caliente 2 min antes de comer."],
-      nota:"El snack más práctico para el trabajo."},
-  ]},
-];
-const DIA_TIPO=[["Antes del gym: leche de soja + dátiles",150,7],["Desayuno: avena proteica",440,34],["Almuerzo casino (guía del plato)",550,38],["Snack: 2 bolitas proteicas",175,12],["Cena: pescado con zapallo",330,32]];
-
 /* ---------- ESTADO ---------- */
 const KEY="entreno_diana_v1";
 const GOAL=36;
@@ -570,7 +494,6 @@ function render(){
   if(currentTab==="hoy")return renderHoy();
   if(currentTab==="lib")return renderLib();
   if(currentTab==="prog")return renderProg();
-  if(currentTab==="comida")return renderComida();
   if(currentTab==="hist")return renderHist();
   renderRoutine();
 }
@@ -811,7 +734,7 @@ function renderHoy(){
   <div class="card">
     <h3>🎯 Metas diarias de comida</h3>
     <p><span class="macro">1.550–1.750 kcal</span><span class="macro">110–120 g proteína</span><span class="macro">2 L agua</span></p>
-    <p class="small">Constante &gt; perfecta. Evita días bajo 1.300 kcal: a tu Vata le pasan la cuenta (ansiedad, mal dormir). Recetas en 🍲 Comida.</p>
+    <p class="small">Constante &gt; perfecta. Evita días bajo 1.300 kcal: a tu Vata le pasan la cuenta (ansiedad, mal dormir).</p>
   </div>`;
   main.innerHTML=html;
   document.getElementById("goGym").onclick=()=>{currentTab=nx;draft={};cur={};activeEx=null;sessionDate=todayStr();render();window.scrollTo(0,0);};
@@ -981,33 +904,6 @@ function renderFuerza(body){
     <select class="full" id="fEx">${names.map(n=>`<option ${n===fuerzaEx?'selected':''}>${esc(n)}</option>`).join("")}</select>
     ${lineChart(series[fuerzaEx],"kg","#3b6ea5")}</div>`;
   document.getElementById("fEx").onchange=e=>{fuerzaEx=e.target.value;renderFuerza(body);};
-}
-
-/* ---------- COMIDA ---------- */
-function renderComida(){
-  const tk=DIA_TIPO.reduce((a,x)=>a+x[1],0), tp=DIA_TIPO.reduce((a,x)=>a+x[2],0);
-  let html=`<div class="card"><h3>🎯 Tus metas</h3>
-    <p><span class="macro">1.550–1.750 kcal</span><span class="macro">110–120 g proteína</span><span class="macro">2 L agua</span></p>
-    <p class="small">Regla: <b>proteína en cada comida</b>, todo lo más tibio posible, horarios regulares. Registra en Fitia como vienes haciendo 👏</p></div>
-  <details class="item"><summary><span>📅 Un día tipo que cumple todo<small>~${tk.toLocaleString('es-CL')} kcal · ~${tp} g proteína</small></span></summary><div class="ibody"><div class="mlist">
-    ${DIA_TIPO.map(x=>`<div><span>${esc(x[0])}</span><span>${x[1]} kcal · ${x[2]} g</span></div>`).join("")}</div></div></details>
-  <details class="item"><summary><span>🥤 Proteína en polvo: qué comprar<small>guía rápida</small></span></summary><div class="ibody">
-    <ul><li><b>Tu elección: Cáscara Lean Active</b> (aislado de soya, 20 g de proteína por medida, sin lactosa ni sucralosa, $29.990 las 30 porciones ≈ $1.000 c/u). Para cocinar conviene <b>sin sabor</b> o <b>vainilla manzana</b>.</li>
-    <li><b>Etiqueta:</b> ≥20 g de proteína por medida, sin azúcar agregada, pocos ingredientes.</li>
-    <li><b>Sabor:</b> vainilla o natural: sirve para avena, arroz con leche, bolitas y leche dorada.</li>
-    <li><b>Dosis:</b> 1 medida al día basta. Es un apoyo, no reemplaza la comida.</li>
-    <li><b>Estilo ayurvédico:</b> nunca en batido helado (enfría y agrava Vata). Mézclala tibia, fuera del fuego, para que no se haga grumos.</li></ul></div></details>`;
-  RECETAS.forEach(sec=>{
-    html+=`<div class="cat">${esc(sec.cat)}</div>`;
-    sec.items.forEach(r=>{
-      html+=`<details class="item"><summary><span>${esc(r.n)}<small>${esc(r.m)}</small></span></summary><div class="ibody">
-        <h4>Ingredientes</h4><ul>${r.ing.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
-        <h4>Preparación</h4><ol>${r.prep.map(i=>`<li>${esc(i)}</li>`).join("")}</ol>
-        ${r.nota?`<div class="knee">🌿 ${esc(r.nota)}</div>`:''}</div></details>`;
-    });
-  });
-  html+=`<p class="small" style="margin-top:12px">Las calorías son estimaciones: para el número exacto, usa Fitia con tus marcas.</p>`;
-  main.innerHTML=html;
 }
 
 /* ---------- HISTORIAL ---------- */
