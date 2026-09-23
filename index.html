@@ -73,6 +73,23 @@
   .ex-note input:focus{outline:none;border-color:var(--terra);background:#fff}
   .star{color:var(--terra);font-size:11px}
 
+  /* Registro de series con botones */
+  .sets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{border:1.5px dashed var(--line);background:#fff;border-radius:10px;padding:5px 9px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}
+  .chip.done{background:var(--ok);color:#fff;border:1.5px solid var(--ok)}
+  .chip.next{border:1.5px solid var(--terra);color:var(--terra)}
+  .stepper{display:flex;gap:8px;margin-top:10px}
+  .stp{flex:1;background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:6px 6px 8px;text-align:center}
+  .stp .lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+  .stp .ctl{display:flex;align-items:center;justify-content:space-between;margin-top:3px}
+  .stp button{width:42px;height:42px;border-radius:11px;border:none;background:#fff;font-size:22px;font-weight:700;color:var(--terra);box-shadow:var(--shadow);cursor:pointer}
+  .stp button:active{transform:scale(.94)}
+  .stp .val{font-size:22px;font-weight:800;min-width:44px;cursor:pointer;font-variant-numeric:tabular-nums}
+  .logset{width:100%;margin-top:8px;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;background:var(--terra);color:#fff;cursor:pointer}
+  .logset.extra{background:var(--sand);color:var(--ink);font-size:13px;padding:10px}
+  .openlog{margin-top:8px;border:1px solid var(--terra);background:#fff;color:var(--terra);font-weight:700;font-size:12.5px;border-radius:10px;padding:7px 12px;cursor:pointer}
+  .ex.active{background:#fffaf4}
+
   /* Edición */
   .ed-row{display:flex;flex-direction:column;gap:6px;flex:1}
   .ed-row input{border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px;font-family:inherit;background:var(--cream);color:var(--ink)}
@@ -421,11 +438,11 @@ const RECETAS=[
       prep:["Corta el plátano, úntalo, espolvorea canela."],nota:"Opción si tienes prisa."},
   ]},
   {cat:"☀️ Después de entrenar (desayuno)",items:[
-    {n:"Avena proteica tibia",m:"~450 kcal · 38 g prot",
-      ing:["40 g de avena (½ taza)","200 ml de leche de soja","1 medida (≈30 g) de proteína en polvo vainilla","Canela, cardamomo, jengibre en polvo","1 cda de almendras picadas (remojadas si puedes)","½ plátano o 2 dátiles picados"],
+    {n:"Avena proteica tibia",m:"~440 kcal · 34 g prot",
+      ing:["40 g de avena (½ taza)","200 ml de leche de soja","1 medida de proteína en polvo (sin sabor o vainilla)","Canela, cardamomo, jengibre en polvo","1 cda de almendras picadas (remojadas si puedes)","½ plátano o 2 dátiles picados"],
       prep:["Cocina la avena en la leche de soja con las especias, 4-5 min.","Apaga el fuego y espera 1 min.","Agrega la proteína revolviendo rápido (si la echas hirviendo se hacen grumos).","Arriba: almendras y plátano."],
       nota:"Tu desayuno estrella: dulce, tibio, denso (calma Vata) y con la proteína que te faltaba."},
-    {n:"Arroz con leche proteico",m:"~340 kcal · 30 g prot",
+    {n:"Arroz con leche proteico",m:"~330 kcal · 26 g prot",
       ing:["¾ taza de arroz ya cocido (sobras)","200 ml de leche de soja","1 medida de proteína vainilla","Canela, cardamomo, clavo de olor","1 cda de pasas"],
       prep:["Calienta el arroz con la leche y las especias 5 min hasta que espese.","Fuera del fuego, agrega la proteína y las pasas."],
       nota:"Aprovecha el arroz del día anterior."},
@@ -455,11 +472,11 @@ const RECETAS=[
       nota:"Proteína vegetal completa, rápida de hacer."},
   ]},
   {cat:"🍯 Snacks proteicos",items:[
-    {n:"Bolitas de dátil, almendra y proteína",m:"2 bolitas ≈ 180 kcal · 13 g prot",
+    {n:"Bolitas de dátil, almendra y proteína",m:"2 bolitas ≈ 175 kcal · 12 g prot",
       ing:["10 dátiles sin cuesco (≈80 g)","60 g de almendras","2 medidas de proteína en polvo","2 cdas de sésamo","Canela y cacao (opcional)","Agua, de a cucharadas"],
       prep:["Procesa almendras y dátiles hasta formar una pasta.","Agrega proteína, sésamo y especias; si está seco, una cucharada de agua a la vez.","Forma 10 bolitas y guárdalas en el refri (1 semana)."],
       nota:"Para el antojo dulce de después de almuerzo: dulce + grasa + proteína."},
-    {n:"Leche dorada proteica",m:"~215 kcal · 33 g prot",
+    {n:"Leche dorada proteica",m:"~200 kcal · 29 g prot",
       ing:["250 ml de leche de soja","1 medida de proteína vainilla","Tu polvo de leche dorada (cúrcuma, pimienta, jengibre, canela)"],
       prep:["Entibia la leche con el polvo de leche dorada.","Fuera del fuego, bate con la proteína."],
       nota:"De noche ayuda a dormir y suma proteína si quedaste corta en el día."},
@@ -468,7 +485,7 @@ const RECETAS=[
       nota:"El snack más práctico para el trabajo."},
   ]},
 ];
-const DIA_TIPO=[["Antes del gym: leche de soja + dátiles",150,7],["Desayuno: avena proteica",450,38],["Almuerzo casino (guía del plato)",550,38],["Snack: 2 bolitas proteicas",180,13],["Cena: pescado con zapallo",330,32]];
+const DIA_TIPO=[["Antes del gym: leche de soja + dátiles",150,7],["Desayuno: avena proteica",440,34],["Almuerzo casino (guía del plato)",550,38],["Snack: 2 bolitas proteicas",175,12],["Cena: pescado con zapallo",330,32]];
 
 /* ---------- ESTADO ---------- */
 const KEY="entreno_diana_v1";
@@ -480,6 +497,8 @@ let data=load();
 let currentTab="hoy";
 let editMode=false;
 let draft={};
+let activeEx=null;   // ejercicio con el registro de series abierto
+let cur={};          // valores kg/reps en pantalla por ejercicio
 let sessionDate=todayStr();
 let progSub="medidas";
 let fotoPose="frente";
@@ -544,17 +563,18 @@ function render(){
 function renderRoutine(){
   const r=data.routines[currentTab];
   const isYoga=r.yoga;
+  if(!editMode&&(!activeEx||!exByName(activeEx)))activeEx=firstActive();
   document.body.className=isYoga?"yoga":"";
   saveBtn.style.display=editMode?"none":"block";
   saveBtn.className="save"+(isYoga?" yoga":"");
 
   let html=`<div class="introbar">
-    <div class="intro">${r.emoji} <b>${esc(r.nombre)}</b><br>${editMode?'edita, borra o agrega ejercicios':'anota kg y reps · toca ℹ️ para ver cómo se hace'}</div>
+    <div class="intro">${r.emoji} <b>${esc(r.nombre)}</b><br>${editMode?'edita, borra o agrega ejercicios':'marca cada serie con los botones · ℹ️ = cómo se hace'}</div>
     <button class="editbtn ${editMode?'on':''}" id="editToggle">${editMode?'✓ Listo':'✏️ Editar'}</button>
   </div>`;
   if(!editMode) html+=`<div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>`;
   if(isYoga && !editMode) html+=`<div class="tip">💡 Ideal para días de terreno o de descanso. Respira lento y sin prisa.</div>`;
-  if(!isYoga && !editMode) html+=`<div class="tip">💡 <b>Peso correcto:</b> termina cada serie sintiendo que te quedaban solo 1-3 reps. Cuando completes todas las series en el tope del rango, <b>sube 1-2 kg</b>. Descanso: 90 s (⏱️).</div>`;
+  if(!isYoga && !editMode) html+=`<div class="tip">💡 <b>Peso correcto:</b> termina cada serie sintiendo que te quedaban solo 1-3 reps. Cuando completes todas las series en el tope del rango, <b>sube 1-2 kg</b>. Al marcar una serie parte solo el descanso de 90 s (⏱️).</div>`;
 
   r.blocks.forEach((bl,bi)=>{
     html+=`<div class="block${isYoga?' yoga':''}"><div class="block-h">`;
@@ -578,19 +598,20 @@ function renderRoutine(){
         if(ex.log){
           const L=lastLog(ex.n);
           if(L){
-            const txt=[L.kg?L.kg+" kg":"",L.reps||(!L.kg?L.v:"")].filter(Boolean).join(" · ");
+            const txt=L.sets?L.v:[L.kg?L.kg+" kg":"",L.reps||(!L.kg?L.v:"")].filter(Boolean).join(" · ");
             lastHtml=`<div class="last">↩︎ Última vez (${fmtShort(L.date)}): ${esc(txt)}</div>`;
             const t=target(ex.d), r=nums(L.reps);
             if(t&&L.kg&&r.length>=t.sets&&r.slice(0,t.sets).every(x=>x>=t.top)) lastHtml+=`<div class="up">⬆️ Completaste todo: hoy sube 1-2 kg</div>`;
           }
         }
-        html+=`<div class="ex">
+        const isAct=ex.log&&activeEx===ex.n;
+        html+=`<div class="ex ${isAct?'active':''}">
           <div class="cbx ${st.done?'on':''}" data-cb="${id}"></div>
           <div class="ex-body">
             <div class="ex-top"><div class="ex-name">${nm}</div>${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}</div>
             ${ex.d?`<div class="ex-dose">${esc(ex.d)}</div>`:''}
             ${lastHtml}
-            ${ex.log?`<div class="ex-note"><input class="kg" type="text" inputmode="decimal" data-kg="${id}" placeholder="kg" value="${esc(st.kg||'')}"><input type="text" data-reps="${id}" placeholder="reps: 10 10 9 · o min/seg" value="${esc(st.reps||'')}"></div>`:''}
+            ${ex.log?setsHtml(ex,id,isAct):''}
           </div></div>`;
       }
     });
@@ -606,9 +627,59 @@ function renderRoutine(){
   bindRoutine();
 }
 
+/* Series: la dosis "3 × 10" define cuántas series y las reps objetivo. Sin "×" (ej: caminadora) = 1 registro en minutos, sin kg. */
+function exMeta(ex){
+  const t=target(ex.d);
+  const byTime=!t&&/min/.test(ex.d||"");
+  const secs=/seg/.test(ex.d||"")&&!(t&&t.top<20);
+  return {t,nSets:t?t.sets:1,byTime,unit:byTime?"min":(secs?"reps / seg":"reps"),repStep:secs?5:1};
+}
+function curVals(ex){
+  if(cur[ex.n])return cur[ex.n];
+  const m=exMeta(ex), L=lastLog(ex.n), done=(draft[ex.n]&&draft[ex.n].sets)||[];
+  const i=done.length, prevSet=done[i-1];
+  const lastSet=L&&L.sets?(L.sets[i]||L.sets[L.sets.length-1]):null;
+  let kg=prevSet?prevSet.kg:(lastSet?lastSet.kg:(L&&parseFloat(L.kg))||0);
+  let reps=prevSet?prevSet.reps:(lastSet?lastSet.reps:(m.t?m.t.top:(m.byTime?15:10)));
+  return cur[ex.n]={kg:+kg||0,reps:+reps||0};
+}
+function fmtSet(s,byTime){return byTime?`${s.reps} min`:(s.kg?`${fmtKg(s.kg)}×${s.reps}`:`${s.reps}`);}
+function fmtKg(k){return String(Math.round(k*10)/10).replace('.',',');}
+function setsHtml(ex,id,isAct){
+  const m=exMeta(ex), sets=(draft[ex.n]&&draft[ex.n].sets)||[];
+  let chips="";
+  const n=Math.max(m.nSets,sets.length);
+  for(let i=0;i<n;i++){
+    if(i<sets.length)chips+=`<span class="chip done" data-rmset="${id}_${i}">✓ ${fmtSet(sets[i],m.byTime)}</span>`;
+    else chips+=`<span class="chip ${i===sets.length?'next':''}">Serie ${i+1}</span>`;
+  }
+  if(m.byTime&&!sets.length)chips=`<span class="chip next">Pendiente</span>`;
+  let h=`<div class="sets">${chips}</div>`;
+  if(!isAct)return h+`<button class="openlog" data-act="${id}">${sets.length?'✏️ Seguir registrando':'▸ Registrar series'}</button>`;
+  const c=curVals(ex);
+  h+=`<div class="stepper">
+    ${m.byTime?'':`<div class="stp"><div class="lbl">Peso (kg)</div><div class="ctl"><button data-kgm="${id}">−</button><span class="val" data-kgv="${id}">${fmtKg(c.kg)}</span><button data-kgp="${id}">+</button></div></div>`}
+    <div class="stp"><div class="lbl">${m.unit}</div><div class="ctl"><button data-rpm="${id}">−</button><span class="val" data-rpv="${id}">${c.reps}</span><button data-rpp="${id}">+</button></div></div>
+  </div>`;
+  const next=sets.length+1, extra=sets.length>=m.nSets;
+  h+=`<button class="logset ${extra?'extra':''}" data-logset="${id}">${extra?`+ Serie extra (${next})`:(m.byTime?'✓ Listo':`✓ Serie ${next} hecha`)}</button>`;
+  return h;
+}
+function exByName(n){for(const bl of data.routines[currentTab].blocks)for(const ex of bl.ex)if(ex.n===n)return ex;return null;}
+function nextActive(afterName){
+  const all=[];data.routines[currentTab].blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.log)all.push(ex);}));
+  const i=all.findIndex(e=>e.n===afterName);
+  for(let j=i+1;j<all.length;j++){const s=(draft[all[j].n]&&draft[all[j].n].sets)||[];if(s.length<exMeta(all[j]).nSets)return all[j].n;}
+  return null;
+}
+function firstActive(){
+  for(const bl of data.routines[currentTab].blocks)for(const ex of bl.ex){if(ex.log){const s=(draft[ex.n]&&draft[ex.n].sets)||[];if(s.length<exMeta(ex).nSets)return ex.n;}}
+  return null;
+}
+
 function bindRoutine(){
   const et=document.getElementById("editToggle");
-  if(et)et.onclick=()=>{editMode=!editMode;draft={};render();};
+  if(et)et.onclick=()=>{editMode=!editMode;draft={};cur={};activeEx=null;render();};
   const sd=document.getElementById("sessDate");
   if(sd)sd.onchange=()=>{sessionDate=sd.value||todayStr();};
   main.querySelectorAll("[data-info]").forEach(el=>{el.onclick=()=>openInfo(el.dataset.info);});
@@ -616,11 +687,29 @@ function bindRoutine(){
     main.querySelectorAll("[data-cb]").forEach(el=>{
       el.onclick=()=>{const n=idMap[el.dataset.cb];draft[n]=draft[n]||{};draft[n].done=!draft[n].done;el.classList.toggle("on",draft[n].done);};
     });
-    const onType=(attr,field)=>main.querySelectorAll(`[data-${attr}]`).forEach(el=>{
-      el.oninput=()=>{const id=el.dataset[attr],n=idMap[id];draft[n]=draft[n]||{};draft[n][field]=el.value;
-        if(el.value.trim()&&!draft[n].done){draft[n].done=true;main.querySelector(`[data-cb="${id}"]`).classList.add("on");}};
+    const on=(attr,fn)=>main.querySelectorAll(`[data-${attr}]`).forEach(el=>{el.onclick=()=>{const v=el.dataset[attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase())];fn(v,el);};});
+    const withEx=(id,fn)=>{const n=idMap[id],ex=exByName(n);if(!ex)return;fn(n,ex,curVals(ex));render();};
+    on("act",id=>{activeEx=idMap[id];render();});
+    on("kgm",id=>withEx(id,(n,ex,c)=>{c.kg=Math.max(0,Math.round((c.kg-1)*10)/10);}));
+    on("kgp",id=>withEx(id,(n,ex,c)=>{c.kg=Math.round((c.kg+1)*10)/10;}));
+    on("rpm",id=>withEx(id,(n,ex,c)=>{c.reps=Math.max(0,c.reps-exMeta(ex).repStep);}));
+    on("rpp",id=>withEx(id,(n,ex,c)=>{c.reps=c.reps+exMeta(ex).repStep;}));
+    on("kgv",id=>withEx(id,(n,ex,c)=>{const v=prompt("Peso (kg):",fmtKg(c.kg));if(v!==null){const k=parseFloat(v.replace(',','.'));if(!isNaN(k)&&k>=0)c.kg=k;}}));
+    on("rpv",id=>withEx(id,(n,ex,c)=>{const v=prompt(exMeta(ex).unit+":",c.reps);if(v!==null){const k=parseInt(v,10);if(!isNaN(k)&&k>=0)c.reps=k;}}));
+    on("logset",id=>{
+      const n=idMap[id],ex=exByName(n);if(!ex)return;
+      const c=curVals(ex),m=exMeta(ex);
+      draft[n]=draft[n]||{};draft[n].sets=draft[n].sets||[];
+      draft[n].sets.push({kg:m.byTime?0:c.kg,reps:c.reps});draft[n].done=true;
+      if(draft[n].sets.length>=m.nSets&&!m.byTime){activeEx=nextActive(n)||n;}
+      if(m.byTime)activeEx=nextActive(n)||n;
+      if(!m.byTime&&window.TIMER)TIMER.rest();
+      render();
     });
-    onType("kg","kg");onType("reps","reps");
+    on("rmset",v=>{
+      const p=v.lastIndexOf("_"),n=idMap[v.slice(0,p)],i=+v.slice(p+1);
+      if(confirm("¿Borrar esta serie?")){draft[n].sets.splice(i,1);if(!draft[n].sets.length)draft[n].done=false;delete cur[n];activeEx=n;render();}
+    });
     return;
   }
   const R=data.routines[currentTab];
@@ -647,12 +736,15 @@ saveBtn.onclick=()=>{
   if(!done.length){toast("Marca al menos un ejercicio ✏️");return;}
   const logs=[];
   Object.entries(draft).forEach(([n,v])=>{
-    const kg=(v.kg||"").trim().replace(',','.'), reps=(v.reps||"").trim();
-    if(kg||reps)logs.push({n:n.replace('★','').trim(),kg,reps,v:[kg?kg+" kg":"",reps].filter(Boolean).join(" · ")});
+    const sets=v.sets||[];if(!sets.length)return;
+    const ex=exByName(n),byTime=ex?exMeta(ex).byTime:false;
+    const kgMax=Math.max(...sets.map(s=>s.kg||0));
+    logs.push({n:n.replace('★','').trim(),kg:kgMax?String(kgMax):"",reps:sets.map(s=>s.reps).join(" "),sets,
+      v:sets.map(s=>fmtSet(s,byTime)).join(" · ")+(kgMax&&!byTime?" (kg×reps)":"")});
   });
   const iso=new Date((sessionDate||todayStr())+'T12:00:00').toISOString();
   data.sessions.push({id:Date.now(),date:iso,tipo:currentTab,count:done.length,logs});
-  save();draft={};sessionDate=todayStr();updateStats();
+  save();draft={};cur={};activeEx=null;sessionDate=todayStr();updateStats();
   toast("¡Sesión guardada! 🎉");
   currentTab="hoy";render();
 };
@@ -705,7 +797,7 @@ function renderHoy(){
     <p class="small">Constante &gt; perfecta. Evita días bajo 1.300 kcal: a tu Vata le pasan la cuenta (ansiedad, mal dormir). Recetas en 🍲 Comida.</p>
   </div>`;
   main.innerHTML=html;
-  document.getElementById("goGym").onclick=()=>{currentTab=nx;draft={};sessionDate=todayStr();render();window.scrollTo(0,0);};
+  document.getElementById("goGym").onclick=()=>{currentTab=nx;draft={};cur={};activeEx=null;sessionDate=todayStr();render();window.scrollTo(0,0);};
   document.getElementById("qHs").onclick=()=>quickLog("handstand");
   document.getElementById("qEs").onclick=()=>quickLog("escalada");
 }
@@ -773,26 +865,43 @@ function renderProg(){
   else if(progSub==="fotos")renderFotos(body);
   else renderFuerza(body);
 }
+/* % grasa estimado: fórmula de la Marina de EE.UU. para mujeres (cm). Error típico ±3-4 puntos: sirve para ver tendencia. */
+const ALTURA=160;
+function navyBF(m){
+  if(!m.cintura||!m.cadera||!m.cuello)return null;
+  const x=m.cintura+m.cadera-m.cuello;if(x<=0)return null;
+  const bf=495/(1.29579-0.35004*Math.log10(x)+0.22100*Math.log10(ALTURA))-450;
+  return Math.round(bf*10)/10;
+}
 function renderMedidas(body){
   const M=[...data.medidas].sort((a,b)=>a.date.localeCompare(b.date));
   let html=`<div class="card"><h3>Nuevo registro</h3>
-    <p class="small">1 vez por semana, mismo día, en ayunas después del baño. La cintura se mide a la altura del ombligo, relajada, sin apretar la huincha.</p>
+    <p class="small">1 vez por semana, mismo día, en ayunas. Huincha firme pero sin apretar, relajada:<br>• <b>Cintura:</b> el punto más angosto (suele estar sobre el ombligo).<br>• <b>Cadera:</b> la parte más ancha de los glúteos.<br>• <b>Cuello:</b> justo bajo la manzana de Adán.<br>Con las tres se calcula tu % de grasa estimado.</p>
     <div class="form">
       <label>Fecha<input type="date" id="mDate" value="${todayStr()}" max="${todayStr()}"></label>
       <label>Peso (kg)<input type="text" inputmode="decimal" id="mPeso" placeholder="65,0"></label>
       <label>Cintura (cm)<input type="text" inputmode="decimal" id="mCint" placeholder="78"></label>
+      <label>Cadera (cm)<input type="text" inputmode="decimal" id="mCad" placeholder="100"></label>
+      <label>Cuello (cm)<input type="text" inputmode="decimal" id="mCue" placeholder="32"></label>
     </div><button class="btn" id="mSave">Guardar medida</button></div>`;
   const cin=M.filter(m=>m.cintura).map(m=>({x:m.date,y:m.cintura}));
   const pes=M.filter(m=>m.peso).map(m=>({x:m.date,y:m.peso}));
+  const bfs=M.map(m=>({x:m.date,y:navyBF(m)})).filter(p=>p.y!=null);
+  const lastBF=bfs.length?bfs[bfs.length-1].y:null;
+  html+=`<div class="card"><h3>🔥 % de grasa estimado</h3>
+    ${lastBF!=null?`<div class="hero" style="background:none"><div class="big">${String(lastBF).replace('.',',')}%</div></div>`:'<p class="small">Anota cintura, cadera y cuello para calcularlo.</p>'}
+    <p class="small">Calculado con la fórmula de la Marina de EE.UU. (altura 1,60 m). Se equivoca ±3-4 puntos, pero <b>si mides siempre igual, la tendencia es confiable</b>. Referencia: abdomen marcado en mujeres ≈ 18-22%.</p>
+    ${bfs.length>1?lineChart(bfs,"%","#9e4f2f"):''}</div>`;
   html+=`<div class="card"><h3>📐 Cintura</h3><p class="small">El mejor indicador casero de grasa abdominal.</p>${lineChart(cin,"cm","#c1663f")}</div>`;
   html+=`<div class="card"><h3>⚖️ Peso</h3><p class="small">Fluctúa ±1 kg día a día (agua, ciclo). Mira la tendencia, no el número suelto.</p>${lineChart(pes,"kg","#2f7d78")}</div>`;
-  if(M.length){html+=`<div class="card"><h3>Registros</h3><div class="mlist">${[...M].reverse().map(m=>`<div><span>${fmtShort(m.date)}</span><span>${m.peso?String(m.peso).replace('.',',')+' kg':'—'} · ${m.cintura?String(m.cintura).replace('.',',')+' cm':'—'}</span><button class="del" data-mdel="${m.id}">Borrar</button></div>`).join("")}</div></div>`;}
+  if(M.length){html+=`<div class="card"><h3>Registros</h3><div class="mlist">${[...M].reverse().map(m=>`<div><span>${fmtShort(m.date)}</span><span>${m.peso?String(m.peso).replace('.',',')+' kg':'—'} · ${m.cintura?String(m.cintura).replace('.',',')+' cm':'—'}${navyBF(m)!=null?' · '+String(navyBF(m)).replace('.',',')+'%':''}</span><button class="del" data-mdel="${m.id}">Borrar</button></div>`).join("")}</div></div>`;}
   body.innerHTML=html;
   document.getElementById("mSave").onclick=()=>{
     const p=parseFloat((document.getElementById("mPeso").value||"").replace(',','.'));
-    const c=parseFloat((document.getElementById("mCint").value||"").replace(',','.'));
-    if(isNaN(p)&&isNaN(c)){toast("Anota peso o cintura ✏️");return;}
-    data.medidas.push({id:Date.now(),date:document.getElementById("mDate").value||todayStr(),peso:isNaN(p)?null:p,cintura:isNaN(c)?null:c});
+    const num=id=>{const v=parseFloat((document.getElementById(id).value||"").replace(',','.'));return isNaN(v)?null:v;};
+    const c=num("mCint"),cad=num("mCad"),cue=num("mCue");
+    if(isNaN(p)&&c==null){toast("Anota peso o cintura ✏️");return;}
+    data.medidas.push({id:Date.now(),date:document.getElementById("mDate").value||todayStr(),peso:isNaN(p)?null:p,cintura:c,cadera:cad,cuello:cue});
     save();toast("Medida guardada 📏");renderProg();
   };
   body.querySelectorAll("[data-mdel]").forEach(b=>b.onclick=()=>{if(confirm("¿Borrar este registro?")){data.medidas=data.medidas.filter(m=>m.id!=b.dataset.mdel);save();renderProg();}});
@@ -866,7 +975,7 @@ function renderComida(){
   <details class="item"><summary><span>📅 Un día tipo que cumple todo<small>~${tk.toLocaleString('es-CL')} kcal · ~${tp} g proteína</small></span></summary><div class="ibody"><div class="mlist">
     ${DIA_TIPO.map(x=>`<div><span>${esc(x[0])}</span><span>${x[1]} kcal · ${x[2]} g</span></div>`).join("")}</div></div></details>
   <details class="item"><summary><span>🥤 Proteína en polvo: qué comprar<small>guía rápida</small></span></summary><div class="ibody">
-    <ul><li><b>Tipo:</b> whey <i>isolate</i> si toleras bien los lácteos (casi sin lactosa), o vegetal de <b>soja o arveja</b> si prefieres evitarlos.</li>
+    <ul><li><b>Tu elección: Cáscara Lean Active</b> (aislado de soya, 20 g de proteína por medida, sin lactosa ni sucralosa, $29.990 las 30 porciones ≈ $1.000 c/u). Para cocinar conviene <b>sin sabor</b> o <b>vainilla manzana</b>.</li>
     <li><b>Etiqueta:</b> ≥20 g de proteína por medida, sin azúcar agregada, pocos ingredientes.</li>
     <li><b>Sabor:</b> vainilla o natural: sirve para avena, arroz con leche, bolitas y leche dorada.</li>
     <li><b>Dosis:</b> 1 medida al día basta. Es un apoyo, no reemplaza la comida.</li>
@@ -925,7 +1034,7 @@ document.querySelectorAll("#nav button").forEach(b=>{
     if(!editMode && ROUTINE_TABS.includes(currentTab) && Object.values(draft).some(v=>v.done)){
       if(!confirm("Tienes ejercicios marcados sin guardar. ¿Cambiar de todos modos?")) return;
     }
-    draft={};editMode=false;sessionDate=todayStr();currentTab=b.dataset.tab;render();
+    draft={};cur={};activeEx=null;editMode=false;sessionDate=todayStr();currentTab=b.dataset.tab;render();
   };
 });
 
@@ -951,7 +1060,10 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
   function ensureAudio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();}catch(e){}}
   function beep(){try{ensureAudio();for(let i=0;i<3;i++){const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=880;const t=actx.currentTime+i*0.28;g.gain.setValueAtTime(0.35,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.22);o.start(t);o.stop(t+0.22);}}catch(e){}if(navigator.vibrate)navigator.vibrate([200,100,200,100,300]);}
   function fmt(ms,ceil){let s=ceil?Math.ceil(ms/1000):Math.floor(ms/1000);if(s<0)s=0;const m=Math.floor(s/60);s=s%60;return String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');}
+  const fab=document.getElementById("timerFab");
   function draw(){
+    const showFab=running&&mode==="cd";
+    fab.textContent=showFab?fmt(cdRemain,true):"⏱️";fab.style.fontSize=showFab?"14px":"24px";fab.style.fontWeight="800";
     if(mode==="sw"){disp.textContent=fmt(swElapsed,false);disp.classList.remove("warn");}
     else{disp.textContent=fmt(cdRemain,true);disp.classList.toggle("warn",cdRemain<=5000&&cdRemain>0);}
   }
@@ -968,7 +1080,11 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
   function stop(){running=false;startBtn.textContent="Iniciar";if(iv){clearInterval(iv);iv=null;}}
   function reset(){stop();if(mode==="sw"){swElapsed=0;}else{cdRemain=cdSet;}draw();}
 
-  document.getElementById("timerFab").onclick=()=>openSheet("timerSheet");
+  fab.onclick=()=>openSheet("timerSheet");
+  // Descanso automático al marcar una serie
+  window.TIMER={rest(){stop();mode="cd";
+    document.querySelectorAll("#timerSheet [data-tm]").forEach(x=>x.classList.toggle("active",x.dataset.tm==="cd"));
+    presets.style.display="flex";cdRemain=cdSet;start();}};
   startBtn.onclick=()=>{running?stop():start();};
   resetBtn.onclick=reset;
 
