@@ -78,15 +78,14 @@
   .chip{border:1.5px dashed var(--line);background:#fff;border-radius:10px;padding:5px 9px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}
   .chip.done{background:var(--ok);color:#fff;border:1.5px solid var(--ok)}
   .chip.next{border:1.5px solid var(--terra);color:var(--terra)}
-  .stepper{display:flex;gap:8px;margin-top:10px}
-  .stp{flex:1;background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:6px 6px 8px;text-align:center}
-  .stp .lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
-  .stp .ctl{display:flex;align-items:center;justify-content:space-between;margin-top:3px}
-  .stp button{width:42px;height:42px;border-radius:11px;border:none;background:#fff;font-size:22px;font-weight:700;color:var(--terra);box-shadow:var(--shadow);cursor:pointer}
-  .stp button:active{transform:scale(.94)}
-  .stp .val{font-size:22px;font-weight:800;min-width:44px;cursor:pointer;font-variant-numeric:tabular-nums}
-  .logset{width:100%;margin-top:8px;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;background:var(--terra);color:#fff;cursor:pointer}
-  .logset.extra{background:var(--sand);color:var(--ink);font-size:13px;padding:10px}
+  .setrow{display:flex;gap:6px;align-items:flex-end;margin-top:8px}
+  .setrow label{flex:0 0 70px;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase}
+  .setrow input{display:block;width:100%;margin-top:2px;border:1.5px solid var(--line);border-radius:10px;padding:8px 6px;font-size:17px;font-weight:800;text-align:center;font-family:inherit;background:#fff;color:var(--ink)}
+  .setrow input:focus{outline:none;border-color:var(--terra)}
+  .play{flex:0 0 auto;border:none;border-radius:10px;padding:10px 11px;font-size:13px;font-weight:800;background:var(--teal);color:#fff;cursor:pointer}
+  .playsm{margin-top:6px;border:none;border-radius:9px;padding:6px 10px;font-size:12px;font-weight:800;background:var(--teal-light);color:var(--teal);cursor:pointer}
+  .logset{flex:1;border:none;border-radius:10px;padding:11px 8px;font-size:14px;font-weight:800;background:var(--terra);color:#fff;cursor:pointer;white-space:nowrap}
+  .logset.extra{background:var(--sand);color:var(--ink);font-size:13px}
   .openlog{margin-top:8px;border:1px solid var(--terra);background:#fff;color:var(--terra);font-weight:700;font-size:12.5px;border-radius:10px;padding:7px 12px;cursor:pointer}
   .ex.active{background:#fffaf4}
 
@@ -247,10 +246,10 @@
 <div class="backdrop" id="backdrop"></div>
 <div class="sheet" id="timerSheet">
   <button class="sheet-close" data-close>✕</button>
-  <div class="timer-title">⏱️ Cronómetro</div>
+  <div class="timer-title" id="tmTitle">⏱️ Descanso</div>
   <div class="timer-tabs">
     <button data-tm="sw">Cronómetro</button>
-    <button data-tm="cd" class="active">Descanso</button>
+    <button data-tm="cd" class="active">Temporizador</button>
   </div>
   <div class="timer-presets" id="tmPresets">
     <button data-sec="30">30 s</button>
@@ -258,6 +257,8 @@
     <button data-sec="60">1 min</button>
     <button data-sec="90" class="sel">90 s</button>
     <button data-sec="120">2 min</button>
+    <button data-sec="300">5 min</button>
+    <input id="tmCustom" type="text" inputmode="decimal" placeholder="otro (min)" style="width:92px;border:1px solid var(--line);border-radius:20px;padding:8px 10px;font-size:13px;text-align:center;font-family:inherit">
   </div>
   <div class="timer-display" id="tmDisplay">01:30</div>
   <div class="timer-ctrls">
@@ -471,6 +472,20 @@ const RECETAS=[
       prep:["Seca el tofu con papel y dóralo en la sartén 6-8 min.","Agrega verduras y jengibre, saltea 4 min.","Salsa de soya al final y sirve sobre el arroz con sésamo."],
       nota:"Proteína vegetal completa, rápida de hacer."},
   ]},
+  {cat:"🥚 Con lo que hay en el negocio (huevos, atún, bistec)",items:[
+    {n:"Omelette de claras con atún",m:"~220 kcal · 30 g prot",
+      ing:["1 huevo entero + 3 claras","½ lata de atún al agua, escurrido","Cebolla, tomate, espinaca o zapallo italiano picados","½ cdta de aceite de oliva","Comino, pimienta, orégano"],
+      prep:["Saltea las verduras 3 min con el aceite y las especias.","Bate el huevo con las claras, agrega el atún.","Vierte sobre las verduras, tapa y cocina a fuego bajo 4-5 min."],
+      nota:"Guarda las yemas que sobran (ver abajo)."},
+    {n:"Bistec magro con verduras salteadas",m:"~290 kcal · 30 g prot",
+      ing:["120 g de bistec magro (posta o asiento, sin grasa visible)","Zapallo italiano, zanahoria, cebolla en tiras","1 cdta de aceite de oliva","Ajo, comino, pimienta, sal"],
+      prep:["Sella el bistec en sartén bien caliente 2-3 min por lado y déjalo reposar.","En la misma sartén saltea las verduras con ajo y especias.","Corta el bistec en tiras sobre las verduras."],
+      nota:"La carne roja es pesada para Vata: mejor al almuerzo o cena temprana, con verduras cocidas y especias digestivas (comino, jengibre)."},
+    {n:"Qué hacer con las yemas",m:"1 yema ≈ 55 kcal · 3 g prot · 4,5 g grasa",
+      ing:["Guárdalas en un frasco, cubiertas con un poco de agua, en el refri: duran hasta 2 días."],
+      prep:["En la avena: fuera del fuego, bate 1 yema con una cucharada de la avena caliente y luego mézclala toda. Queda cremosa, como natilla.","En el revuelto del desayuno: 1 huevo + 1 yema + 2 claras.","En el kitchari o una sopa: bátela al final, fuera del fuego, para espesar.","Postre tibio: 1 yema + 1 taza de leche de soja + canela y vainilla, cocinado a fuego bajo revolviendo hasta que espese."],
+      nota:"No tienes que comer solo claras: la yema trae vitaminas y grasas buenas. Úsalas los días en que la grasa te da margen."},
+  ]},
   {cat:"🍯 Snacks proteicos",items:[
     {n:"Bolitas de dátil, almendra y proteína",m:"2 bolitas ≈ 175 kcal · 12 g prot",
       ing:["10 dátiles sin cuesco (≈80 g)","60 g de almendras","2 medidas de proteína en polvo","2 cdas de sésamo","Canela y cacao (opcional)","Agua, de a cucharadas"],
@@ -611,7 +626,7 @@ function renderRoutine(){
             <div class="ex-top"><div class="ex-name">${nm}</div>${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}</div>
             ${ex.d?`<div class="ex-dose">${esc(ex.d)}</div>`:''}
             ${lastHtml}
-            ${ex.log?setsHtml(ex,id,isAct):''}
+            ${ex.log?setsHtml(ex,id,isAct):(parseDur(ex.d)?`<button class="playsm" data-tmr="${parseDur(ex.d)}|${esc(ex.n)}">▶ Temporizador ${fmtDur(parseDur(ex.d))}</button>`:'')}
           </div></div>`;
       }
     });
@@ -632,7 +647,7 @@ function exMeta(ex){
   const t=target(ex.d);
   const byTime=!t&&/min/.test(ex.d||"");
   const secs=/seg/.test(ex.d||"")&&!(t&&t.top<20);
-  return {t,nSets:t?t.sets:1,byTime,unit:byTime?"min":(secs?"reps / seg":"reps"),repStep:secs?5:1};
+  return {t,nSets:t?t.sets:1,byTime,secs,unit:byTime?"min":(secs?"seg":"reps"),repStep:secs?5:1};
 }
 function curVals(ex){
   if(cur[ex.n])return cur[ex.n];
@@ -640,9 +655,12 @@ function curVals(ex){
   const i=done.length, prevSet=done[i-1];
   const lastSet=L&&L.sets?(L.sets[i]||L.sets[L.sets.length-1]):null;
   let kg=prevSet?prevSet.kg:(lastSet?lastSet.kg:(L&&parseFloat(L.kg))||0);
-  let reps=prevSet?prevSet.reps:(lastSet?lastSet.reps:(m.t?m.t.top:(m.byTime?15:10)));
+  // reps: el número recomendado de la rutina (en series siguientes, lo mismo que la anterior)
+  let reps=prevSet?prevSet.reps:(m.t?m.t.top:(m.byTime?(parseDur(ex.d)||900)/60:10));
   return cur[ex.n]={kg:+kg||0,reps:+reps||0};
 }
+function parseDur(d){const m=String(d||"").match(/(\d+)(?:\s*-\s*\d+)?\s*(min|seg)/);return m?(m[2]==="min"?+m[1]*60:+m[1]):0;}
+function fmtDur(sec){return sec>=60?(sec%60?Math.floor(sec/60)+":"+String(sec%60).padStart(2,'0'):sec/60+" min"):sec+" s";}
 function fmtSet(s,byTime){return byTime?`${s.reps} min`:(s.kg?`${fmtKg(s.kg)}×${s.reps}`:`${s.reps}`);}
 function fmtKg(k){return String(Math.round(k*10)/10).replace('.',',');}
 function setsHtml(ex,id,isAct){
@@ -657,12 +675,13 @@ function setsHtml(ex,id,isAct){
   let h=`<div class="sets">${chips}</div>`;
   if(!isAct)return h+`<button class="openlog" data-act="${id}">${sets.length?'✏️ Seguir registrando':'▸ Registrar series'}</button>`;
   const c=curVals(ex);
-  h+=`<div class="stepper">
-    ${m.byTime?'':`<div class="stp"><div class="lbl">Peso (kg)</div><div class="ctl"><button data-kgm="${id}">−</button><span class="val" data-kgv="${id}">${fmtKg(c.kg)}</span><button data-kgp="${id}">+</button></div></div>`}
-    <div class="stp"><div class="lbl">${m.unit}</div><div class="ctl"><button data-rpm="${id}">−</button><span class="val" data-rpv="${id}">${c.reps}</span><button data-rpp="${id}">+</button></div></div>
-  </div>`;
   const next=sets.length+1, extra=sets.length>=m.nSets;
-  h+=`<button class="logset ${extra?'extra':''}" data-logset="${id}">${extra?`+ Serie extra (${next})`:(m.byTime?'✓ Listo':`✓ Serie ${next} hecha`)}</button>`;
+  h+=`<div class="setrow">
+    ${m.byTime?'':`<label>kg<input type="text" inputmode="decimal" data-kgi="${id}" value="${c.kg?fmtKg(c.kg):''}" placeholder="0"></label>`}
+    <label>${m.byTime?'min':(m.unit==='reps'?'reps':'seg')}<input type="text" inputmode="numeric" data-rpi="${id}" value="${c.reps||''}"></label>
+    ${m.byTime||m.secs||parseDur(ex.d)?`<button class="play" data-play="${id}">▶</button>`:''}
+    <button class="logset ${extra?'extra':''}" data-logset="${id}">${extra?`+ Extra`:(m.byTime?'✓ Listo':`✓ Serie ${next}`)}</button>
+  </div>`;
   return h;
 }
 function exByName(n){for(const bl of data.routines[currentTab].blocks)for(const ex of bl.ex)if(ex.n===n)return ex;return null;}
@@ -688,14 +707,12 @@ function bindRoutine(){
       el.onclick=()=>{const n=idMap[el.dataset.cb];draft[n]=draft[n]||{};draft[n].done=!draft[n].done;el.classList.toggle("on",draft[n].done);};
     });
     const on=(attr,fn)=>main.querySelectorAll(`[data-${attr}]`).forEach(el=>{el.onclick=()=>{const v=el.dataset[attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase())];fn(v,el);};});
-    const withEx=(id,fn)=>{const n=idMap[id],ex=exByName(n);if(!ex)return;fn(n,ex,curVals(ex));render();};
     on("act",id=>{activeEx=idMap[id];render();});
-    on("kgm",id=>withEx(id,(n,ex,c)=>{c.kg=Math.max(0,Math.round((c.kg-1)*10)/10);}));
-    on("kgp",id=>withEx(id,(n,ex,c)=>{c.kg=Math.round((c.kg+1)*10)/10;}));
-    on("rpm",id=>withEx(id,(n,ex,c)=>{c.reps=Math.max(0,c.reps-exMeta(ex).repStep);}));
-    on("rpp",id=>withEx(id,(n,ex,c)=>{c.reps=c.reps+exMeta(ex).repStep;}));
-    on("kgv",id=>withEx(id,(n,ex,c)=>{const v=prompt("Peso (kg):",fmtKg(c.kg));if(v!==null){const k=parseFloat(v.replace(',','.'));if(!isNaN(k)&&k>=0)c.kg=k;}}));
-    on("rpv",id=>withEx(id,(n,ex,c)=>{const v=prompt(exMeta(ex).unit+":",c.reps);if(v!==null){const k=parseInt(v,10);if(!isNaN(k)&&k>=0)c.reps=k;}}));
+    main.querySelectorAll("[data-kgi]").forEach(el=>{el.oninput=()=>{const n=idMap[el.dataset.kgi],ex=exByName(n);const v=parseFloat(el.value.replace(',','.'));curVals(ex).kg=isNaN(v)?0:v;};el.onfocus=()=>el.select();});
+    main.querySelectorAll("[data-rpi]").forEach(el=>{el.oninput=()=>{const n=idMap[el.dataset.rpi],ex=exByName(n);const v=parseFloat(el.value.replace(',','.'));curVals(ex).reps=isNaN(v)?0:v;};el.onfocus=()=>el.select();});
+    on("play",id=>{const n=idMap[id],ex=exByName(n),m=exMeta(ex),c=curVals(ex);
+      const sec=m.byTime?Math.round(c.reps*60):(m.secs?c.reps:parseDur(ex.d));if(sec>0&&window.TIMER)TIMER.countdown(sec*1000,n.replace('★','').trim());});
+    on("tmr",v=>{const [sec,...rest]=v.split("|");TIMER.countdown(+sec*1000,rest.join("|"));});
     on("logset",id=>{
       const n=idMap[id],ex=exByName(n);if(!ex)return;
       const c=curVals(ex),m=exMeta(ex);
@@ -1055,6 +1072,9 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
   let mode="cd", running=false, iv=null;
   let swElapsed=0, swStart=0;
   let cdSet=90000, cdEnd=0, cdRemain=90000;
+  let restMs=90000, label="Descanso";
+  const title=document.getElementById("tmTitle");
+  function setLabel(l){label=l;title.textContent="⏱️ "+l;}
   let actx=null;
 
   function ensureAudio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();}catch(e){}}
@@ -1069,7 +1089,8 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
   }
   function tick(){
     if(mode==="sw"){swElapsed=Date.now()-swStart;draw();}
-    else{cdRemain=cdEnd-Date.now();if(cdRemain<=0){cdRemain=0;draw();stop();beep();cdRemain=cdSet;setTimeout(draw,800);return;}draw();}
+    else{cdRemain=cdEnd-Date.now();if(cdRemain<=0){cdRemain=0;draw();stop();beep();setTimeout(beep,1200);
+      toast(label==="Descanso"?"⏰ ¡A la siguiente serie!":"✅ "+label+": ¡tiempo!");cdRemain=cdSet;setTimeout(draw,800);return;}draw();}
   }
   function start(){
     running=true;startBtn.textContent="Pausar";ensureAudio();
@@ -1082,9 +1103,11 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
 
   fab.onclick=()=>openSheet("timerSheet");
   // Descanso automático al marcar una serie
-  window.TIMER={rest(){stop();mode="cd";
+  function countdown(ms,l){stop();mode="cd";
     document.querySelectorAll("#timerSheet [data-tm]").forEach(x=>x.classList.toggle("active",x.dataset.tm==="cd"));
-    presets.style.display="flex";cdRemain=cdSet;start();}};
+    presets.style.display="flex";setLabel(l);cdSet=ms;cdRemain=ms;start();}
+  window.TIMER={rest(){countdown(restMs,"Descanso");},
+    countdown(ms,l){countdown(ms,l);toast("▶ "+l+" · "+fmt(ms,true));}};
   startBtn.onclick=()=>{running?stop():start();};
   resetBtn.onclick=reset;
 
@@ -1097,9 +1120,13 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
   });
   document.querySelectorAll("#tmPresets [data-sec]").forEach(b=>{
     b.onclick=()=>{cdSet=(+b.dataset.sec)*1000;cdRemain=cdSet;stop();
+      if(+b.dataset.sec<=120){restMs=cdSet;setLabel("Descanso");}else setLabel("Temporizador");
       document.querySelectorAll("#tmPresets [data-sec]").forEach(x=>x.classList.toggle("sel",x===b));
       draw();};
   });
+  document.getElementById("tmCustom").onchange=e=>{const v=parseFloat(e.target.value.replace(',','.'));if(isNaN(v)||v<=0)return;
+    stop();cdSet=Math.round(v*60)*1000;cdRemain=cdSet;setLabel("Temporizador");
+    document.querySelectorAll("#tmPresets [data-sec]").forEach(x=>x.classList.remove("sel"));draw();};
   draw();
 })();
 
