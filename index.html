@@ -88,6 +88,7 @@
   .logset.extra{background:var(--sand);color:var(--ink);font-size:13px}
   .openlog{margin-top:8px;border:1px solid var(--terra);background:#fff;color:var(--terra);font-weight:700;font-size:12.5px;border-radius:10px;padding:7px 12px;cursor:pointer}
   .ex.active{background:#fffaf4}
+  .lvl{margin-top:5px;width:100%;border:1px solid var(--line);border-radius:9px;padding:6px 8px;font-size:12.5px;font-family:inherit;background:var(--teal-light);color:var(--teal);font-weight:700}
 
   /* Edición */
   .ed-row{display:flex;flex-direction:column;gap:6px;flex:1}
@@ -231,6 +232,7 @@
   <button data-tab="hoy" class="active">🏠 Hoy</button>
   <button data-tab="gymA">🟦 Gym A</button>
   <button data-tab="gymB">🟩 Gym B</button>
+  <button data-tab="gymC">🟨 Gym C</button>
   <button data-tab="yoga" class="yoga">🧘 Yoga</button>
   <button data-tab="lib">📚 Ejercicios</button>
   <button data-tab="prog">📈 Progreso</button>
@@ -273,50 +275,80 @@
 
 <script>
 /* ---------- RUTINAS ---------- */
-function CAL(){return {t:"🔥 Calentamiento (~8 min)", ex:[
-  {n:"Caminadora inclinada", d:"5 min · inclinación 8-10% · paso rápido"},
-  {n:"Movilidad de hombros y caderas", d:"2-3 min"},
+// Llega en bici (13 min): el calentamiento no lleva caminadora.
+function CAL(){return {t:"🔥 Calentamiento (~4 min)", ex:[
+  {n:"Movilidad de hombros y caderas", d:"3 min"},
   {n:"Serie de aproximación", d:"1 serie liviana del primer ejercicio"},
 ]};}
-function FIN(){return {t:"🚶‍♀️ Cardio final (clave para bajar grasa)", ex:[
-  {n:"Caminadora inclinada", d:"15-20 min · 10-12% · sin agarrarte", log:true},
+function FIN(min){return {t:"🚶‍♀️ Cardio (clave para bajar grasa)", ex:[
+  {n:"Caminadora inclinada", d:min+" min · 10-12% · sin agarrarte", log:true},
 ]};}
 
 const DEFAULT_ROUTINES = {
-  gymA:{nombre:"Gym A · Cuádriceps + espalda + tríceps", emoji:"🟦", yoga:false, blocks:[
+  gymA:{nombre:"Gym A · Cuádriceps + empuje + tríceps", emoji:"🟦", yoga:false, blocks:[
     CAL(),
     {t:"🦵 Piernas", ex:[
       {n:"Prensa de piernas", d:"3 × 10", log:true},
       {n:"Extensión de cuádriceps", d:"3 × 10 · baja en 3 seg", log:true},
     ]},
-    {t:"💪 Espalda + tríceps", ex:[
-      {n:"Jalón al pecho", d:"3 × 10", log:true},
-      {n:"Extensión de tríceps en polea", d:"3 × 12", log:true},
-      {n:"Extensión de tríceps sobre la cabeza", d:"2 × 12", log:true},
+    {t:"💪 Hombros + tríceps", ex:[
+      {n:"Press de hombro con mancuernas", d:"3 × 10", log:true},
+      {n:"Extensión de tríceps en polea", d:"3 × 12 · superserie con la siguiente", log:true},
+      {n:"Elevaciones laterales", d:"3 × 12", log:true},
     ]},
-    {t:"🧱 Abdomen", ex:[
+    {t:"🧱 Abdomen + agarre", ex:[
+      {n:"Elevación de piernas colgada", d:"3 × 10 · superserie con la siguiente", log:true},
       {n:"Crunch en polea", d:"3 × 12", log:true},
-      {n:"Elevación de piernas en silla romana", d:"3 × 10", log:true},
+      {n:"Colgarse de la barra (dead hang)", d:"2 × 30-45 seg (o al máximo)", log:true},
     ]},
-    FIN(),
+    FIN(15),
+    {t:"🤸 Skill (opcional, ~8 min)", ex:[
+      {n:"Fondos en paralelas", skill:true, log:true},
+      {n:"L-sit", skill:true, log:true},
+    ]},
   ]},
-  gymB:{nombre:"Gym B · Glúteos + femorales + espalda + tríceps", emoji:"🟩", yoga:false, blocks:[
+  gymB:{nombre:"Gym B · Glúteos + femorales + espalda + bíceps", emoji:"🟩", yoga:false, blocks:[
     CAL(),
     {t:"🍑 Glúteos + femorales", ex:[
       {n:"Hip thrust", d:"3 × 10", log:true},
       {n:"Peso muerto rumano con mancuernas", d:"3 × 10", log:true},
       {n:"Curl femoral", d:"3 × 12", log:true},
     ]},
-    {t:"💪 Espalda + tríceps", ex:[
-      {n:"Remo sentada en polea", d:"3 × 10", log:true},
-      {n:"Fondos en máquina", d:"3 × 10", log:true},
-      {n:"Face pull", d:"2 × 15", log:true},
+    {t:"💪 Espalda + bíceps", ex:[
+      {n:"Jalón al pecho", d:"3 × 10", log:true},
+      {n:"Remo con mancuerna a un brazo", d:"3 × 10 c/brazo · superserie con la siguiente", log:true},
+      {n:"Curl de bíceps con mancuernas", d:"3 × 12", log:true},
     ]},
     {t:"🧱 Abdomen", ex:[
-      {n:"Pallof press", d:"2 × 10 c/lado", log:true},
-      {n:"Rueda abdominal o plancha", d:"3 × 8 (o 30-40 seg)", log:true},
+      {n:"Rueda abdominal", d:"3 × 8 · superserie con la siguiente", log:true},
+      {n:"Oblicuos colgada", d:"3 × 8 c/lado", log:true},
     ]},
-    FIN(),
+    FIN(15),
+    {t:"🤸 Skill (opcional, ~8 min)", ex:[
+      {n:"Pull-over", skill:true, log:true},
+    ]},
+  ]},
+  gymC:{nombre:"Gym C · Unilateral + pecho + espalda + brazos", emoji:"🟨", yoga:false, blocks:[
+    CAL(),
+    {t:"🦵 Piernas", ex:[
+      {n:"Step-up a cajón con mancuernas", d:"3 × 8 c/pierna", log:true},
+      {n:"Abductores en máquina", d:"3 × 15", log:true},
+    ]},
+    {t:"💪 Pecho + espalda + brazos", ex:[
+      {n:"Press de banca con mancuernas", d:"3 × 10", log:true},
+      {n:"Remo sentada en polea", d:"3 × 10", log:true},
+      {n:"Curl martillo", d:"3 × 12 · superserie con la siguiente", log:true},
+      {n:"Extensión de tríceps sobre la cabeza", d:"3 × 12", log:true},
+      {n:"Face pull", d:"2 × 15", log:true},
+    ]},
+    {t:"🧱 Abdomen + agarre", ex:[
+      {n:"Pallof press", d:"2 × 10 c/lado", log:true},
+      {n:"Farmer walk", d:"3 × 30-40 seg", log:true},
+    ]},
+    FIN(10),
+    {t:"🤸 Skill (opcional, ~8 min)", ex:[
+      {n:"Bandera", skill:true, log:true},
+    ]},
   ]},
   yoga:{nombre:"Yoga · movilidad y recuperación", emoji:"🧘", yoga:true, blocks:[
     {t:"🧘 Secuencia (~20 min)", ex:[
@@ -334,7 +366,8 @@ const DEFAULT_ROUTINES = {
     ]},
   ]},
 };
-const ROUTINE_TABS=["gymA","gymB","yoga"];
+const GYM_ORDER=["gymA","gymB","gymC"];
+const ROUTINE_TABS=["gymA","gymB","gymC","yoga"];
 const LEGACY={
   dia1:"1️⃣ Día 1 (calistenia)",dia2:"2️⃣ Día 2 (calistenia)",dia3:"3️⃣ Día 3 (calistenia)",
   parqueA:"🅰️ Parque A",parqueB:"🅱️ Parque B",casa:"🏠 Casa",
@@ -342,94 +375,187 @@ const LEGACY={
 };
 
 /* ---------- BIBLIOTECA ---------- */
+// Skills: "niveles" = progresión; la dosis del nivel elegido reemplaza a ex.d.
 const LIB={
-  "Caminadora inclinada":{cat:"Cardio",musc:"Glúteos, piernas, corazón",
-    pasos:["Sube a la caminadora y parte caminando plano 1 min.","Sube la inclinación a 8-12% y la velocidad a un paso rápido (≈5-6 km/h) en el que puedas hablar pero con esfuerzo.","Camina erguida, pasos completos, empujando con el talón.","Mantén 15-20 min. Al final baja la inclinación 1 min para enfriar."],
-    fij:["Brazos sueltos, balanceándose.","Si te falta el aire en exceso, baja la velocidad y deja la inclinación: la altura (2.400 m) exige más."],
-    err:["Agarrarte de la baranda: le quita casi todo el trabajo al cuerpo.","Inclinarte hacia adelante."],
-    rod:"Es de los cardios más amables con la rodilla: no hay impacto. Si molesta, baja la inclinación.",
-    q:"caminadora inclinada técnica"},
-  "Movilidad de hombros y caderas":{cat:"Calentamiento",musc:"Articulaciones",
-    pasos:["Círculos de hombros hacia atrás y adelante (10 c/u).","Brazos en cruz: círculos chicos que crecen.","Gato-vaca de pie o en 4 apoyos (8).","Círculos de cadera y balanceo de piernas adelante/lateral (10 c/pierna)."],
-    fij:["Movimientos suaves y amplios, sin rebotes."],err:["Saltárselo: es lo que protege tu hombro y rodilla."],q:"movilidad hombros caderas calentamiento gimnasio"},
+  /* Calentamiento y cardio */
+  "Movilidad de hombros y caderas":{cat:"Calentamiento",musc:"Hombros, columna y caderas",
+    pasos:["Círculos de hombros: 10 hacia atrás y 10 hacia adelante.","Brazos estirados en cruz: círculos pequeños que se van agrandando, 10 por dirección.","Gato-vaca en cuatro apoyos: 8 repeticiones lentas.","Círculos de cadera de pie: 8 por lado.","Balanceo de pierna adelante-atrás y hacia el lado, apoyada en algo: 10 por pierna."],
+    fij:["Movimientos amplios y suaves, sin rebotes.","Llegas caliente en bici: esto solo prepara las articulaciones."],
+    err:["Saltártelo: es lo que protege hombros y rodilla."],q:"movilidad articular hombros caderas calentamiento gimnasio"},
   "Serie de aproximación":{cat:"Calentamiento",musc:"—",
-    pasos:["Antes del primer ejercicio, haz 1 serie de 10-12 reps con más o menos la mitad del peso que vas a usar.","Sirve para ensayar la técnica y 'avisarle' a la articulación."],fij:["No cuenta como serie de trabajo."],err:[],q:"warm up set gym"},
+    pasos:["Antes del primer ejercicio de fuerza, haz 1 serie de 10-12 repeticiones con más o menos la mitad del peso que vas a usar.","Descansa 1 minuto y empieza tus series de trabajo."],
+    fij:["No cuenta como serie de trabajo.","Sirve para ensayar la técnica y 'avisarle' a la articulación."],err:[],q:"serie de aproximación calentamiento pesas"},
+  "Caminadora inclinada":{cat:"Cardio",musc:"Glúteos, piernas y corazón",
+    pasos:["Parte caminando en plano 1 minuto.","Sube la inclinación a 10-12% y la velocidad a un paso rápido (≈ 4,5-5,5 km/h) en el que puedas hablar, pero con esfuerzo.","Camina erguida, con pasos completos, apoyando todo el pie.","Al final baja la inclinación 1 minuto para enfriar."],
+    fij:["Brazos sueltos, balanceándose al caminar.","A 2.400 m el corazón trabaja más: si te ahogas, baja la velocidad y mantén la inclinación."],
+    err:["Agarrarte de la baranda: le quita casi todo el trabajo a las piernas.","Inclinar el tronco hacia adelante."],
+    rod:"No tiene impacto: es de los cardios más amables con la rodilla. Si molesta, baja la inclinación.",q:"caminar en cinta inclinada técnica correcta"},
+
+  /* Piernas */
   "Prensa de piernas":{cat:"Piernas",musc:"Cuádriceps y glúteos",
-    pasos:["Siéntate con la espalda y la cadera bien apoyadas en el respaldo.","Pies en el centro de la plataforma, al ancho de caderas, puntas levemente hacia afuera.","Quita los seguros y baja la plataforma lento (2-3 seg) doblando las rodillas.","Baja solo hasta donde NO duela y la cadera no se despegue del asiento (≈90°).","Empuja con todo el pie (talón incluido) hasta casi estirar las piernas."],
-    fij:["Rodillas en la línea de los pies, sin irse hacia adentro.","Al terminar cada serie vuelve a poner los seguros."],
-    err:["Bloquear las rodillas arriba (dejarlas totalmente rectas).","Bajar tanto que la cola se despega del asiento (redondea la espalda baja)."],
-    rod:"Pies un poco más arriba en la plataforma = menos carga en la rodilla y más glúteo. Rango corto y sin dolor al principio.",
-    q:"prensa de piernas 45 grados técnica correcta"},
+    pasos:["Siéntate con la espalda y la cadera bien apoyadas en el respaldo.","Pies en el centro de la plataforma, separados al ancho de las caderas, puntas levemente hacia afuera.","Empuja la plataforma un poco y suelta los seguros (las manillas de los lados).","Baja la plataforma lento (2-3 seg) doblando las rodillas, hasta unos 90° o hasta donde no haya dolor, sin que la cola se despegue del asiento.","Empuja con todo el pie (sobre todo el talón) hasta casi estirar las piernas.","Al terminar la serie, vuelve a poner los seguros antes de soltar."],
+    fij:["Rodillas en la misma línea que las puntas de los pies: que no se vayan hacia adentro.","Parte con poco peso: la máquina de 45° ya pesa sola (el carro)."],
+    err:["Bloquear las rodillas al estirar (dejarlas totalmente rectas).","Bajar tanto que la pelvis se despega y la espalda baja se redondea."],
+    rod:"Pies un poco más arriba en la plataforma = menos carga en la rodilla y más glúteo. Rango corto y sin dolor al principio.",q:"prensa de piernas 45 grados técnica correcta"},
   "Extensión de cuádriceps":{cat:"Piernas",musc:"Cuádriceps",
-    pasos:["Ajusta el respaldo para que la rodilla quede alineada con el eje de la máquina (el punto que gira).","El rodillo va sobre el tobillo, no sobre el pie.","Estira las piernas en 1 seg, aprieta arriba 1 seg.","Baja lento en 3 seg."],
-    fij:["Agárrate de las manillas y mantén la cola pegada al asiento.","Peso moderado: aquí manda el control, no los kilos."],
-    err:["Balancear o dejar caer el peso.","Eje de la máquina desalineado con la rodilla."],
-    rod:"Con tendinosis, esta máquina hecha LENTA y controlada es parte típica de rehabilitación. Si hay dolor punzante: haz solo la mitad superior del movimiento o una isometría (sostener 30-45 seg arriba).",
-    q:"extensión de cuádriceps máquina técnica"},
-  "Jalón al pecho":{cat:"Espalda",musc:"Dorsales, espalda media, bíceps",
-    pasos:["Ajusta el apoyo de muslos para quedar firme.","Toma la barra un poco más ancho que los hombros, palmas hacia adelante.","Pecho arriba e inclínate apenas hacia atrás.","Baja primero los hombros (lejos de las orejas) y luego tira la barra hacia la parte alta del pecho, codos hacia abajo.","Sube controlado hasta estirar los brazos."],
-    fij:["Piensa en 'meter los codos a los bolsillos traseros'.","Es el ejercicio base para, más adelante, volver a la dominada y al pull-over."],
-    err:["Tirar la barra detrás de la nuca.","Balancearte con el cuerpo para bajar la barra."],q:"jalón al pecho técnica mujer"},
-  "Extensión de tríceps en polea":{cat:"Tríceps",musc:"Tríceps",
-    pasos:["Polea alta con barra recta o cuerda.","Codos pegados al cuerpo, a la altura de las costillas.","Estira los brazos hacia abajo hasta extender los codos por completo (con cuerda: separa las puntas al final).","Sube controlado hasta que los antebrazos queden paralelos al suelo."],
-    fij:["Solo se mueven los antebrazos: los codos quedan quietos.","Es tu punto débil: aquí prioriza el recorrido completo."],
-    err:["Abrir los codos o usar el peso del cuerpo para empujar.","Subir las manos hasta la cara."],q:"extensión de tríceps en polea cuerda técnica"},
-  "Extensión de tríceps sobre la cabeza":{cat:"Tríceps",musc:"Tríceps (porción larga)",
-    pasos:["Sentada en banco con respaldo recto, una mancuerna tomada con las dos manos por el disco de arriba.","Sube la mancuerna sobre la cabeza con los brazos estirados.","Dobla los codos y baja la mancuerna detrás de la cabeza, lento.","Estira los brazos de vuelta arriba."],
-    fij:["Codos apuntando al frente/techo, cerca de la cabeza.","Abdomen apretado para no arquear la espalda baja."],
-    err:["Abrir mucho los codos.","Arquear la espalda al subir."],
-    alt:"También se puede en polea (de espaldas a la polea, con cuerda).",q:"extensión de tríceps sobre la cabeza mancuerna"},
-  "Crunch en polea":{cat:"Abdomen",musc:"Recto abdominal (las 'calugas')",
-    pasos:["Polea alta con cuerda. Arrodíllate mirando la polea.","Toma la cuerda y ponla a los lados de tu cabeza.","Enrolla la columna: lleva las costillas hacia la pelvis, como si quisieras mirarte el ombligo.","Vuelve lento hasta estirar el abdomen."],
-    fij:["La cadera se queda quieta: el movimiento es de la columna.","Exhala fuerte al bajar."],
-    err:["Tirar con los brazos.","Sentarte sobre los talones (eso es cadera, no abdomen)."],q:"crunch en polea de rodillas técnica"},
-  "Elevación de piernas en silla romana":{cat:"Abdomen",musc:"Abdomen bajo y flexores de cadera",
-    pasos:["La silla romana es la estación con apoyabrazos altos y respaldo, donde quedas 'colgando' con los antebrazos apoyados.","Espalda pegada al respaldo, piernas colgando.","Sube las rodillas hacia el pecho enrollando un poco la pelvis.","Baja lento sin balancearte."],
-    fij:["Cuando sea fácil: piernas estiradas (acerca al L-sit).","Pensar en llevar la pelvis hacia las costillas."],
-    err:["Balancearte.","Despegar la espalda del respaldo."],
-    alt:"Si no hay silla romana: rodillas al pecho colgada de la barra, o en el suelo (reverse crunch).",q:"elevación de piernas silla romana captain's chair"},
+    pasos:["Ajusta el respaldo para que tu rodilla quede alineada con el eje de giro de la máquina (el punto que rota).","Ajusta el rodillo para que quede en la parte baja de la tibia, justo sobre el tobillo.","Tómate de las manillas y apoya bien la cola en el asiento.","Estira las piernas en 1 seg y aprieta arriba 1 seg.","Baja lento, en 3 segundos."],
+    fij:["Aquí manda el control, no los kilos."],
+    err:["Balancear el peso o dejarlo caer.","Rodilla desalineada del eje de la máquina."],
+    rod:"Con tendinosis, hacerla LENTA es parte típica de la rehabilitación del tendón. Si hay dolor punzante: haz solo la mitad de arriba del recorrido o sostén arriba 30-45 seg (isometría).",q:"extensión de cuádriceps en máquina técnica"},
   "Hip thrust":{cat:"Glúteos",musc:"Glúteos",
-    pasos:["Espalda alta apoyada en el borde de un banco (a la altura de las escápulas).","Barra (con protector) o mancuerna sobre la cadera. Si hay máquina de hip thrust, úsala.","Pies apoyados, al ancho de caderas, rodillas a 90° arriba.","Empuja con los talones y sube la cadera hasta quedar en línea hombros-rodillas.","Aprieta glúteos 1 seg arriba y baja controlado."],
-    fij:["Mentón hacia el pecho, mirada al frente (no al techo).","Pelvis levemente enrollada arriba: no arquees la zona lumbar."],
-    err:["Hiperextender la espalda baja arriba.","Pies muy lejos (trabaja femoral) o muy cerca (trabaja cuádriceps)."],
-    rod:"Muy amable con la rodilla: casi toda la carga va al glúteo.",q:"hip thrust con barra técnica mujer"},
-  "Peso muerto rumano con mancuernas":{cat:"Glúteos/femorales",musc:"Femorales, glúteos, espalda baja",
-    pasos:["De pie, mancuernas delante de los muslos, pies al ancho de caderas.","Rodillas levemente flectadas y así se quedan.","Lleva la cadera hacia atrás (como cerrando una puerta con la cola) mientras las mancuernas bajan pegadas a las piernas.","Baja hasta sentir estirar la parte de atrás del muslo (≈ bajo la rodilla).","Sube empujando la cadera hacia adelante y apretando glúteos."],
-    fij:["Espalda recta y neutra todo el tiempo.","Es un movimiento de bisagra de cadera, no una sentadilla."],
+    pasos:["Siéntate en el suelo con la espalda apoyada en el borde largo de un banco plano; el borde debe quedar justo bajo tus escápulas.","Pon la barra (con un protector o toalla) sobre el pliegue de la cadera, o una mancuerna sostenida con las manos. Si hay máquina de hip thrust, úsala.","Pies apoyados al ancho de caderas, a una distancia en que arriba las canillas queden verticales.","Empuja con los talones y sube la cadera hasta que hombros, cadera y rodillas queden en línea.","Aprieta los glúteos 1 seg arriba y baja controlado."],
+    fij:["Mentón levemente hacia el pecho, mirada al frente (no al techo).","Arriba, pelvis levemente 'enrollada': que el glúteo termine el movimiento, no la espalda."],
+    err:["Arquear la espalda baja arriba.","Pies muy lejos (se va a los femorales) o muy cerca (se va al cuádriceps)."],
+    rod:"Muy amable con la rodilla: casi toda la carga va al glúteo.",q:"hip thrust con barra técnica correcta"},
+  "Peso muerto rumano con mancuernas":{cat:"Glúteos",musc:"Femorales, glúteos y espalda baja",
+    pasos:["De pie, pies al ancho de caderas, una mancuerna en cada mano delante de los muslos.","Dobla levemente las rodillas y déjalas así todo el ejercicio.","Lleva la cadera hacia atrás (como si cerraras una puerta con la cola) mientras las mancuernas bajan rozando las piernas.","Baja hasta sentir que se estira la parte de atrás del muslo (en general, un poco bajo la rodilla), sin perder la espalda recta.","Sube empujando la cadera hacia adelante y apretando los glúteos."],
+    fij:["Espalda neutra todo el tiempo: pecho abierto, hombros hacia atrás.","Es una bisagra de cadera, no una sentadilla."],
     err:["Redondear la espalda.","Doblar mucho las rodillas.","Alejar las mancuernas del cuerpo."],
-    rod:"La rodilla casi no se flexiona: buena opción para ti.",q:"peso muerto rumano con mancuernas técnica"},
-  "Curl femoral":{cat:"Glúteos/femorales",musc:"Femorales (parte de atrás del muslo)",
-    pasos:["Máquina acostada (boca abajo) o sentada.","Rodilla alineada con el eje de la máquina, rodillo sobre el tobillo (atrás).","Dobla las rodillas llevando los talones hacia la cola.","Aprieta 1 seg y baja lento (2-3 seg)."],
-    fij:["Cadera pegada al asiento/banco.","Femorales fuertes protegen la rodilla."],
-    err:["Levantar la cadera para ayudarte.","Soltar el peso de golpe."],q:"curl femoral máquina técnica"},
-  "Remo sentada en polea":{cat:"Espalda",musc:"Espalda media, dorsales, postura",
-    pasos:["Siéntate con pies en los apoyos y rodillas levemente flectadas.","Toma el agarre (triángulo o barra), espalda recta.","Primero junta las escápulas y luego tira el agarre hacia el ombligo, codos pegados.","Vuelve controlado estirando los brazos sin encorvarte."],
-    fij:["Pecho orgulloso, hombros lejos de las orejas.","Ideal para la contractura de espalda alta: fortalece lo que la postura de oficina debilita."],
-    err:["Balancear el tronco atrás y adelante.","Subir los hombros."],
-    alt:"Si no hay polea baja: máquina de remo o remo con mancuerna a un brazo apoyada en banco.",q:"remo sentado en polea técnica"},
-  "Fondos en máquina":{cat:"Tríceps",musc:"Tríceps y pecho",
-    pasos:["Máquina de fondos sentada o fondos asistidos (la rodilla se apoya en una plataforma que te ayuda: más peso = más ayuda).","Manos en los agarres, codos apuntando hacia atrás, cerca del cuerpo.","Empuja hacia abajo hasta estirar los brazos.","Sube/baja controlado hasta ~90° de codo."],
-    fij:["Hombros abajo, lejos de las orejas.","Es la continuación de tus fondos en paralelas, con carga controlada."],
-    err:["Bajar más de 90° (estresa el hombro).","Abrir los codos hacia los lados."],
-    alt:"Si no hay máquina: fondos en banco (manos en un banco detrás tuyo, pies en el suelo con rodillas dobladas).",q:"fondos en máquina asistida técnica"},
-  "Face pull":{cat:"Espalda alta/hombros",musc:"Deltoides posterior, trapecio medio, manguito rotador",
-    pasos:["Polea a la altura de la cara, con cuerda.","Toma la cuerda con palmas hacia abajo y da 2 pasos atrás.","Tira la cuerda hacia tu cara separando las manos, codos altos.","Termina con las manos a los lados de las orejas, como haciendo 'doble bíceps'.","Vuelve lento."],
-    fij:["Peso liviano, mucho control: es de salud de hombro y postura.","Clave para la contractura de espalda alta y para el handstand."],
-    err:["Usar mucho peso y tirar con el cuerpo.","Bajar los codos."],q:"face pull polea técnica"},
-  "Pallof press":{cat:"Abdomen",musc:"Oblicuos y core profundo (antirotación)",
-    pasos:["Polea a la altura del pecho. Ponte de lado a la polea, a 1-2 pasos.","Toma el agarre con las dos manos pegado al pecho.","Empuja las manos al frente hasta estirar los brazos: la polea intentará girarte y tú NO te dejas.","Sostén 2 seg y vuelve al pecho. Luego cambia de lado."],
-    fij:["Cadera y hombros mirando al frente todo el tiempo.","Glúteos apretados, rodillas levemente flectadas."],
-    err:["Girar el tronco hacia la polea.","Ponerte demasiado lejos (mucho peso) al inicio."],q:"pallof press polea técnica"},
-  "Rueda abdominal o plancha":{cat:"Abdomen",musc:"Recto abdominal, core completo",
-    pasos:["RUEDA: de rodillas, rueda bajo los hombros. Aprieta abdomen y glúteos, pelvis enrollada.","Rueda hacia adelante solo hasta donde puedas mantener la espalda baja sin arquear.","Vuelve tirando con el abdomen.","PLANCHA: antebrazos bajo los hombros, cuerpo en línea recta, glúteos y abdomen apretados, respira."],
-    fij:["Empieza con recorrido corto en la rueda y ve alargando.","Si la espalda baja se hunde, se acabó la serie."],
-    err:["Arquear la zona lumbar.","Cadera muy arriba o muy abajo en la plancha."],q:"rueda abdominal de rodillas principiante técnica"},
+    rod:"La rodilla casi no se flexiona: muy buena opción para ti.",q:"peso muerto rumano con mancuernas técnica"},
+  "Curl femoral":{cat:"Glúteos",musc:"Femorales (parte de atrás del muslo)",
+    pasos:["Puede ser máquina acostada (boca abajo) o sentada.","Alinea la rodilla con el eje de giro de la máquina.","El rodillo va en la parte baja de la pantorrilla, justo sobre el talón.","Dobla las rodillas llevando los talones hacia la cola.","Aprieta 1 seg y baja lento (2-3 seg)."],
+    fij:["Cadera pegada al banco o al asiento.","Unos femorales fuertes protegen la rodilla."],
+    err:["Levantar la cadera para ayudarte.","Soltar el peso de golpe."],q:"curl femoral en máquina técnica"},
+  "Step-up a cajón con mancuernas":{cat:"Piernas",musc:"Glúteos y cuádriceps (una pierna a la vez)",
+    pasos:["Usa un cajón o banco bajo (30-40 cm): al apoyar el pie arriba, la rodilla no debe quedar más alta que la cadera.","Una mancuerna en cada mano, brazos colgando a los lados.","Apoya el pie completo sobre el cajón.","Empuja con el talón de esa pierna y sube hasta quedar de pie y estirada sobre el cajón. La pierna de abajo solo acompaña: no te impulses con ella.","Baja controlado con la misma pierna.","Haz todas las repeticiones con una pierna y luego cambia."],
+    fij:["Rodilla en línea con el pie: que no se vaya hacia adentro.","Tronco levemente inclinado hacia adelante = más glúteo."],
+    err:["Impulsarte con la pierna de abajo.","Cajón demasiado alto al principio."],
+    rod:"Mientras más bajo el cajón, menos flexión de rodilla. Si hay dolor, baja la altura. Es una progresión hacia el pistol squat.",q:"step up con mancuernas técnica"},
+  "Abductores en máquina":{cat:"Glúteos",musc:"Glúteo medio y menor (costado de la cadera)",
+    pasos:["Siéntate con la espalda apoyada y ajusta las almohadillas por fuera de las rodillas.","Abre las piernas empujando hacia afuera, todo lo que puedas.","Sostén 1 seg abierta.","Vuelve lento, sin dejar que las placas choquen."],
+    fij:["Inclinarte un poco hacia adelante, despegando la espalda, carga más el glúteo.","Estabiliza la rodilla: evita que se vaya hacia adentro al bajar escaleras o hacer sentadillas."],
+    err:["Rebotar o soltar el peso de golpe.","Recorrido a medias."],q:"máquina de abductores técnica glúteo medio"},
+
+  /* Empuje y tríceps */
+  "Press de hombro con mancuernas":{cat:"Hombros",musc:"Deltoides (hombros) y tríceps",
+    pasos:["Siéntate en un banco con el respaldo vertical, espalda y cabeza apoyadas, pies firmes en el suelo.","Sube las mancuernas a la altura de los hombros, palmas mirando al frente, codos un poco por delante del cuerpo.","Empuja las mancuernas hacia arriba hasta casi estirar los brazos; arriba quedan cerca una de otra, sin chocar.","Baja controlado (2 seg) hasta que las mancuernas lleguen a la altura de las orejas o el mentón."],
+    fij:["Abdomen firme: la espalda baja no se despega del respaldo.","Base de fuerza para el handstand."],
+    err:["Arquear la espalda baja al empujar.","Bajar solo la mitad del recorrido.","Codos totalmente abiertos hacia los lados (estresa el hombro)."],q:"press de hombro con mancuernas sentado técnica"},
+  "Elevaciones laterales":{cat:"Hombros",musc:"Deltoides medio (la 'forma' del hombro)",
+    pasos:["De pie, una mancuerna liviana en cada mano, a los costados.","Codos levemente doblados y fijos en esa posición.","Sube los brazos hacia los lados, guiando con los codos, hasta la altura de los hombros (no más arriba).","Arriba, las palmas miran al suelo.","Baja lento, en 2-3 segundos."],
+    fij:["Peso liviano: 2-5 kg es normal aquí.","Hombros lejos de las orejas durante todo el movimiento."],
+    err:["Balancear el cuerpo para subir.","Encoger los hombros (trabaja el trapecio en vez del hombro).","Subir por encima de la altura de los hombros."],q:"elevaciones laterales con mancuernas técnica"},
+  "Extensión de tríceps en polea":{cat:"Tríceps",musc:"Tríceps",
+    pasos:["Polea alta con barra recta o cuerda.","De pie frente a la polea, tronco apenas inclinado adelante, codos pegados a los costados.","Estira los brazos hacia abajo hasta extender completamente los codos (con cuerda: separa las puntas abajo).","Sube controlado hasta que los antebrazos queden paralelos al suelo."],
+    fij:["Solo se mueven los antebrazos: los codos se quedan quietos junto al cuerpo.","Es tu punto débil: prioriza el recorrido completo antes que el peso."],
+    err:["Abrir los codos o dejar que se adelanten.","Empujar con el peso del cuerpo.","Subir las manos hasta la cara."],q:"extensión de tríceps en polea con cuerda técnica"},
+  "Extensión de tríceps sobre la cabeza":{cat:"Tríceps",musc:"Tríceps (sobre todo la porción larga)",
+    pasos:["Sentada en un banco con respaldo vertical, toma UNA mancuerna con las dos manos por debajo del disco superior (las palmas sostienen el disco).","Súbela sobre la cabeza con los brazos estirados.","Dobla los codos y baja la mancuerna detrás de la cabeza, lento, hasta sentir el estiramiento del tríceps.","Estira los brazos de vuelta arriba."],
+    fij:["Codos apuntando hacia adelante, cerca de la cabeza.","Abdomen firme para no arquear la espalda."],
+    err:["Abrir mucho los codos hacia los lados.","Arquear la espalda baja al subir."],
+    alt:"También se puede en polea: de espaldas a la polea, con cuerda, estirando los brazos hacia adelante y arriba.",q:"extensión de tríceps sobre la cabeza con mancuerna sentado"},
+  "Press de banca con mancuernas":{cat:"Pecho",musc:"Pecho, tríceps y parte delantera del hombro",
+    pasos:["Siéntate en la punta de un banco plano con las mancuernas paradas sobre los muslos.","Recuéstate llevando las mancuernas al pecho (ayúdate con un empujón de rodillas).","Pies firmes en el suelo, glúteos y espalda alta apoyados; junta las escápulas y bájalas (pecho 'orgulloso').","Empuja las mancuernas hacia arriba, sobre el pecho, hasta casi estirar los brazos.","Baja controlado (2 seg) hasta que las mancuernas queden a los lados del pecho, con los codos a unos 45-60° del cuerpo (no abiertos en forma de T).","Al terminar: lleva las mancuernas al pecho, sube las rodillas y siéntate con ellas sobre los muslos."],
+    fij:["Más seguro que la barra si entrenas sola: si fallas, bajas las mancuernas a los lados.","Si usas barra: en rack y con los seguros puestos."],
+    err:["Codos abiertos a 90° del cuerpo (estresa el hombro).","Despegar los glúteos del banco.","Dejar caer las mancuernas abiertas al terminar."],q:"press de banca con mancuernas técnica correcta"},
+
+  /* Espalda y bíceps */
+  "Jalón al pecho":{cat:"Espalda",musc:"Dorsales, espalda media y bíceps",
+    pasos:["Ajusta el apoyo de muslos para quedar firme en el asiento.","Toma la barra un poco más ancho que los hombros, palmas hacia adelante.","Pecho arriba e inclínate apenas hacia atrás.","Primero baja los hombros (aléjalos de las orejas) y luego tira la barra hacia la parte alta del pecho, llevando los codos hacia abajo y atrás.","Sube controlado hasta estirar los brazos."],
+    fij:["Piensa en 'meter los codos en los bolsillos de atrás'.","Es la base de fuerza para el pull-over."],
+    err:["Tirar la barra detrás de la nuca.","Balancear el cuerpo hacia atrás para bajar la barra."],q:"jalón al pecho polea técnica correcta"},
+  "Remo con mancuerna a un brazo":{cat:"Espalda",musc:"Dorsal, espalda media y bíceps",
+    pasos:["Apoya la rodilla y la mano del mismo lado sobre un banco plano; la otra pierna queda en el suelo, algo separada.","Espalda recta y casi paralela al suelo.","La mancuerna cuelga con el brazo estirado, bajo el hombro.","Tira llevando el codo hacia atrás y arriba, en dirección a la cadera (no hacia afuera), hasta que la mancuerna llegue al costado de las costillas.","Baja estirando el brazo por completo."],
+    fij:["El tronco no gira: el movimiento es del brazo y la escápula.","Piensa en tirar con el codo, no con la mano."],
+    err:["Girar el tronco para subir la mancuerna.","Encoger el hombro hacia la oreja."],q:"remo con mancuerna a una mano apoyado en banco técnica"},
+  "Curl de bíceps con mancuernas":{cat:"Bíceps",musc:"Bíceps",
+    pasos:["De pie, una mancuerna en cada mano, brazos estirados a los costados, palmas mirando al frente.","Codos pegados al cuerpo y quietos.","Dobla los codos y sube las mancuernas hasta cerca de los hombros; aprieta 1 seg.","Baja lento (2-3 seg) hasta estirar completamente los brazos."],
+    fij:["Solo se mueven los antebrazos.","Puedes hacerlo con los dos brazos a la vez o alternando."],
+    err:["Balancear el cuerpo para subir el peso.","Adelantar los codos.","Bajar solo la mitad."],q:"curl de bíceps con mancuernas técnica correcta"},
+  "Curl martillo":{cat:"Bíceps",musc:"Bíceps, braquial y antebrazo",
+    pasos:["Igual que el curl de bíceps, pero con las palmas mirándose entre sí (agarre neutro, como sosteniendo un martillo) durante todo el recorrido.","Codos pegados al cuerpo y quietos.","Sube hasta cerca del hombro y baja lento."],
+    fij:["Trabaja también el antebrazo: suma a tu agarre."],
+    err:["Balancear el cuerpo.","Girar la muñeca durante el movimiento."],q:"curl martillo con mancuernas técnica"},
+  "Remo sentada en polea":{cat:"Espalda",musc:"Espalda media, dorsales y postura",
+    pasos:["Siéntate con los pies en los apoyos y las rodillas levemente dobladas.","Toma el agarre (triángulo o barra) con la espalda recta.","Primero junta las escápulas y luego tira el agarre hacia el ombligo, con los codos pegados al cuerpo.","Vuelve controlado estirando los brazos, sin encorvarte."],
+    fij:["Pecho abierto, hombros lejos de las orejas.","Ideal para la contractura de espalda alta."],
+    err:["Balancear el tronco hacia atrás y adelante.","Subir los hombros."],
+    alt:"Si no hay polea baja: máquina de remo, o el remo con mancuerna a un brazo.",q:"remo sentado en polea baja técnica"},
+  "Face pull":{cat:"Espalda",musc:"Hombro posterior, trapecio medio y manguito rotador",
+    pasos:["Polea a la altura de la cara o un poco más arriba, con cuerda.","Toma las puntas de la cuerda con las palmas mirando hacia abajo y da 2 pasos atrás.","Tira la cuerda hacia tu frente separando las manos, con los codos altos (a la altura de los hombros o más).","Termina con las manos a los lados de la cabeza, como mostrando los bíceps.","Vuelve lento."],
+    fij:["Peso liviano y mucho control: es para postura y salud del hombro.","Clave para la contractura de espalda alta y para el handstand."],
+    err:["Usar mucho peso y tirar con el cuerpo.","Bajar los codos (se convierte en un remo)."],q:"face pull con cuerda en polea técnica"},
+
+  /* Abdomen y agarre */
+  "Elevación de piernas colgada":{cat:"Abdomen",musc:"Recto abdominal (sobre todo la parte baja) y flexores de cadera",
+    pasos:["Cuélgate de la barra con las palmas hacia adelante, manos al ancho de los hombros, brazos estirados.","Activa los hombros: bájalos, alejándolos de las orejas.","Sin balancearte, sube las rodillas hacia el pecho y 'enrolla' la pelvis (la cola se va hacia adelante).","Baja lento (2-3 seg) hasta estirar las piernas."],
+    fij:["Lo que trabaja el abdomen es enrollar la pelvis, no solo subir las rodillas.","Progresión: rodillas al pecho → piernas estiradas a 90° → pies a la barra (toes to bar)."],
+    err:["Balancearse o usar impulso.","Subir las piernas sin enrollar la pelvis (trabaja solo el flexor de cadera)."],q:"elevación de piernas colgado en barra técnica abdomen"},
+  "Oblicuos colgada":{cat:"Abdomen",musc:"Oblicuos (costados del abdomen)",
+    pasos:["Cuélgate de la barra igual que en la elevación de piernas, con los hombros activos.","Sube las rodillas juntas hacia un lado, girando la pelvis, como si quisieras llevar la cadera hacia la axila de ese lado.","Baja lento al centro.","Alterna los lados o haz todas las repeticiones de un lado y luego del otro."],
+    fij:["Movimiento lento, sin balanceo."],
+    err:["Balancearse de lado a lado.","Soltar los hombros."],
+    alt:"Si todavía cuesta colgada: tendida de espaldas, lleva las rodillas dobladas hacia un lado y luego al otro (limpiaparabrisas).",q:"elevación de rodillas oblicua colgado barra"},
+  "Crunch en polea":{cat:"Abdomen",musc:"Recto abdominal (las 'calugas')",
+    pasos:["Polea alta con cuerda. Arrodíllate mirando la polea, a unos 50 cm.","Toma la cuerda y deja las manos a los lados de tu cabeza.","Enrolla la columna llevando los codos hacia los muslos, como si quisieras mirarte el ombligo.","Vuelve lento hasta estirar el abdomen."],
+    fij:["La cadera se queda quieta: el movimiento es de la columna.","Exhala fuerte al bajar."],
+    err:["Tirar con los brazos.","Sentarte hacia atrás sobre los talones (eso mueve la cadera, no el abdomen)."],q:"crunch en polea alta de rodillas técnica"},
+  "Rueda abdominal":{cat:"Abdomen",musc:"Recto abdominal y core completo",
+    pasos:["Es una rueda pequeña con una manilla a cada lado.","De rodillas sobre una colchoneta, toma la rueda con los brazos estirados bajo los hombros.","Aprieta abdomen y glúteos y enrolla levemente la pelvis.","Rueda hacia adelante lento, solo hasta donde puedas sin que la espalda baja se hunda.","Vuelve tirando con el abdomen hasta la posición inicial."],
+    fij:["Empieza con recorrido corto y ve alargándolo semana a semana.","Si la espalda baja se hunde, se acabó la serie."],
+    err:["Arquear la zona lumbar.","Llevar la cadera hacia atrás al volver (se mueve la cadera y no el abdomen)."],
+    alt:"Si no hay rueda: plancha sobre antebrazos, 3 × 30-40 seg.",q:"rueda abdominal de rodillas principiante técnica"},
+  "Pallof press":{cat:"Abdomen",musc:"Oblicuos y core profundo (resiste el giro)",
+    pasos:["Polea a la altura del pecho, con agarre simple.","Ponte de lado a la polea, a 1-2 pasos, pies al ancho de hombros y rodillas levemente dobladas.","Toma el agarre con las dos manos, pegado al pecho.","Estira los brazos al frente: la polea intentará girarte y tú NO te dejas.","Sostén 2 seg y vuelve al pecho. Termina las repeticiones y cambia de lado."],
+    fij:["Cadera y hombros mirando siempre al frente.","Glúteos y abdomen apretados."],
+    err:["Girar el tronco hacia la polea.","Ponerte muy lejos (demasiado peso) al principio."],q:"pallof press en polea técnica"},
+  "Colgarse de la barra (dead hang)":{cat:"Agarre",musc:"Antebrazos, manos y hombros",
+    pasos:["Toma la barra con las palmas hacia adelante, manos al ancho de los hombros y el pulgar rodeando la barra.","Cuélgate con los brazos estirados y los pies despegados del suelo.","Alterna entre hombros relajados y hombros activos (bajarlos, alejándolos de las orejas).","Aguanta lo máximo posible y anota los segundos."],
+    fij:["Usa un banco o salto para subir y bajar con control.","Progresión: 2 manos → agarre mixto → 1 mano con apoyo."],
+    err:["Soltar la barra de golpe.","Agarrar sin el pulgar alrededor de la barra."],q:"dead hang colgarse de la barra técnica agarre"},
+  "Farmer walk":{cat:"Agarre",musc:"Agarre, trapecio y core",
+    pasos:["Toma una mancuerna pesada en cada mano (para partir, 10-12 kg cada una), levantándolas con la espalda recta y doblando rodillas y cadera.","De pie, erguida, hombros atrás y abajo, abdomen firme.","Camina con pasos cortos y controlados durante 30-40 seg (o ~30 m).","Para dejarlas, dobla rodillas y cadera; no te agaches con la espalda redonda."],
+    fij:["Mirada al frente, sin inclinarte hacia ningún lado.","Cuando aguantes 40 seg fácil, sube el peso."],
+    err:["Encoger los hombros hacia las orejas.","Inclinarte hacia un lado o arquear la espalda."],q:"farmer walk técnica paseo del granjero"},
+
+  /* Skills (parque de calistenia) */
+  "Fondos en paralelas":{cat:"Skills",musc:"Tríceps, pecho y hombros",skill:true,
+    niveles:[
+      {n:"Apoyo en paralelas",d:"3 × 20-30 seg"},
+      {n:"Negativas (bajar en 5 seg)",d:"3 × 3-5"},
+      {n:"Fondos completos",d:"3 × 5-8"},
+      {n:"Fondos con peso",d:"3 × 5-8"},
+    ],
+    pasos:["Toma las paralelas y súbete con los brazos estirados; hombros abajo, lejos de las orejas.","Inclina el tronco levemente hacia adelante; codos apuntando hacia atrás (no hacia afuera).","Baja doblando los codos hasta que formen unos 90° (hombro a la altura del codo).","Empuja hasta estirar los brazos de nuevo."],
+    fij:["Nivel 1: solo sostenerte arriba con los brazos estirados y el cuerpo quieto.","Nivel 2: desde arriba, baja en 5 seg hasta 90°; vuelve arriba con un salto o apoyando los pies.","Pasa de nivel cuando completes todas las series del nivel actual con buena técnica."],
+    err:["Bajar más allá de 90° al principio (estresa el hombro).","Encoger los hombros.","Balancear las piernas."],q:"progresión fondos en paralelas principiante"},
+  "L-sit":{cat:"Skills",musc:"Abdomen, flexores de cadera, tríceps y hombros",skill:true,
+    niveles:[
+      {n:"Apoyo en paralelas",d:"3 × 20 seg"},
+      {n:"Tuck L-sit (rodillas al pecho)",d:"4 × 10-15 seg"},
+      {n:"L-sit a una pierna (alternando)",d:"4 × 10 seg"},
+      {n:"L-sit completo",d:"4 × 10 seg"},
+    ],
+    pasos:["Apóyate en las paralelas (o paralelas bajas) con los brazos completamente estirados.","Empuja las barras hacia abajo, alejando los hombros de las orejas.","Levanta las piernas: en tuck, rodillas pegadas al pecho; en L-sit completo, piernas estiradas y juntas, paralelas al suelo, con las puntas de los pies estiradas.","Sostén el tiempo indicado respirando."],
+    fij:["Ejercicio extra de compresión: sentada en el suelo con las piernas estiradas y las manos a los lados de las rodillas, levanta las piernas estiradas 10 veces.","Pasa de nivel cuando completes todas las series del nivel actual."],
+    err:["Doblar los codos.","Hombros hundidos (encogidos hacia las orejas)."],q:"progresión l-sit principiante paralelas"},
+  "Pull-over":{cat:"Skills",musc:"Dorsales, bíceps y abdomen",skill:true,
+    niveles:[
+      {n:"Remo explosivo a la cadera",d:"3 × 3-5"},
+      {n:"Negativas de pull-over",d:"3 × 3"},
+      {n:"Pull-over con impulso de pierna",d:"3 × 3"},
+      {n:"Pull-over estricto",d:"3 × 1-3"},
+    ],
+    pasos:["El pull-over es pasar de estar colgada bajo la barra a quedar en apoyo SOBRE la barra, rotando la cadera por encima.","Toma la barra con las palmas hacia adelante, al ancho de los hombros.","Tira la barra hacia la cadera (no hacia el pecho) mientras llevas rodillas y cadera hacia la barra, doblando el cuerpo.","Rota por encima de la barra, manteniéndola pegada a la cadera, hasta quedar en apoyo con los brazos estirados."],
+    fij:["Nivel 1: desde colgada, dominada explosiva llevando la barra hacia el ombligo, con los codos hacia atrás.","Nivel 2: sube a apoyo sobre la barra (con un salto o un banco) y rueda hacia atrás lentamente, con los brazos doblados y la barra pegada a la cadera, hasta volver a colgar.","Nivel 3: desde colgada, tira la barra a la cadera y patea una pierna hacia arriba y por sobre la barra para ayudarte a rotar.","Con una barra baja puedes aprender empujándote desde el suelo."],
+    err:["Dejar que la barra se aleje del cuerpo.","Estirar los brazos a mitad del movimiento."],q:"progresión pull over barra principiante"},
+  "Bandera":{cat:"Skills",musc:"Dorsales, hombros, oblicuos y core",skill:true,
+    niveles:[
+      {n:"Plancha lateral con brazo estirado",d:"3 × 30 seg"},
+      {n:"Bandera vertical",d:"3 × 10 seg"},
+      {n:"Tuck flag (rodillas recogidas)",d:"3 × 5 seg"},
+      {n:"Straddle flag (piernas abiertas)",d:"3 × 5 seg"},
+      {n:"Bandera completa",d:"3 × 3-5 seg"},
+    ],
+    pasos:["Necesitas un poste vertical firme o una espaldera.","Manos en el poste separadas un poco más que el ancho de los hombros: el brazo de arriba TIRA y el brazo de abajo EMPUJA. Ambos brazos estirados.","Bandera vertical: con ese agarre, sube las piernas hasta quedar vertical, de cabeza, y sostén.","Tuck flag: desde la vertical, baja el cuerpo hacia el lado con las rodillas recogidas hasta quedar horizontal.","Luego abre las piernas (straddle) y finalmente júntalas estiradas (bandera completa)."],
+    fij:["Es la skill más avanzada de tu lista: tómalo con calma, suele llevar meses.","Pasa de nivel cuando completes todas las series del nivel actual.","Mira varios videos antes de probar el agarre en el poste."],
+    err:["Doblar el brazo de abajo.","Probarla sin calentar bien los hombros.","Si sientes dolor en el hombro, vuelve al nivel anterior."],q:"progresión bandera humana human flag principiante"},
 };
 
 /* ---------- ESTADO ---------- */
 const KEY="entreno_diana_v1";
 const GOAL=36;
-const ROUTINES_VERSION=4;
+const ROUTINES_VERSION=5;
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -455,8 +581,8 @@ function checkRoutinesUpdate(){
   if(data.routinesVersion!==ROUTINES_VERSION){
     // Plan nuevo de gimnasio: las rutinas anteriores eran de calistenia, se reemplazan. Las sesiones guardadas se conservan.
     data.routines=JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
-    data.routinesVersion=ROUTINES_VERSION;data.planStart=todayStr();save();render();updateStats();
-    toast("🆕 Plan de gimnasio cargado · tu historial se conserva");
+    data.routinesVersion=ROUTINES_VERSION;data.planStart=data.planStart||todayStr();save();render();updateStats();
+    toast("🆕 Rutinas A · B · C cargadas · tu historial se conserva");
   }
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){toast("⚠️ No se pudo guardar");}}
@@ -473,15 +599,20 @@ function fmtDate(iso){const d=new Date(iso);const dias=["dom","lun","mar","mié"
   return `${dias[d.getDay()]} ${d.getDate()} ${MES[d.getMonth()]} ${d.getFullYear()}`;}
 function fmtShort(ds){const d=new Date(ds.length===10?ds+'T12:00:00':ds);return d.getDate()+" "+MES[d.getMonth()];}
 function weekStart(dt){const x=new Date(dt);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x;}
-function isGym(t){return t==="gymA"||t==="gymB";}
+function isGym(t){return GYM_ORDER.includes(t);}
 function sessName(t){const R=data.routines[t]||DEFAULT_ROUTINES[t];if(R)return R.emoji+" "+R.nombre.split(' · ')[0];return LEGACY[t]||t;}
 function sorted(){return [...data.sessions].sort((a,b)=>new Date(a.date)-new Date(b.date));}
 function thisWeek(){const ws=weekStart(new Date());return data.sessions.filter(s=>new Date(s.date)>=ws);}
 function target(d){const m=String(d||"").match(/(\d+)\s*[×x]\s*(\d+)(?:\s*-\s*(\d+))?/);return m?{sets:+m[1],top:+(m[3]||m[2])}:null;}
 function lastLog(n){const s=sorted();for(let i=s.length-1;i>=0;i--){const l=(s[i].logs||[]).find(x=>x.n===n);if(l)return {...l,date:s[i].date};}return null;}
 function nums(s){return (String(s||"").match(/\d+(?:[.,]\d+)?/g)||[]).map(x=>parseFloat(x.replace(',','.')));}
-function nextGym(){const g=sorted().filter(s=>isGym(s.tipo));return g.length&&g[g.length-1].tipo==="gymA"?"gymB":"gymA";}
-function ytLink(q){return "https://www.youtube.com/results?search_query="+encodeURIComponent(q);}
+// Rotación A → B → C sin importar el día de la semana
+function nextGym(){const g=sorted().filter(s=>isGym(s.tipo));if(!g.length)return GYM_ORDER[0];const i=GYM_ORDER.indexOf(g[g.length-1].tipo);return GYM_ORDER[(i+1)%GYM_ORDER.length];}
+// Búsqueda en Google Videos: funciona en cualquier navegador (el link de búsqueda de YouTube se abría vacío en el teléfono)
+function videoLink(q){return "https://www.google.com/search?tbm=vid&q="+encodeURIComponent(q);}
+function skillLv(n){const e=LIB[n];if(!e||!e.niveles)return 0;const i=(data.skillLv||{})[n]||0;return Math.min(i,e.niveles.length-1);}
+// Dosis efectiva: en skills manda el nivel de progresión elegido
+function effD(ex){const e=LIB[ex.n];return ex.skill&&e&&e.niveles?e.niveles[skillLv(ex.n)].d:(ex.d||"");}
 
 /* ---------- RENDER PRINCIPAL ---------- */
 function render(){
@@ -538,7 +669,7 @@ function renderRoutine(){
           if(L){
             const txt=L.sets?L.v:[L.kg?L.kg+" kg":"",L.reps||(!L.kg?L.v:"")].filter(Boolean).join(" · ");
             lastHtml=`<div class="last">↩︎ Última vez (${fmtShort(L.date)}): ${esc(txt)}</div>`;
-            const t=target(ex.d), r=nums(L.reps);
+            const t=target(effD(ex)), r=nums(L.reps);
             if(t&&L.kg&&r.length>=t.sets&&r.slice(0,t.sets).every(x=>x>=t.top)) lastHtml+=`<div class="up">⬆️ Completaste todo: hoy sube 1-2 kg</div>`;
           }
         }
@@ -547,7 +678,8 @@ function renderRoutine(){
           <div class="cbx ${st.done?'on':''}" data-cb="${id}"></div>
           <div class="ex-body">
             <div class="ex-top"><div class="ex-name">${nm}</div>${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}</div>
-            ${ex.d?`<div class="ex-dose">${esc(ex.d)}</div>`:''}
+            ${ex.skill&&LIB[ex.n]&&LIB[ex.n].niveles?`<select class="lvl" data-lvl="${id}">${LIB[ex.n].niveles.map((l,i)=>`<option value="${i}" ${i===skillLv(ex.n)?'selected':''}>Nivel ${i+1}: ${esc(l.n)}</option>`).join("")}</select>`:''}
+            ${effD(ex)?`<div class="ex-dose">${esc(effD(ex))}</div>`:''}
             ${lastHtml}
             ${ex.log?setsHtml(ex,id,isAct):(parseDur(ex.d)?`<button class="playsm" data-tmr="${parseDur(ex.d)}|${esc(ex.n)}">▶ Temporizador ${fmtDur(parseDur(ex.d))}</button>`:'')}
           </div></div>`;
@@ -567,9 +699,9 @@ function renderRoutine(){
 
 /* Series: la dosis "3 × 10" define cuántas series y las reps objetivo. Sin "×" (ej: caminadora) = 1 registro en minutos, sin kg. */
 function exMeta(ex){
-  const t=target(ex.d);
-  const byTime=!t&&/min/.test(ex.d||"");
-  const secs=/seg/.test(ex.d||"")&&!(t&&t.top<20);
+  const d=effD(ex), t=target(d);
+  const byTime=!t&&/min/.test(d);
+  const secs=/×\s*(?:\d+(?:\s*-\s*\d+)?|máx)\s*seg/.test(d);
   return {t,nSets:t?t.sets:1,byTime,secs,unit:byTime?"min":(secs?"seg":"reps"),repStep:secs?5:1};
 }
 function curVals(ex){
@@ -579,7 +711,7 @@ function curVals(ex){
   const lastSet=L&&L.sets?(L.sets[i]||L.sets[L.sets.length-1]):null;
   let kg=prevSet?prevSet.kg:(lastSet?lastSet.kg:(L&&parseFloat(L.kg))||0);
   // reps: el número recomendado de la rutina (en series siguientes, lo mismo que la anterior)
-  let reps=prevSet?prevSet.reps:(m.t?m.t.top:(m.byTime?(parseDur(ex.d)||900)/60:10));
+  let reps=prevSet?prevSet.reps:(m.t?m.t.top:(m.byTime?(parseDur(effD(ex))||900)/60:(m.secs?30:10)));
   return cur[ex.n]={kg:+kg||0,reps:+reps||0};
 }
 function parseDur(d){const m=String(d||"").match(/(\d+)(?:\s*-\s*\d+)?\s*(min|seg)/);return m?(m[2]==="min"?+m[1]*60:+m[1]):0;}
@@ -602,7 +734,7 @@ function setsHtml(ex,id,isAct){
   h+=`<div class="setrow">
     ${m.byTime?'':`<label>kg<input type="text" inputmode="decimal" data-kgi="${id}" value="${c.kg?fmtKg(c.kg):''}" placeholder="0"></label>`}
     <label>${m.byTime?'min':(m.unit==='reps'?'reps':'seg')}<input type="text" inputmode="numeric" data-rpi="${id}" value="${c.reps||''}"></label>
-    ${m.byTime||m.secs||parseDur(ex.d)?`<button class="play" data-play="${id}">▶</button>`:''}
+    ${m.byTime||m.secs||parseDur(effD(ex))?`<button class="play" data-play="${id}">▶</button>`:''}
     <button class="logset ${extra?'extra':''}" data-logset="${id}">${extra?`+ Extra`:(m.byTime?'✓ Listo':`✓ Serie ${next}`)}</button>
   </div>`;
   return h;
@@ -631,10 +763,11 @@ function bindRoutine(){
     });
     const on=(attr,fn)=>main.querySelectorAll(`[data-${attr}]`).forEach(el=>{el.onclick=()=>{const v=el.dataset[attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase())];fn(v,el);};});
     on("act",id=>{activeEx=idMap[id];render();});
+    main.querySelectorAll("[data-lvl]").forEach(el=>{el.onchange=()=>{const n=idMap[el.dataset.lvl];data.skillLv=data.skillLv||{};data.skillLv[n]=+el.value;save();delete cur[n];render();};});
     main.querySelectorAll("[data-kgi]").forEach(el=>{el.oninput=()=>{const n=idMap[el.dataset.kgi],ex=exByName(n);const v=parseFloat(el.value.replace(',','.'));curVals(ex).kg=isNaN(v)?0:v;};el.onfocus=()=>el.select();});
     main.querySelectorAll("[data-rpi]").forEach(el=>{el.oninput=()=>{const n=idMap[el.dataset.rpi],ex=exByName(n);const v=parseFloat(el.value.replace(',','.'));curVals(ex).reps=isNaN(v)?0:v;};el.onfocus=()=>el.select();});
     on("play",id=>{const n=idMap[id],ex=exByName(n),m=exMeta(ex),c=curVals(ex);
-      const sec=m.byTime?Math.round(c.reps*60):(m.secs?c.reps:parseDur(ex.d));if(sec>0&&window.TIMER)TIMER.countdown(sec*1000,n.replace('★','').trim());});
+      const sec=m.byTime?Math.round(c.reps*60):(m.secs?c.reps:parseDur(effD(ex)));if(sec>0&&window.TIMER)TIMER.countdown(sec*1000,n.replace('★','').trim());});
     on("tmr",v=>{const [sec,...rest]=v.split("|");TIMER.countdown(+sec*1000,rest.join("|"));});
     on("logset",id=>{
       const n=idMap[id],ex=exByName(n);if(!ex)return;
@@ -679,8 +812,9 @@ saveBtn.onclick=()=>{
     const sets=v.sets||[];if(!sets.length)return;
     const ex=exByName(n),byTime=ex?exMeta(ex).byTime:false;
     const kgMax=Math.max(...sets.map(s=>s.kg||0));
+    const lv=ex&&ex.skill&&LIB[n]&&LIB[n].niveles?`Nivel ${skillLv(n)+1} · `:"";
     logs.push({n:n.replace('★','').trim(),kg:kgMax?String(kgMax):"",reps:sets.map(s=>s.reps).join(" "),sets,
-      v:sets.map(s=>fmtSet(s,byTime)).join(" · ")+(kgMax&&!byTime?" (kg×reps)":"")});
+      v:lv+sets.map(s=>fmtSet(s,byTime)).join(" · ")+(kgMax&&!byTime?" (kg×reps)":"")});
   });
   const iso=new Date((sessionDate||todayStr())+'T12:00:00').toISOString();
   data.sessions.push({id:Date.now(),date:iso,tipo:currentTab,count:done.length,logs});
@@ -745,12 +879,13 @@ function renderHoy(){
 /* ---------- BIBLIOTECA ---------- */
 function libHtml(n,e,withTitle){
   return `${withTitle?`<h2>${esc(n)}</h2><div class="small">${esc(e.cat)} · ${esc(e.musc)}</div>`:''}
+    ${e.niveles?`<h4>Progresión (niveles)</h4><ol>${e.niveles.map(l=>`<li><b>${esc(l.n)}</b> · ${esc(l.d)}</li>`).join("")}</ol>`:''}
     <h4>Cómo se hace</h4><ol>${e.pasos.map(p=>`<li>${esc(p)}</li>`).join("")}</ol>
     ${e.fij&&e.fij.length?`<h4>Fíjate en</h4><ul>${e.fij.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`:''}
     ${e.err&&e.err.length?`<h4>Errores comunes</h4><ul>${e.err.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`:''}
     ${e.alt?`<h4>Si no está la máquina</h4><p>${esc(e.alt)}</p>`:''}
     ${e.rod?`<div class="knee">🦵 <b>Tu rodilla:</b> ${esc(e.rod)}</div>`:''}
-    <a class="vid" href="${ytLink(e.q)}" target="_blank" rel="noopener">▶ Ver videos en YouTube</a>`;
+    <a class="vid" href="${videoLink(e.q)}" target="_blank" rel="noopener">▶ Ver videos de la técnica</a>`;
 }
 function renderLib(){
   const cats={};Object.entries(LIB).forEach(([n,e])=>{(cats[e.cat]=cats[e.cat]||[]).push([n,e]);});
