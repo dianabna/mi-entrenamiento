@@ -802,7 +802,7 @@ function setsLeft(ex){return exMeta(ex).nSets-(((draft[ex.n]||{}).sets)||[]).len
 // Superserie: la dosis dice "superserie con la siguiente" → se alterna con el ejercicio siguiente sin descanso entre ambos
 function ssFirst(ex){return /superserie con la siguiente/.test(effD(ex));}
 function neighbor(n,d){const all=logExs(),i=all.findIndex(e=>e.n===n);return all[i+d]||null;}
-function logSet(n){
+function logSet(n,cont){  // cont: si viene de una serie con tiempo, al terminar el descanso parte sola la serie siguiente
   const ex=exByName(n);if(!ex)return;
   const c=curVals(ex),m=exMeta(ex);
   draft[n]=draft[n]||{};draft[n].sets=draft[n].sets||[];
@@ -816,7 +816,8 @@ function logSet(n){
   if(m.byTime||!firstActive()||!window.TIMER)return;
   const secs=Math.max(restOf(n),partnerPrev?restOf(partnerPrev.n):0);
   const nx=exByName(activeEx), k=nx?((((draft[nx.n]||{}).sets)||[]).length+1):0;
-  TIMER.rest(secs*1000,nx?`Descanso · luego ${nx.n.replace('★','').trim()} (serie ${k})`:"Descanso");
+  const again=cont&&activeEx===n&&setsLeft(ex)>0?cont:null;
+  TIMER.rest(secs*1000,nx?`Descanso · luego ${nx.n.replace('★','').trim()} (serie ${k})`:"Descanso",again);
 }
 function exByName(n){for(const bl of data.routines[currentTab].blocks)for(const ex of bl.ex)if(ex.n===n)return ex;return null;}
 function nextActive(afterName){
@@ -845,9 +846,14 @@ function bindRoutine(){
     main.querySelectorAll("[data-lvl]").forEach(el=>{el.onchange=()=>{const n=idMap[el.dataset.lvl];data.skillLv=data.skillLv||{};data.skillLv[n]=+el.value;save();delete cur[n];render();};});
     main.querySelectorAll("[data-kgi]").forEach(el=>{el.oninput=()=>{const n=idMap[el.dataset.kgi],ex=exByName(n);const v=parseFloat(el.value.replace(',','.'));curVals(ex).kg=isNaN(v)?0:v;};el.onfocus=()=>el.select();});
     main.querySelectorAll("[data-rpi]").forEach(el=>{el.oninput=()=>{const n=idMap[el.dataset.rpi],ex=exByName(n);const v=parseFloat(el.value.replace(',','.'));curVals(ex).reps=isNaN(v)?0:v;};el.onfocus=()=>el.select();});
-    on("play",id=>{const n=idMap[id],ex=exByName(n),m=exMeta(ex),c=curVals(ex);
-      const sec=m.byTime?Math.round(c.reps*60):(m.secs?c.reps:parseDur(effD(ex)));
-      if(sec>0&&window.TIMER)TIMER.countdown(sec*1000,n.replace('★','').trim(),(m.byTime||m.secs)?()=>logSet(n):null);});
+    // ▶: prep 5 s → tiempo de la serie → se registra sola → descanso → parte sola la serie siguiente, hasta completar
+    on("play",id=>{const n=idMap[id];
+      const run=()=>{const ex=exByName(n);if(!ex||!window.TIMER)return;const m=exMeta(ex),c=curVals(ex);
+        const sec=m.byTime?Math.round(c.reps*60):(m.secs?c.reps:parseDur(effD(ex)));if(!(sec>0))return;
+        const k=(((draft[n]||{}).sets)||[]).length+1, name=n.replace('★','').trim();
+        const timed=m.byTime||m.secs;
+        TIMER.countdown(sec*1000,timed&&m.nSets>1?`${name} · serie ${k} de ${m.nSets}`:name,timed?()=>logSet(n,run):null);};
+      run();});
     on("tmr",v=>{const [sec,...rest]=v.split("|");TIMER.countdown(+sec*1000,rest.join("|"));});
     on("logset",id=>logSet(idMap[id]));
     on("rmset",v=>{
@@ -1183,7 +1189,7 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
   let cdSet=90000, cdEnd=0, cdRemain=90000;
   let phase="work";      // "prep" (5 s de preparación) o "work"
   let lastSec=null;      // para los tics de 3-2-1
-  let restMs=90000, label="Descanso", onDone=null, autoClose=false;
+  let restMs=90000, label="Descanso", onDone=null, autoClose=false, closeT=null;
   const title=document.getElementById("tmTitle");
   function setLabel(l){label=l;title.textContent="⏱️ "+l;}
   let actx=null, wake=null;
@@ -1223,7 +1229,7 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
     disp.textContent=phase==="prep"?String(Math.max(1,Math.ceil(cdRemain/1000))):fmt(cdRemain,true);
     disp.classList.toggle("prep",phase==="prep");
     disp.classList.toggle("warn",phase==="work"&&cdRemain<=5000&&cdRemain>0);
-    phaseEl.textContent=phase==="prep"?"Prepárate…":(running&&label.startsWith("Descanso")?"Descansa":(running&&label!=="Temporizador"?"¡Vamos!":""));
+    phaseEl.textContent=phase==="prep"?"Prepárate…":(running&&label.startsWith("Descanso")?"Descanso":(running&&label!=="Temporizador"?"¡Vamos!":""));
   }
   function tick(){
     if(mode==="sw"){swElapsed=Date.now()-swStart;draw();return;}
@@ -1238,9 +1244,9 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
     cdRemain=0;stop();draw();sndEnd();
     const isRest=label.startsWith("Descanso"), cb=onDone; onDone=null;
     toast(isRest?"⏰ ¡A la siguiente serie!":"✅ "+label+": ¡terminado!");
-    if(isRest&&autoClose){autoClose=false;setTimeout(closeSheets,1200);}
+    if(isRest&&autoClose){autoClose=false;clearTimeout(closeT);closeT=setTimeout(closeSheets,1200);}
     if(cb){cb();                             // la serie con tiempo se registra sola y parte el descanso
-      if(!running){cdRemain=cdSet;draw();setTimeout(closeSheets,1200);}   // era la última serie: no hay descanso
+      if(!running){cdRemain=cdSet;draw();clearTimeout(closeT);closeT=setTimeout(closeSheets,1200);}   // era la última serie: no hay descanso
       return;}
     cdRemain=cdSet;setTimeout(draw,900);
   }
@@ -1260,9 +1266,11 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
     phase=prep?"prep":"work";cdRemain=prep?PREP_MS:ms;start();draw();}
   window.TIMER={
     // Descanso entre series: abre el cronómetro con el descanso recomendado y se cierra solo al terminar
-    rest(ms,l){countdown(ms||restMs,l||"Descanso",false);onDone=null;autoClose=true;openSheet("timerSheet");},
+    // done: si viene, al terminar el descanso se llama (parte la serie siguiente) y el cronómetro no se cierra
+    rest(ms,l,done){clearTimeout(closeT);countdown(ms||restMs,l||"Descanso",false);onDone=done||null;autoClose=!done;openSheet("timerSheet");},
     // ▶ de un ejercicio: abre el cronómetro, 5 s de preparación y luego el tiempo; done() se llama al terminar
-    countdown(ms,l,done){countdown(ms,l,true);onDone=done||null;autoClose=false;openSheet("timerSheet");}};
+    countdown(ms,l,done){clearTimeout(closeT);countdown(ms,l,true);onDone=done||null;autoClose=false;openSheet("timerSheet");},
+    get state(){return {running,phase,label,mode};}};
   startBtn.onclick=()=>{running?stop():start();};
   resetBtn.onclick=reset;
 
