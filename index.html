@@ -31,7 +31,35 @@
   .progfill{height:100%;background:#fff;border-radius:20px;transition:width .4s}
   .progtxt{font-size:10px;opacity:.9;margin-top:4px;text-align:center}
 
-  nav{display:flex;gap:6px;padding:12px 12px 8px;overflow-x:auto;position:sticky;top:0;background:var(--cream);z-index:10;scrollbar-width:none}
+  nav{display:flex;justify-content:center;padding:12px 12px 8px;position:sticky;top:0;background:var(--cream);z-index:10}
+  nav .homelink{background:none!important;color:var(--ink)!important;border:none;padding:4px 8px;font-size:15px;font-weight:800;text-decoration:underline;text-underline-offset:5px;cursor:pointer}
+
+  /* Resumen: botones de colores */
+  .tiles{display:grid;gap:8px;margin-bottom:10px}
+  .tiles.t3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tiles.t2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tile{border-radius:14px;padding:12px 8px;text-align:center;font-weight:800;font-size:14px;cursor:pointer;border:1px solid;line-height:1.25}
+  .tile small{display:block;font-weight:600;font-size:11.5px;margin-top:3px;opacity:.85}
+  .tile:active{transform:scale(.98)}
+  .th-a{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
+  .th-b{background:#FAECE7;color:#712B13;border-color:#F0997B}
+  .th-c{background:#FBEAF0;color:#72243E;border-color:#ED93B1}
+  .th-casa{background:#E1F5EE;color:#085041;border-color:#5DCAA5}
+  .th-yoga{background:#EAF3DE;color:#27500A;border-color:#97C459}
+  .th-am{background:#FAEEDA;color:#633806;border-color:#EF9F27}
+  .linkcard{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;padding:12px 14px;margin-bottom:10px}
+  .linkcard .arrow{font-size:20px;font-weight:400}
+  .navcard{border-radius:14px;padding:12px 14px;margin-bottom:10px;cursor:pointer;border:1px solid}
+  .navcard .ttl{display:flex;justify-content:space-between;font-weight:800;font-size:14px}
+  .navcard .rm{font-size:12.5px;font-weight:600;margin-top:5px}
+  .lastday{font-size:12px;color:var(--muted);margin-bottom:4px}
+  .form.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fb{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px;font-size:12.5px;display:flex;flex-direction:column;gap:3px}
+  .fb .ok{color:var(--ok)} .fb .wa{color:#9a5b12}
+  .ulink{display:block;width:100%;background:none;border:none;text-decoration:underline;text-underline-offset:3px;font-size:13px;font-weight:700;color:var(--ink);margin-top:10px;cursor:pointer}
+  .rhead{border-radius:14px;padding:12px 14px;margin-bottom:12px;border:1px solid}
+  .rhead .rt{font-weight:800;font-size:15px}
+  .rhead .rm{font-size:12.5px;margin-top:6px;line-height:1.55;opacity:.9}
   nav::-webkit-scrollbar{display:none}
   nav button{
     flex:0 0 auto;border:none;background:var(--sand);color:var(--ink);
@@ -219,9 +247,9 @@
   <h1>🏔️ Mi Entrenamiento</h1>
   <p>Diana · Gym + handstand · San Pedro</p>
   <div class="stats">
-    <div class="stat"><b id="s-week">0/3</b><span>gym esta semana</span></div>
+    <div class="stat"><b id="s-week">0/3</b><span>🏋️ gym (sem)</span></div>
     <div class="stat"><b id="s-hs">0</b><span>🤸 handstand (sem)</span></div>
-    <div class="stat"><b id="s-total">0</b><span>sesiones gym</span></div>
+    <div class="stat"><b id="s-es">0</b><span>🧗 escalada (sem)</span></div>
   </div>
   <div class="progwrap">
     <div class="progbar"><div class="progfill" id="progfill" style="width:0%"></div></div>
@@ -229,17 +257,7 @@
   </div>
 </header>
 
-<nav id="nav">
-  <button data-tab="hoy" class="active">🏠 Hoy</button>
-  <button data-tab="gymA">🟦 Gym A</button>
-  <button data-tab="gymB">🟩 Gym B</button>
-  <button data-tab="gymC">🟨 Gym C</button>
-  <button data-tab="casa">🏠 Casa</button>
-  <button data-tab="yoga" class="yoga">🧘 Yoga</button>
-  <button data-tab="lib">📚 Ejercicios</button>
-  <button data-tab="prog">📈 Progreso</button>
-  <button data-tab="hist">📊 Historial</button>
-</nav>
+<nav id="nav"><button data-tab="hoy" class="homelink">🏠 Resumen</button></nav>
 
 <main id="main"></main>
 
@@ -292,7 +310,7 @@ function FIN(){return {t:"🚶‍♀️ Cardio (clave para bajar grasa)", ex:[
 const APROX={n:"Serie de aproximación", d:"1 serie liviana del primer ejercicio de piernas"};
 
 const DEFAULT_ROUTINES = {
-  gymA:{nombre:"Gym A · Empuje + cuádriceps", emoji:"🟦", yoga:false, blocks:[
+  gymA:{nombre:"Gym A · Empuje + cuádriceps", emoji:"🟪", yoga:false, blocks:[
     CAL(),
     {t:"🤸 Calistenia", ex:[
       {n:"Fondos en paralelas", skill:true, log:true},
@@ -311,7 +329,7 @@ const DEFAULT_ROUTINES = {
     ]},
     FIN(),
   ]},
-  gymB:{nombre:"Gym B · Tirón + glúteos y femorales", emoji:"🟩", yoga:false, blocks:[
+  gymB:{nombre:"Gym B · Tirón + glúteos y femorales", emoji:"🟧", yoga:false, blocks:[
     CAL(),
     {t:"🤸 Calistenia", ex:[
       {n:"Dominadas", skill:true, log:true},
@@ -330,7 +348,7 @@ const DEFAULT_ROUTINES = {
     ]},
     FIN(),
   ]},
-  gymC:{nombre:"Gym C · L-sit + tirón + piernas", emoji:"🟨", yoga:false, blocks:[
+  gymC:{nombre:"Gym C · L-sit + tirón + piernas", emoji:"🩷", yoga:false, blocks:[
     CAL(),
     {t:"🤸 Calistenia", ex:[
       {n:"L-sit", skill:true, log:true},
@@ -389,6 +407,15 @@ const DEFAULT_ROUTINES = {
   ]},
 };
 const GYM_ORDER=["gymA","gymB","gymC"];
+const THEME={gymA:"th-a",gymB:"th-b",gymC:"th-c",casa:"th-casa",yoga:"th-yoga"};
+const FOCUS={gymA:"Empuje",gymB:"Tirón",gymC:"L-sit"};
+const MUSC={
+  gymA:["💪 Tríceps · pecho · hombros","🦵 Cuádriceps · glúteos · glúteo medio","🔥 Abdomen"],
+  gymB:["💪 Dorsales · bíceps · hombro posterior","🦵 Glúteos · femorales · cuádriceps","🔥 Abdomen · oblicuos"],
+  gymC:["💪 Dorsales · bíceps · pecho · tríceps","🦵 Glúteos · cuádriceps · femorales","🔥 Abdomen · oblicuos"],
+  casa:["💪 Hombros · muñecas · tríceps","🔥 Abdomen · flexores de cadera"],
+  yoga:["🧘 Movilidad y recuperación"],
+};
 const ROUTINE_TABS=["gymA","gymB","gymC","casa","yoga"];
 const LEGACY={
   dia1:"1️⃣ Día 1 (calistenia)",dia2:"2️⃣ Día 2 (calistenia)",dia3:"3️⃣ Día 3 (calistenia)",
@@ -625,6 +652,8 @@ function load(){
   return d;
 }
 function checkRoutinesUpdate(){
+  // Los colores/emojis de las rutinas se toman siempre del plan actual (sin tocar las ediciones de ejercicios)
+  Object.keys(DEFAULT_ROUTINES).forEach(t=>{if(data.routines[t])data.routines[t].emoji=DEFAULT_ROUTINES[t].emoji;});
   if(data.routinesVersion!==ROUTINES_VERSION){
     // Plan nuevo de gimnasio: las rutinas anteriores eran de calistenia, se reemplazan. Las sesiones guardadas se conservan.
     data.routines=JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
@@ -664,7 +693,6 @@ function effD(ex){const e=LIB[ex.n];return ex.skill&&e&&e.niveles?e.niveles[skil
 /* ---------- RENDER PRINCIPAL ---------- */
 function render(){
   idMap={};
-  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===currentTab));
   const isRoutine=ROUTINE_TABS.includes(currentTab);
   document.body.className="";
   saveBtn.style.display="none";
@@ -684,13 +712,15 @@ function renderRoutine(){
   saveBtn.style.display=editMode?"none":"block";
   saveBtn.className="save"+(isYoga?" yoga":"");
 
-  let html=`<div class="introbar">
-    <div class="intro">${r.emoji} <b>${esc(r.nombre)}</b><br>${editMode?'edita, borra o agrega ejercicios':'marca cada serie con los botones · ℹ️ = cómo se hace'}</div>
+  let html=`<div class="rhead ${THEME[currentTab]||'th-am'}"><div class="rt">${r.emoji} ${esc(r.nombre)}</div>
+    ${(MUSC[currentTab]||[]).length?`<div class="rm">${MUSC[currentTab].map(esc).join("<br>")}</div>`:''}</div>
+  <div class="introbar">
+    <div class="intro">${editMode?'edita, borra o agrega ejercicios':'marca cada serie con los botones · ℹ️ = cómo se hace'}</div>
     <button class="editbtn ${editMode?'on':''}" id="editToggle">${editMode?'✓ Listo':'✏️ Editar'}</button>
   </div>`;
   if(!editMode) html+=`<div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>`;
   if(isYoga && !editMode) html+=`<div class="tip">💡 Ideal para días de terreno o de descanso. Respira lento y sin prisa.</div>`;
-  if(!isYoga && !editMode) html+=`<div class="tip">💡 <b>Peso correcto:</b> termina cada serie sintiendo que te quedaban solo 1-3 reps. Cuando completes todas las series en el tope del rango, <b>sube 1-2 kg</b>. Al marcar una serie parte solo el descanso de 90 s (⏱️).</div>`;
+  if(!isYoga && !editMode) html+=`<div class="tip">💡 <b>Peso correcto:</b> termina cada serie sintiendo que te quedaban solo 1-3 reps. Cuando completes todas las series en el tope del rango, <b>sube 1-2 kg</b>. Al marcar una serie se abre el descanso recomendado (⏱️).</div>`;
 
   r.blocks.forEach((bl,bi)=>{
     html+=`<div class="block${isYoga?' yoga':''}"><div class="block-h">`;
@@ -900,61 +930,152 @@ saveBtn.onclick=()=>{
   currentTab="hoy";render();
 };
 
-/* ---------- HOY ---------- */
+/* ---------- RESUMEN ---------- */
+function goTab(t){
+  if(!editMode && ROUTINE_TABS.includes(currentTab) && Object.values(draft).some(v=>v.done)){
+    if(!confirm("Tienes ejercicios marcados sin guardar. ¿Cambiar de todos modos?")) return;
+  }
+  draft={};cur={};activeEx=null;editMode=false;sessionDate=todayStr();currentTab=t;render();window.scrollTo(0,0);
+}
 function quickLog(tipo){
   const note=prompt(tipo==="handstand"?"🤸 Clase de handstand · ¿algo que anotar? (opcional)":"🧗 Escalada · ¿algo que anotar? (opcional)","");
   if(note===null)return;
   const logs=note.trim()?[{n:"Nota",v:note.trim()}]:[];
-  data.sessions.push({id:Date.now(),date:new Date(todayStr()+'T12:00:00').toISOString(),tipo,count:1,logs});
-  save();updateStats();render();toast("Registrado ✅");
+  data.sessions.push({id:Date.now(),date:new Date((sessionDate||todayStr())+'T12:00:00').toISOString(),tipo,count:1,logs});
+  save();updateStats();render();toast("Registrado ✅ "+fmtShort(sessionDate||todayStr()));
 }
+
+/* Fitia: promedios semanales (lunes a domingo) guardados en data.fitia[lunes] = {kcal,p,c,g} */
+const META={kcal:[1550,1750],p:[110,120],c:[130,170],g:[50,60]};
+function mondayOf(d){return dstr(weekStart(d));}
+function weekLabel(mon){const a=new Date(mon+'T12:00:00'),b=new Date(a);b.setDate(a.getDate()+6);
+  return `lun ${a.getDate()}${a.getMonth()!==b.getMonth()?' '+MES[a.getMonth()]:''} – dom ${b.getDate()} ${MES[b.getMonth()]}`;}
+let fitiaWeek=null, fitiaHist=false;
+function evalWeek(v){
+  const out=[], n=x=>Math.round(x).toLocaleString('es-CL');
+  if(v.kcal){
+    if(v.kcal<1400)out.push(["wa",`🔥 Muy bajo (${n(v.kcal)} kcal): cuidado con tu Vata (ansiedad, mal dormir). Sube a 1.550.`]);
+    else if(v.kcal<META.kcal[0])out.push(["wa","🔥 Un poco bajo la meta: está bien, pero no bajes más."]);
+    else if(v.kcal<=META.kcal[1])out.push(["ok","🔥 Calorías en rango ✅"]);
+    else out.push(["wa",`🔥 Sobre la meta (+${n(v.kcal-META.kcal[1])} kcal al día).`]);
+  }
+  if(v.p){
+    if(v.p>=META.p[0])out.push(["ok","🥚 Proteína cumplida ✅"]);
+    else out.push(["wa",`🥚 Te faltan ~${n(META.p[0]-v.p)} g de proteína al día: suma 2 huevos (12 g) o ½ lata de atún (13 g).`]);
+  }
+  if(v.c){
+    if(v.c>META.c[1])out.push(["wa",`🍚 Carbos altos (+${n(v.c-META.c[1])} g): revisa pan, arroz y dulces.`]);
+    else if(v.c<META.c[0])out.push(["wa","🍚 Carbos bajos: para entrenar necesitas energía, suma fruta o avena."]);
+    else out.push(["ok","🍚 Carbos en rango ✅"]);
+  }
+  if(v.g){
+    if(v.g>META.g[1])out.push(["wa",`🥑 Grasa alta (+${n(v.g-META.g[1])} g): revisa semillas, frutos secos y aceite.`]);
+    else if(v.g<40)out.push(["wa","🥑 Grasa muy baja: tu cuerpo la necesita (hormonas, Vata)."]);
+    else if(v.g<META.g[0])out.push(["ok","🥑 Grasa un poco baja, está bien ✅"]);
+    else out.push(["ok","🥑 Grasa en rango ✅"]);
+  }
+  return out;
+}
+// Gráfico: barras = kcal promedio de la semana; línea = cintura de esa semana (último registro en Progreso)
+function fitiaChart(weeks){
+  if(!weeks.length)return "";
+  const W=320,H=150,pl=8,pr=8,pt=14,pb=22,n=weeks.length,slot=(W-pl-pr)/n,bw=Math.min(34,slot*.6);
+  const kmax=Math.max(META.kcal[1]*1.15,...weeks.map(w=>w.v.kcal||0));
+  const Yk=v=>pt+(1-v/kmax)*(H-pt-pb);
+  const cin=weeks.map(w=>{const ms=data.medidas.filter(m=>m.cintura&&mondayOf(new Date(m.date+'T12:00:00'))===w.mon).sort((a,b)=>a.date.localeCompare(b.date));return ms.length?ms[ms.length-1].cintura:null;});
+  const cv=cin.filter(x=>x!=null);let cmin=Math.min(...cv),cmax=Math.max(...cv);if(cmax-cmin<2){cmin-=1;cmax+=1;}
+  const Yc=v=>pt+10+(1-(v-cmin)/(cmax-cmin))*(H-pt-pb-20);
+  let g=`<line x1="${pl}" x2="${W-pr}" y1="${Yk(META.kcal[1])}" y2="${Yk(META.kcal[1])}" stroke="#8a7f74" stroke-dasharray="3 3"/><text x="${W-pr}" y="${Yk(META.kcal[1])-3}" font-size="9" fill="#8a7f74" text-anchor="end">meta 1.750</text>`;
+  weeks.forEach((w,i)=>{const x=pl+slot*i+slot/2;if(w.v.kcal)g+=`<rect x="${x-bw/2}" y="${Yk(w.v.kcal)}" width="${bw}" height="${H-pb-Yk(w.v.kcal)}" rx="3" fill="#F0997B"/>`;
+    const d=new Date(w.mon+'T12:00:00');g+=`<text x="${x}" y="${H-7}" font-size="9" fill="#8a7f74" text-anchor="middle">${d.getDate()} ${MES[d.getMonth()]}</text>`;});
+  const pts=cin.map((c,i)=>c==null?null:[pl+slot*i+slot/2,Yc(c),c]).filter(Boolean);
+  if(pts.length>1)g+=`<polyline points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" stroke="#2f7d78" stroke-width="2"/>`;
+  pts.forEach(p=>{g+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#2f7d78"/><text x="${p[0]}" y="${p[1]-6}" font-size="9" fill="#2f7d78" text-anchor="middle">${String(p[2]).replace('.',',')}</text>`;});
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}">${g}</svg><p class="small">Barras: kcal promedio · Línea: cintura en cm (de 📈 Progreso)${pts.length<2?' · registra tu cintura cada semana para ver la línea':''}</p>`;
+}
+
 function renderHoy(){
-  const nx=nextGym(), R=data.routines[nx];
   const wk=thisWeek();
-  const casaW=wk.filter(s=>s.tipo==="casa").length;
-  const gymW=wk.filter(s=>isGym(s.tipo)).length, hsW=wk.filter(s=>s.tipo==="handstand").length, esW=wk.filter(s=>s.tipo==="escalada").length, yoW=wk.filter(s=>s.tipo==="yoga").length;
-  const d=new Date(), dias=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  const gymW=wk.filter(s=>isGym(s.tipo)).length, hsW=wk.filter(s=>s.tipo==="handstand").length,
+    casaW=wk.filter(s=>s.tipo==="casa").length, esW=wk.filter(s=>s.tipo==="escalada").length, yoW=wk.filter(s=>s.tipo==="yoga").length;
   let dots="";for(let i=0;i<3;i++)dots+=`<div class="dot ${i<gymW?'on':''}">${i<gymW?'✓':i+1}</div>`;
 
-  const rem=[];
-  const lastM=data.medidas.length?data.medidas[data.medidas.length-1].date:null;
-  const daysM=lastM?Math.floor((new Date(todayStr())-new Date(lastM))/86400000):null;
-  if(daysM===null||daysM>=7)rem.push("📏 Toca registrar <b>peso y cintura</b> (1 vez por semana, en ayunas).");
-  const lastF=(data.lastFoto||null);
-  const daysF=lastF?Math.floor((new Date(todayStr())-new Date(lastF))/86400000):null;
-  if(daysF===null||daysF>=14)rem.push("📸 Toca <b>foto de progreso</b> (cada 2 semanas, misma luz y ropa).");
-  if(d.getDay()===1||d.getDay()===5)rem.push("🤸 Hoy hay clase de handstand ("+(d.getDay()===1?"11:00":"17:00")+").");
-  const dow=(d.getDay()+6)%7;
-  if(gymW<3&&dow>=3&&(3-gymW)>(6-dow)+1)rem.push("⚠️ Quedan pocos días para llegar a 3 gym esta semana: aunque sea una sesión corta (3 primeros ejercicios) cuenta.");
+  // Último entrenamiento: el último día con registros y todo lo hecho ese día
+  const ss=sorted();let lastHtml=`<p class="small">Todavía no registras entrenamientos.</p>`;
+  if(ss.length){const lastD=dstr(new Date(ss[ss.length-1].date));
+    const that=ss.filter(x=>dstr(new Date(x.date))===lastD);
+    lastHtml=`<div class="lastday">${fmtDate(ss[ss.length-1].date)}</div>`+[...new Set(that.map(x=>sessName(x.tipo)))].map(t=>`<div class="wk"><span>${esc(t)}</span></div>`).join("");}
 
-  let html=`<div class="card hero">
-    <div class="small">Hoy es ${dias[d.getDay()]} ${d.getDate()} de ${MES[d.getMonth()]}</div>
-    <div class="big">Te toca ${R.emoji} ${esc(R.nombre.split(' · ')[0])}</div>
-    <p class="small">${esc(R.nombre.split(' · ')[1]||'')} · ~55 min con cardio final</p>
-    <button class="btn" id="goGym">Empezar ${esc(R.nombre.split(' · ')[0])} →</button>
-    <p class="small" style="margin-top:8px">¿Entras a las 7:30 hoy? Descansa o haz 🧘 yoga 20 min. El gym va los días que entras a las 10 (8-9 AM) y en tus libres.</p>
+  const rem=[];
+  const lastM=data.medidas.length?[...data.medidas].sort((a,b)=>a.date.localeCompare(b.date)).pop().date:null;
+  const daysM=lastM?Math.floor((new Date(todayStr())-new Date(lastM))/86400000):null;
+  if(daysM===null||daysM>=7)rem.push("📏 Toca registrar peso y cintura");
+  const daysF=data.lastFoto?Math.floor((new Date(todayStr())-new Date(data.lastFoto))/86400000):null;
+  if(daysF===null||daysF>=14)rem.push("📸 Toca foto de progreso");
+
+  // Semanas para el selector de Fitia: la actual y 11 anteriores
+  data.fitia=data.fitia||{};
+  const thisMon=mondayOf(new Date());if(!fitiaWeek)fitiaWeek=thisMon;
+  const mons=[];for(let i=0;i<12;i++){const d=new Date(thisMon+'T12:00:00');d.setDate(d.getDate()-7*i);mons.push(dstr(d));}
+  const fv=data.fitia[fitiaWeek]||{};
+  const fb=data.fitia[fitiaWeek]?evalWeek(fv):[];
+  const hist=Object.keys(data.fitia).sort().map(mon=>({mon,v:data.fitia[mon]}));
+
+  let html=`
+  <div class="tiles t3">
+    ${GYM_ORDER.map(t=>`<div class="tile ${THEME[t]}" data-go="${t}">${data.routines[t].emoji} ${esc(data.routines[t].nombre.split(' · ')[0])}<small>${FOCUS[t]}</small></div>`).join("")}
   </div>
+  <div class="tiles t2">
+    <div class="tile th-casa" data-go="casa">🏠 Handstand casa</div>
+    <div class="tile th-yoga" data-go="yoga">🧘 Yoga</div>
+  </div>
+  <div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>
+  <div class="tiles t2">
+    <div class="tile th-am" id="qHs">🤸 + Clase handstand</div>
+    <div class="tile th-am" id="qEs">🧗 + Escalada</div>
+  </div>
+  <div class="card"><h3>⏮️ Último entrenamiento</h3>${lastHtml}</div>
+  <div class="tile th-am linkcard" data-go="hist"><span>📊 Historial</span><span class="arrow">›</span></div>
   <div class="card">
-    <h3>Esta semana</h3>
+    <h3>📆 Esta semana</h3>
     <div class="wk"><span>🏋️ Gym</span><div class="dots">${dots}</div></div>
     <div class="wk"><span>🤸 Clase de handstand</span><b>${hsW} / 1</b></div>
     <div class="wk"><span>🏠 Handstand en casa</span><b>${casaW} / 2-4</b></div>
     <div class="wk"><span>🧗 Escalada</span><b>${esW}</b></div>
     <div class="wk"><span>🧘 Yoga</span><b>${yoW}</b></div>
-    <div class="row2"><button class="btn teal" id="qHs">+ 🤸 Clase handstand</button><button class="btn sec" id="qEs">+ 🧗 Escalada</button></div>
-    <button class="btn sec" id="goCasa">🏠 Hacer handstand en casa (~15 min)</button>
-    ${rem.map(r=>`<div class="remind">${r}</div>`).join("")}
   </div>
+  <div class="navcard th-am" data-go="prog"><div class="ttl"><span>📈 Progreso</span><span>›</span></div>
+    ${rem.map(r=>`<div class="rm">${r}</div>`).join("")||'<div class="rm">Medidas y fotos al día ✅</div>'}</div>
+  <div class="tile th-am linkcard" data-go="lib"><span>📚 Biblioteca de ejercicios</span><span class="arrow">›</span></div>
   <div class="card">
     <h3>🎯 Metas diarias de comida</h3>
-    <p><span class="macro">1.550–1.750 kcal</span><span class="macro">110–120 g proteína</span><span class="macro">2 L agua</span></p>
-    <p class="small">Constante &gt; perfecta. Evita días bajo 1.300 kcal: a tu Vata le pasan la cuenta (ansiedad, mal dormir).</p>
+    <p><span class="macro">🔥 1.550–1.750 kcal</span><span class="macro">🥚 110–120 g prot</span><span class="macro">🍚 130–170 g carbos</span><span class="macro">🥑 50–60 g grasa</span><span class="macro">💧 2 L agua</span></p>
+    <p class="small" style="margin-top:10px">🥗 Promedio semanal (Fitia)</p>
+    <select class="full" id="fWeek">${mons.map(m=>`<option value="${m}" ${m===fitiaWeek?'selected':''}>Semana ${weekLabel(m)}${data.fitia[m]?' ✓':''}</option>`).join("")}</select>
+    <div class="form fgrid">
+      <label>🔥 kcal<input type="text" inputmode="numeric" id="fK" value="${fv.kcal??''}"></label>
+      <label>🥚 Proteína (g)<input type="text" inputmode="numeric" id="fP" value="${fv.p??''}"></label>
+      <label>🍚 Carbos (g)<input type="text" inputmode="numeric" id="fC" value="${fv.c??''}"></label>
+      <label>🥑 Grasa (g)<input type="text" inputmode="numeric" id="fG" value="${fv.g??''}"></label>
+    </div>
+    <div class="tile th-am" id="fSave" style="margin-top:10px">Guardar semana</div>
+    ${fb.length?`<div class="fb">${fb.map(([c,t])=>`<div class="${c}">${esc(t)}</div>`).join("")}</div>`:''}
+    <button class="ulink" id="fHist">Historial ${fitiaHist?'▴':'▾'}</button>
+    ${fitiaHist?(hist.length?`<div style="margin-top:8px">${fitiaChart(hist)}<div class="mlist">${[...hist].reverse().map(h=>`<div><span>${weekLabel(h.mon)}</span><span>${h.v.kcal??'—'} kcal · ${h.v.p??'—'} P · ${h.v.c??'—'} C · ${h.v.g??'—'} G</span></div>`).join("")}</div></div>`:'<p class="small">Aún no guardas semanas.</p>'):''}
   </div>`;
   main.innerHTML=html;
-  document.getElementById("goGym").onclick=()=>{currentTab=nx;draft={};cur={};activeEx=null;sessionDate=todayStr();render();window.scrollTo(0,0);};
+  main.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
+  document.getElementById("sessDate").onchange=e=>{sessionDate=e.target.value||todayStr();};
   document.getElementById("qHs").onclick=()=>quickLog("handstand");
-  document.getElementById("goCasa").onclick=()=>{currentTab="casa";draft={};cur={};activeEx=null;sessionDate=todayStr();render();window.scrollTo(0,0);};
   document.getElementById("qEs").onclick=()=>quickLog("escalada");
+  document.getElementById("fWeek").onchange=e=>{fitiaWeek=e.target.value;renderHoy();};
+  document.getElementById("fHist").onclick=()=>{fitiaHist=!fitiaHist;renderHoy();};
+  document.getElementById("fSave").onclick=()=>{
+    const num=id=>{const v=parseFloat((document.getElementById(id).value||"").replace(/\./g,'').replace(',','.'));return isNaN(v)?null:v;};
+    const v={kcal:num("fK"),p:num("fP"),c:num("fC"),g:num("fG")};
+    if(v.kcal==null&&v.p==null){toast("Anota al menos kcal o proteína ✏️");return;}
+    data.fitia[fitiaWeek]=v;save();toast("Semana guardada 🥗");renderHoy();
+  };
 }
 
 /* ---------- BIBLIOTECA ---------- */
@@ -1147,9 +1268,9 @@ function updateStats(){
   const wk=thisWeek();
   document.getElementById("s-week").textContent=wk.filter(s=>isGym(s.tipo)).length+"/3";
   document.getElementById("s-hs").textContent=wk.filter(s=>s.tipo==="handstand").length;
+  document.getElementById("s-es").textContent=wk.filter(s=>s.tipo==="escalada").length;
   const ps=data.planStart||todayStr();
   const total=data.sessions.filter(s=>isGym(s.tipo)&&dstr(new Date(s.date))>=ps).length;
-  document.getElementById("s-total").textContent=total;
   const pct=Math.min(100,Math.round(total/GOAL*100));
   const wkN=Math.min(12,Math.floor((new Date(todayStr())-new Date(ps))/(7*86400000))+1);
   document.getElementById("progfill").style.width=pct+"%";
@@ -1159,14 +1280,7 @@ function updateStats(){
 let toastT;
 function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2400);}
 
-document.querySelectorAll("#nav button").forEach(b=>{
-  b.onclick=()=>{
-    if(!editMode && ROUTINE_TABS.includes(currentTab) && Object.values(draft).some(v=>v.done)){
-      if(!confirm("Tienes ejercicios marcados sin guardar. ¿Cambiar de todos modos?")) return;
-    }
-    draft={};cur={};activeEx=null;editMode=false;sessionDate=todayStr();currentTab=b.dataset.tab;render();
-  };
-});
+document.querySelectorAll("#nav button").forEach(b=>{b.onclick=()=>goTab(b.dataset.tab);});
 
 /* ---------- HOJAS INFERIORES ---------- */
 const backdrop=document.getElementById("backdrop");
@@ -1293,9 +1407,9 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
   draw();
 })();
 
+checkRoutinesUpdate();
 updateStats();
 render();
-checkRoutinesUpdate();
 </script>
 </body>
 </html>
