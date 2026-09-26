@@ -712,7 +712,7 @@ function renderRoutine(){
         const st=draft[ex.n]||{};
         const nm=ex.n.startsWith("★")?`<span class="star">★</span> ${esc(ex.n.slice(1).trim())}`:esc(ex.n);
         let lastHtml="";
-        if(ex.log){
+        if(canLog(ex)){
           const L=lastLog(ex.n);
           if(L){
             const txt=L.sets?L.v:[L.kg?L.kg+" kg":"",L.reps||(!L.kg?L.v:"")].filter(Boolean).join(" · ");
@@ -721,15 +721,15 @@ function renderRoutine(){
             if(t&&L.kg&&r.length>=t.sets&&r.slice(0,t.sets).every(x=>x>=t.top)) lastHtml+=`<div class="up">⬆️ Completaste todo: hoy sube 1-2 kg</div>`;
           }
         }
-        const isAct=ex.log&&activeEx===ex.n;
+        const isAct=canLog(ex)&&activeEx===ex.n;
         html+=`<div class="ex ${isAct?'active':''}">
           <div class="cbx ${st.done?'on':''}" data-cb="${id}"></div>
           <div class="ex-body">
             <div class="ex-top"><div class="ex-name">${nm}</div>${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}</div>
             ${ex.skill&&LIB[ex.n]&&LIB[ex.n].niveles?`<select class="lvl" data-lvl="${id}">${LIB[ex.n].niveles.map((l,i)=>`<option value="${i}" ${i===skillLv(ex.n)?'selected':''}>Nivel ${i+1}: ${esc(l.n)}</option>`).join("")}</select>`:''}
-            ${effD(ex)?`<div class="ex-dose">${esc(effD(ex))}${ex.log&&!exMeta(ex).byTime&&exMeta(ex).nSets>1?(ssFirst(ex)?' · sin descanso, pasa a la siguiente':` · descanso ${fmtDur(restOf(ex.n))}`):''}</div>`:''}
+            ${effD(ex)?`<div class="ex-dose">${esc(effD(ex))}${canLog(ex)&&!exMeta(ex).byTime&&exMeta(ex).nSets>1?(ssFirst(ex)?' · sin descanso, pasa a la siguiente':` · descanso ${fmtDur(restOf(ex.n))}`):''}</div>`:''}
             ${lastHtml}
-            ${ex.log?setsHtml(ex,id,isAct):(parseDur(ex.d)?`<button class="playsm" data-tmr="${parseDur(ex.d)}|${esc(ex.n)}">▶ Temporizador ${fmtDur(parseDur(ex.d))}</button>`:'')}
+            ${canLog(ex)?setsHtml(ex,id,isAct):(parseDur(ex.d)?`<button class="playsm" data-tmr="${parseDur(ex.d)}|${esc(ex.n)}">▶ Temporizador ${fmtDur(parseDur(ex.d))}</button>`:'')}
           </div></div>`;
       }
     });
@@ -780,7 +780,7 @@ function setsHtml(ex,id,isAct){
   const c=curVals(ex);
   const next=sets.length+1, extra=sets.length>=m.nSets;
   h+=`<div class="setrow">
-    ${m.byTime?'':`<label>kg<input type="text" inputmode="decimal" data-kgi="${id}" value="${c.kg?fmtKg(c.kg):''}" placeholder="0"></label>`}
+    ${m.byTime||!ex.log?'':`<label>kg<input type="text" inputmode="decimal" data-kgi="${id}" value="${c.kg?fmtKg(c.kg):''}" placeholder="0"></label>`}
     <label>${m.byTime?'min':(m.unit==='reps'?'reps':'seg')}<input type="text" inputmode="numeric" data-rpi="${id}" value="${c.reps||''}"></label>
     ${m.byTime||m.secs||parseDur(effD(ex))?`<button class="play" data-play="${id}">▶</button>`:''}
     <button class="logset ${extra?'extra':''}" data-logset="${id}">${extra?`+ Extra`:(m.byTime?'✓ Listo':`✓ Serie ${next}`)}</button>
@@ -796,8 +796,10 @@ const REST={
   "Crunch en polea":60,"Elevación de piernas colgada":60,"Oblicuos colgada":60,
   "Plancha":45,"Pallof press":45,"Elevaciones en compresión":45,"Hollow hold":30,
 };
-function restOf(n){return REST[n]??90;}
-function logExs(){const all=[];data.routines[currentTab].blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.log)all.push(ex);}));return all;}
+function canLog(ex){return !!ex.log||!!target(effD(ex));}
+// Descanso por defecto: 90 s en ejercicios de fuerza, 30 s en los de calentamiento/técnica
+function restOf(n){if(REST[n]!=null)return REST[n];const ex=exByName(n);return ex&&!ex.log?30:90;}
+function logExs(){const all=[];data.routines[currentTab].blocks.forEach(bl=>bl.ex.forEach(ex=>{if(canLog(ex))all.push(ex);}));return all;}
 function setsLeft(ex){return exMeta(ex).nSets-(((draft[ex.n]||{}).sets)||[]).length;}
 // Superserie: la dosis dice "superserie con la siguiente" → se alterna con el ejercicio siguiente sin descanso entre ambos
 function ssFirst(ex){return /superserie con la siguiente/.test(effD(ex));}
@@ -821,13 +823,13 @@ function logSet(n,cont){  // cont: si viene de una serie con tiempo, al terminar
 }
 function exByName(n){for(const bl of data.routines[currentTab].blocks)for(const ex of bl.ex)if(ex.n===n)return ex;return null;}
 function nextActive(afterName){
-  const all=[];data.routines[currentTab].blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.log)all.push(ex);}));
+  const all=[];data.routines[currentTab].blocks.forEach(bl=>bl.ex.forEach(ex=>{if(canLog(ex))all.push(ex);}));
   const i=all.findIndex(e=>e.n===afterName);
   for(let j=i+1;j<all.length;j++){const s=(draft[all[j].n]&&draft[all[j].n].sets)||[];if(s.length<exMeta(all[j]).nSets)return all[j].n;}
   return null;
 }
 function firstActive(){
-  for(const bl of data.routines[currentTab].blocks)for(const ex of bl.ex){if(ex.log){const s=(draft[ex.n]&&draft[ex.n].sets)||[];if(s.length<exMeta(ex).nSets)return ex.n;}}
+  for(const bl of data.routines[currentTab].blocks)for(const ex of bl.ex){if(canLog(ex)){const s=(draft[ex.n]&&draft[ex.n].sets)||[];if(s.length<exMeta(ex).nSets)return ex.n;}}
   return null;
 }
 
