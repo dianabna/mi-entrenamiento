@@ -115,6 +115,29 @@
   .logset{flex:1;border:none;border-radius:10px;padding:11px 8px;font-size:14px;font-weight:800;background:var(--terra);color:#fff;cursor:pointer;white-space:nowrap}
   .logset.extra{background:var(--sand);color:var(--ink);font-size:13px}
   .ex.active{background:#fffaf4}
+  .edcard{border-top:1px solid var(--line);padding:11px 14px;display:flex;flex-direction:column;gap:8px}
+  .edtop{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14.5px}
+  .mv{display:flex;gap:4px;flex:0 0 auto}
+  .mv button{border:1px solid var(--line);background:#fff;border-radius:8px;min-width:30px;height:30px;font-size:14px;cursor:pointer}
+  .block-h .mv button{height:26px;min-width:26px;font-size:12px}
+  .edtype{display:flex;align-items:center;gap:10px}
+  .typ{background:#FAEEDA;color:#633806;border:1px solid #EF9F27;border-radius:14px;padding:3px 10px;font-weight:700;font-size:12px}
+  .edlink{background:none;border:none;text-decoration:underline;color:var(--muted);font-size:12.5px;cursor:pointer;padding:2px 4px}
+  .edlink.danger{color:#c0392b}
+  .chips{display:flex;flex-wrap:wrap;gap:5px}
+  .chip2{border:1px solid var(--line);background:#fff;border-radius:14px;padding:5px 9px;font-size:12px;cursor:pointer;color:var(--ink)}
+  .chip2.on{background:#FAEEDA;color:#633806;border-color:#EF9F27;font-weight:700}
+  .edgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .edgrid label,.edfull{font-size:11px;color:var(--muted);font-weight:600;display:block}
+  .edgrid input,.edfull input,.edfull select,.edfull textarea{display:block;width:100%;margin-top:3px;border:1px solid var(--line);border-radius:9px;padding:8px 9px;font-size:14px;font-family:inherit;background:var(--cream);color:var(--ink)}
+  .edfull{margin-top:6px}
+  .edcheck{font-size:12.5px;display:flex;align-items:center;gap:6px;color:var(--ink)}
+  .addcard{background:#fffaf4}
+  .addgo{width:100%}
+  .libact{display:flex;justify-content:space-between;margin-top:10px}
+  .curlv{background:#FAEEDA;border-radius:6px;padding:2px 6px}
+  .lvrow{display:grid;grid-template-columns:14px minmax(0,1.6fr) 46px 72px 50px 28px;gap:4px;align-items:center;margin-top:5px;font-size:12px}
+  .lvrow input,.lvrow select{width:100%;border:1px solid var(--line);border-radius:7px;padding:6px 5px;font-size:13px;font-family:inherit;background:var(--cream);color:var(--ink);min-width:0}
   .lvl{margin-top:5px;width:100%;border:1px solid var(--line);border-radius:9px;padding:6px 8px;font-size:12.5px;font-family:inherit;background:var(--teal-light);color:var(--teal);font-weight:700}
 
   /* Edición */
@@ -425,7 +448,7 @@ const LEGACY={
 
 /* ---------- BIBLIOTECA ---------- */
 // Skills: "niveles" = progresión; la dosis del nivel elegido reemplaza a ex.d. "codo"/"rod" = notas de lesión.
-const LIB={
+const LIB_BASE={
   /* Calentamiento */
   "Calentamiento de muñecas":{cat:"Calentamiento",musc:"Muñecas y antebrazos",
     pasos:["Círculos de muñeca con los dedos entrelazados: 30 seg.","En cuatro apoyos, manos bajo los hombros con los dedos hacia adelante: balancéate adelante y atrás sobre las palmas, 10 veces.","Repite con los dedos apuntando hacia los lados y luego hacia las rodillas: 10 veces cada uno, suave.","Apoyo sobre el dorso de las manos (dedos hacia las rodillas): 10 seg, con poco peso."],
@@ -626,6 +649,10 @@ const LIB={
     rod:"No tiene impacto. Si molesta, baja la inclinación.",q:"caminar en cinta inclinada técnica correcta"},
 };
 
+let LIB={};
+// Biblioteca = base + lo que Diana crea/edita/borra (data.libEdits: {nombre: ficha, o null si la borró})
+function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits||{}).forEach(([n,e])=>{if(e===null)delete LIB[n];else LIB[n]=e;});}
+
 /* ---------- ESTADO ---------- */
 const KEY="entreno_diana_v1";
 const GOAL=36;
@@ -633,6 +660,7 @@ const ROUTINES_VERSION=6;
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
+buildLib();
 let currentTab="hoy";
 let editMode=false;
 let draft={};
@@ -724,17 +752,16 @@ function renderRoutine(){
 
   r.blocks.forEach((bl,bi)=>{
     html+=`<div class="block${isYoga?' yoga':''}"><div class="block-h">`;
-    html+= editMode ? `<input value="${esc(bl.t)}" data-btitle="${bi}">` : esc(bl.t);
+    html+= editMode ? `<input value="${esc(bl.t)}" data-btitle="${bi}"><span class="mv"><button data-bup="${bi}">↑</button><button data-bdn="${bi}">↓</button><button data-bdel="${bi}">🗑️</button></span>` : esc(bl.t);
     html+=`</div>`;
     bl.ex.forEach((ex,ei)=>{
       if(editMode){
-        html+=`<div class="ex">
-          <div class="ed-row">
-            <input value="${esc(ex.n)}" data-en="${bi}_${ei}" placeholder="Nombre del ejercicio">
-            <input value="${esc(ex.d||'')}" data-ed="${bi}_${ei}" placeholder="Series × reps (ej: 3 × 10)">
-            <div class="ed-opts"><label><input type="checkbox" data-el="${bi}_${ei}" ${ex.log?'checked':''}> anotar kg / reps</label></div>
-          </div>
-          <button class="trash" data-del="${bi}_${ei}">🗑️</button>
+        const key=bi+"_"+ei,t=editTipo(ex),p=parseDose(ex.d);
+        const f={sets:p.sets,val:p.val,nota:t==="marcar"?(ex.d||""):p.nota,ss:p.ss,rest:restOf(ex.n)};
+        html+=`<div class="edcard">
+          <div class="edtop"><b>${esc(ex.n)}</b><span class="mv"><button data-up="${key}">↑</button><button data-dn="${key}">↓</button><button data-del="${key}">🗑️</button></span></div>
+          ${typeRow(t,!!edOpen[key],`data-tog="${key}"`,`data-settype="${key}|`,LIB[ex.n]&&LIB[ex.n].niveles)}
+          ${fieldsHtml(t,f,!!edOpen[key],`data-f="${key}|`,ex.n)}
         </div>`;
       }else{
         const id=exId(ex.n);
@@ -762,7 +789,7 @@ function renderRoutine(){
           </div></div>`;
       }
     });
-    if(editMode) html+=`<button class="addex" data-addex="${bi}">+ Agregar ejercicio aquí</button>`;
+    if(editMode) html+= addOpen===bi?addFormHtml(bi):`<button class="addex" data-addopen="${bi}">+ Agregar ejercicio</button>`;
     html+=`</div>`;
   });
 
@@ -772,6 +799,60 @@ function renderRoutine(){
   }
   main.innerHTML=html;
   bindRoutine();
+}
+
+/* ---------- EDICIÓN (compacta, vinculada a la biblioteca) ---------- */
+let edOpen={}, addOpen=null, addPick=null, addF=null, addTypeOpen=false;
+function typeRow(t,open,togAttr,setAttrPrefix,hasLevels){
+  const opts=Object.keys(TIPOS).filter(k=>k!=="skill"||hasLevels);
+  return `<div class="edtype"><span class="typ">${TIPOS[t]}</span><button class="edlink" ${togAttr}>${open?'cerrar':'editar'}</button></div>
+    ${open?`<div class="chips">${opts.map(k=>`<button class="chip2 ${k===t?'on':''}" ${setAttrPrefix}${k}">${TIPOS[k]}</button>`).join("")}</div>`:''}`;
+}
+function fieldsHtml(t,f,open,attr,n){
+  const inp=(fld,lbl,val,mode)=>`<label>${lbl}<input type="text" inputmode="${mode||'numeric'}" ${attr}${fld}" value="${esc(val??'')}"></label>`;
+  if(t==="skill"){const e=LIB[n];
+    return `${e&&e.niveles?`<label class="edfull">Nivel actual<select ${attr}lvl">${e.niveles.map((l,i)=>`<option value="${i}" ${i===skillLv(n)?'selected':''}>Nivel ${i+1} · ${esc(l.n)} · ${esc(l.d)}</option>`).join("")}</select></label>`:''}
+      <div class="edgrid">${inp("rest","⏸️ Descanso (s)",f.rest)}</div><div class="small">Los niveles se editan en 📚 la biblioteca.</div>`;}
+  if(t==="marcar")return `<label class="edfull">Detalle<input type="text" ${attr}nota" value="${esc(f.nota)}" placeholder="2 min · 10 repeticiones"></label>`;
+  let h=`<div class="edgrid">`;
+  if(t!=="min")h+=inp("sets","Series",f.sets);
+  h+=inp("val",VAL_LBL[t],f.val,"text");
+  if(t!=="min")h+=inp("rest","⏸️ Desc. (s)",f.rest);
+  h+=`</div>`;
+  if(open)h+=`<label class="edfull">📝 Nota<input type="text" ${attr}nota" value="${esc(f.nota)}" placeholder="baja en 3 seg · liviano"></label>`;
+  if(t!=="min")h+=`<label class="edcheck"><input type="checkbox" ${attr}ss" ${f.ss?'checked':''}> 🔗 Superserie con el siguiente</label>`;
+  return h;
+}
+function addFormHtml(bi){
+  const cats={};Object.entries(LIB).forEach(([n,e])=>{(cats[e.cat]=cats[e.cat]||[]).push(n);});
+  let h=`<div class="edcard addcard"><label class="edfull">📚 Ejercicio<select data-addsel="${bi}"><option value="" ${addPick?'':'selected'} disabled>Nombre del ejercicio ▾</option>
+    ${Object.entries(cats).map(([c,ns])=>`<optgroup label="${esc(c)}">${ns.map(n=>`<option ${n===addPick?'selected':''}>${esc(n)}</option>`).join("")}</optgroup>`).join("")}</select></label>`;
+  if(addPick&&addF){
+    h+=typeRow(addF.tipo,addTypeOpen,`data-addtog="1"`,`data-addtype="`,LIB[addPick]&&LIB[addPick].niveles);
+    h+=fieldsHtml(addF.tipo,addF,addTypeOpen,`data-af="`,addPick);
+    h+=`<p class="small">Valores recomendados de la biblioteca: ajústalos si quieres.</p><button class="tile th-am addgo" data-addgo="${bi}">Agregar ejercicio</button>`;
+  }
+  return h+`<button class="edlink" data-addcancel="1" style="margin-top:6px">cancelar</button></div>`;
+}
+// Aplica un cambio de campo a un ejercicio de la rutina y regenera su dosis
+function applyField(ex,fld,val){
+  const t=editTipo(ex),p=parseDose(ex.d);
+  const f={sets:p.sets,val:p.val,nota:t==="marcar"?(ex.d||""):p.nota,ss:p.ss};
+  if(fld==="rest"){const v=parseInt(val,10);if(isNaN(v))delete ex.rest;else ex.rest=v;return;}
+  if(fld==="lvl"){data.skillLv=data.skillLv||{};data.skillLv[ex.n]=+val;return;}
+  if(fld==="sets"){const v=parseInt(val,10);if(v>0)f.sets=v;}
+  else if(fld==="val")f.val=String(val).replace(/\s/g,'')||f.val;
+  else if(fld==="nota")f.nota=val;
+  else if(fld==="ss")f.ss=val;
+  if(t!=="skill")ex.d=buildDose(t,f);
+}
+function setType(ex,t){
+  const p=parseDose(ex.d),r=libRec(ex.n);
+  if(t==="skill"){ex.skill=true;ex.log=true;delete ex.tipo;delete ex.d;return;}
+  delete ex.skill;ex.tipo=t;ex.log=t!=="marcar";
+  const sameUnit=(t==="seg")===(p.unit==="seg")&&(t==="min")===(p.unit==="min");
+  const val=sameUnit&&p.val?p.val:(t==="seg"?"20":t==="min"?"10":(r.tipo===t&&r.val)||"10");
+  ex.d=buildDose(t,{sets:p.sets||r.sets||3,val,nota:t==="marcar"?"":p.nota,ss:p.ss});
 }
 
 /* Series: la dosis "3 × 10" define cuántas series y las reps objetivo. Sin "×" (ej: caminadora) = 1 registro en minutos, sin kg. */
@@ -827,6 +908,7 @@ const REST={
 // Ejercicios de peso corporal: nunca llevan casilla de kg
 const BODYWEIGHT=new Set(["Flexiones inclinadas","Elevación de piernas colgada","Oblicuos colgada","Salida en rueda","Elevaciones en compresión","Hollow hold","Retracción escapular colgada","Flexiones de escápula","Encogimientos de hombros en handstand"]);
 function exType(ex){
+  if(ex.skill){const e=LIB[ex.n],l=e&&e.niveles?e.niveles[skillLv(ex.n)]:null;if(l&&l.t==="peso")return "peso";return exMeta(ex).secs?"seg":"reps";}
   if(ex.tipo)return ex.tipo;
   const m=exMeta(ex);
   if(m.byTime)return "min";
@@ -834,9 +916,39 @@ function exType(ex){
   if(!canLog(ex))return "marcar";
   return ex.skill||BODYWEIGHT.has(ex.n)||!ex.log?"reps":"peso";
 }
-function canLog(ex){return !!ex.log||!!target(effD(ex));}
+function canLog(ex){if(ex.tipo==="marcar")return false;return !!ex.log||!!target(effD(ex));}
+const TIPOS={peso:"🏋️ Peso + reps",reps:"🔁 Reps",seg:"⏱️ Segundos",min:"🕒 Minutos",marcar:"☑️ Solo marcar",skill:"🪜 Skill con niveles"};
+const VAL_LBL={peso:"Reps",reps:"Reps",seg:"Seg",min:"Minutos"};
+const SS_TXT="superserie con la siguiente";
+// "3 × 10-12 seg · nota · superserie con la siguiente" → {sets,val,unit,nota,ss}
+function parseDose(d){
+  d=String(d||"");const parts=d.split(" · ");let sets=null,val="",unit=null,rest=parts;
+  const m=parts[0].match(/^(\d+)\s*[×x]\s*(\d+(?:\s*-\s*\d+)?|máx)\s*(seg|min)?/);
+  if(m){sets=+m[1];val=m[2].replace(/\s/g,'');unit=m[3]||null;rest=parts.slice(1);if(m[0].length<parts[0].length)rest=[parts[0].slice(m[0].length).trim(),...rest].filter(Boolean);}
+  else{const mm=parts[0].match(/^(\d+(?:-\d+)?)\s*min$/);if(mm){val=mm[1];unit="min";rest=parts.slice(1);}}
+  const ss=rest.some(x=>x.trim()===SS_TXT), nota=rest.filter(x=>x.trim()!==SS_TXT).join(" · ").trim();
+  return {sets,val,unit,nota,ss};
+}
+function buildDose(t,f){
+  let d="";
+  if(t==="peso"||t==="reps")d=`${f.sets||3} × ${f.val||10}`;
+  else if(t==="seg")d=`${f.sets||3} × ${f.val||20} seg`;
+  else if(t==="min")d=`${f.val||10} min`;
+  else if(t==="marcar")return (f.nota||"").trim();
+  const extra=[f.nota&&f.nota.trim(),(f.ss&&t!=="min")?SS_TXT:null].filter(Boolean);
+  return [d,...extra].filter(Boolean).join(" · ");
+}
+function editTipo(ex){return ex.skill?"skill":exType(ex);}
+// Valores recomendados de la biblioteca (para agregar a una rutina)
+function libRec(n){
+  const e=LIB[n]||{};if(e.rec)return Object.assign({},e.rec);
+  for(const R of Object.values(DEFAULT_ROUTINES))for(const bl of R.blocks)for(const ex of bl.ex)if(ex.n===n){
+    const t=editTipo(ex),p=parseDose(ex.d);
+    return {tipo:t,sets:p.sets||3,val:p.val||"10",nota:t==="marcar"?(ex.d||""):p.nota,rest:REST[n]??(ex.log?90:30)};}
+  return {tipo:e.skill?"skill":"peso",sets:3,val:"10",nota:"",rest:REST[n]??90};
+}
 // Descanso por defecto: 90 s en ejercicios de fuerza, 30 s en los de calentamiento/técnica
-function restOf(n){if(REST[n]!=null)return REST[n];const ex=exByName(n);return ex&&!ex.log?30:90;}
+function restOf(n){const ex=exByName(n);if(ex&&ex.rest!=null)return ex.rest;const e=LIB[n];if(e&&e.rec&&e.rec.rest!=null)return e.rec.rest;if(REST[n]!=null)return REST[n];return ex&&!ex.log?30:90;}
 function logExs(){const all=[];data.routines[currentTab].blocks.forEach(bl=>bl.ex.forEach(ex=>{if(canLog(ex))all.push(ex);}));return all;}
 function setsLeft(ex){return exMeta(ex).nSets-(((draft[ex.n]||{}).sets)||[]).length;}
 // Superserie: la dosis dice "superserie con la siguiente" → se alterna con el ejercicio siguiente sin descanso entre ambos
@@ -873,7 +985,7 @@ function firstActive(){
 
 function bindRoutine(){
   const et=document.getElementById("editToggle");
-  if(et)et.onclick=()=>{editMode=!editMode;draft={};cur={};activeEx=null;render();};
+  if(et)et.onclick=()=>{editMode=!editMode;draft={};cur={};activeEx=null;edOpen={};addOpen=null;render();};
   const sd=document.getElementById("sessDate");
   if(sd)sd.onchange=()=>{sessionDate=sd.value||todayStr();};
   main.querySelectorAll("[data-info]").forEach(el=>{el.onclick=()=>openInfo(el.dataset.info);});
@@ -903,19 +1015,44 @@ function bindRoutine(){
     return;
   }
   const R=data.routines[currentTab];
+  const at=k=>{const p=k.split("_").map(Number);return [R.blocks[p[0]],p[1],p[0]];};
+  const click=(attr,fn)=>main.querySelectorAll(`[data-${attr}]`).forEach(el=>{el.onclick=()=>fn(el.dataset[attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase())],el);});
   main.querySelectorAll("[data-btitle]").forEach(el=>{el.oninput=()=>{R.blocks[+el.dataset.btitle].t=el.value;save();};});
-  main.querySelectorAll("[data-en]").forEach(el=>{el.oninput=()=>{const p=el.dataset.en.split("_").map(Number);R.blocks[p[0]].ex[p[1]].n=el.value;save();};});
-  main.querySelectorAll("[data-ed]").forEach(el=>{el.oninput=()=>{const p=el.dataset.ed.split("_").map(Number);R.blocks[p[0]].ex[p[1]].d=el.value;save();};});
-  main.querySelectorAll("[data-el]").forEach(el=>{el.onchange=()=>{const p=el.dataset.el.split("_").map(Number);R.blocks[p[0]].ex[p[1]].log=el.checked;save();};});
-  main.querySelectorAll("[data-del]").forEach(el=>{
-    el.onclick=()=>{const p=el.dataset.del.split("_").map(Number);
-      if(confirm("¿Borrar este ejercicio?")){R.blocks[p[0]].ex.splice(p[1],1);save();render();}};
+  const swap=(arr,i,j)=>{if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];edOpen={};save();render();};
+  click("bup",b=>swap(R.blocks,+b,+b-1));
+  click("bdn",b=>swap(R.blocks,+b,+b+1));
+  click("bdel",b=>{if(confirm("¿Borrar este bloque completo?")){R.blocks.splice(+b,1);edOpen={};save();render();}});
+  click("up",k=>{const [bl,i]=at(k);swap(bl.ex,i,i-1);});
+  click("dn",k=>{const [bl,i]=at(k);swap(bl.ex,i,i+1);});
+  click("del",k=>{const [bl,i]=at(k);if(confirm("¿Quitar este ejercicio de la rutina?")){bl.ex.splice(i,1);edOpen={};save();render();}});
+  click("tog",k=>{edOpen[k]=!edOpen[k];render();});
+  click("settype",v=>{const [k,t]=v.split("|"),[bl,i]=at(k);setType(bl.ex[i],t);save();render();});
+  main.querySelectorAll("[data-f]").forEach(el=>{
+    const handler=()=>{const [k,fld]=el.dataset.f.split("|"),[bl,i]=at(k);applyField(bl.ex[i],fld,el.type==="checkbox"?el.checked:el.value);save();};
+    el.onchange=handler;if(el.type==="text")el.oninput=handler;
   });
-  main.querySelectorAll("[data-addex]").forEach(el=>{
-    el.onclick=()=>{const b=+el.dataset.addex;R.blocks[b].ex.push({n:"Nuevo ejercicio",d:"",log:true});save();render();};
+  // Agregar ejercicio desde la biblioteca
+  click("addopen",b=>{addOpen=+b;addPick=null;addF=null;addTypeOpen=false;render();});
+  click("addcancel",()=>{addOpen=null;addPick=null;addF=null;render();});
+  main.querySelectorAll("[data-addsel]").forEach(el=>{el.onchange=()=>{addPick=el.value;addF=libRec(addPick);addTypeOpen=false;render();};});
+  click("addtog",()=>{addTypeOpen=!addTypeOpen;render();});
+  click("addtype",t=>{const r=libRec(addPick);addF.tipo=t;if(t==="seg"&&!/^\d/.test(addF.val||""))addF.val="20";if(t==="min")addF.val=addF.val||"10";if(r.tipo!==t&&t!=="marcar"&&t!=="skill"&&t!=="min"&&t!=="seg")addF.val=r.val||"10";render();});
+  main.querySelectorAll("[data-af]").forEach(el=>{
+    const handler=()=>{const fld=el.dataset.af,v=el.type==="checkbox"?el.checked:el.value;
+      if(fld==="sets")addF.sets=parseInt(v,10)||addF.sets;else if(fld==="rest")addF.rest=parseInt(v,10);else if(fld==="lvl"){data.skillLv=data.skillLv||{};data.skillLv[addPick]=+v;save();}else addF[fld]=v;};
+    el.onchange=handler;if(el.type==="text")el.oninput=handler;
+  });
+  click("addgo",b=>{
+    if(!addPick)return;
+    if(exByName(addPick)){toast("Ese ejercicio ya está en esta rutina");return;}
+    const t=addF.tipo, ex={n:addPick};
+    if(t==="skill"){ex.skill=true;ex.log=true;}
+    else{ex.tipo=t;ex.log=t!=="marcar";ex.d=buildDose(t,addF);}
+    if(addF.rest!=null&&!isNaN(addF.rest))ex.rest=addF.rest;
+    R.blocks[+b].ex.push(ex);addOpen=null;addPick=null;addF=null;save();render();toast("Agregado ✅ "+ex.n);
   });
   const ab=document.getElementById("addBlock");
-  if(ab)ab.onclick=()=>{R.blocks.push({t:"NUEVO BLOQUE",ex:[{n:"Nuevo ejercicio",d:"",log:true}]});save();render();};
+  if(ab)ab.onclick=()=>{R.blocks.push({t:"NUEVO BLOQUE",ex:[]});save();render();};
   const rs=document.getElementById("restore");
   if(rs)rs.onclick=()=>{if(confirm("Esto devuelve esta rutina a su versión original. ¿Seguro?")){
     data.routines[currentTab]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[currentTab]));save();render();toast("Rutina restaurada ↺");}};
@@ -945,7 +1082,7 @@ function goTab(t){
   if(!editMode && ROUTINE_TABS.includes(currentTab) && Object.values(draft).some(v=>v.done)){
     if(!confirm("Tienes ejercicios marcados sin guardar. ¿Cambiar de todos modos?")) return;
   }
-  draft={};cur={};activeEx=null;editMode=false;sessionDate=todayStr();currentTab=t;render();window.scrollTo(0,0);
+  draft={};cur={};activeEx=null;editMode=false;edOpen={};addOpen=null;libForm=null;sessionDate=todayStr();currentTab=t;render();window.scrollTo(0,0);
 }
 function quickLog(tipo){
   const note=prompt(tipo==="handstand"?"🤸 Clase de handstand · ¿algo que anotar? (opcional)":"🧗 Escalada · ¿algo que anotar? (opcional)","");
@@ -1089,20 +1226,97 @@ function renderHoy(){
 }
 
 /* ---------- BIBLIOTECA ---------- */
-function libHtml(n,e,withTitle){
+function libHtml(n,e,withTitle,actions){
   return `${withTitle?`<h2>${esc(n)}</h2><div class="small">${esc(e.cat)} · ${esc(e.musc)}</div>`:''}
-    ${e.niveles?`<h4>Progresión (niveles)</h4><ol>${e.niveles.map(l=>`<li><b>${esc(l.n)}</b> · ${esc(l.d)}</li>`).join("")}</ol>`:''}
-    <h4>Cómo se hace</h4><ol>${e.pasos.map(p=>`<li>${esc(p)}</li>`).join("")}</ol>
+    ${e.niveles?`<h4>Progresión (niveles)</h4><ol>${e.niveles.map((l,i)=>`<li${i===skillLv(n)?' class="curlv"':''}><b>${esc(l.n)}</b> · ${esc(l.d)}${i===skillLv(n)?' ← tu nivel':''}</li>`).join("")}</ol>`:''}
+    ${(e.pasos||[]).length?`<h4>Cómo se hace</h4><ol>${e.pasos.map(p=>`<li>${esc(p)}</li>`).join("")}</ol>`:''}
     ${e.fij&&e.fij.length?`<h4>Fíjate en</h4><ul>${e.fij.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`:''}
     ${e.err&&e.err.length?`<h4>Errores comunes</h4><ul>${e.err.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`:''}
     ${e.alt?`<h4>Si no está la máquina</h4><p>${esc(e.alt)}</p>`:''}
     ${e.rod?`<div class="knee">🦵 <b>Tu rodilla:</b> ${esc(e.rod)}</div>`:''}
     ${e.codo?`<div class="knee">💪 <b>Tu codo:</b> ${esc(e.codo)}</div>`:''}
-    <a class="vid" href="${videoLink(e.q)}" target="_blank" rel="noopener">▶ Ver videos de la técnica</a>`;
+    <a class="vid" href="${videoLink(e.q||n+' técnica')}" target="_blank" rel="noopener">▶ Ver videos de la técnica</a>
+    ${actions?`<div class="libact"><button class="edlink" data-ledit="${esc(n)}">✏️ Editar</button><button class="edlink danger" data-ldel="${esc(n)}">🗑️ Borrar</button></div>`:''}`;
+}
+let libForm=null;  // {orig: nombre o null si es nuevo, f: campos del formulario}
+function libFormFrom(n){
+  const e=LIB[n]||{},r=libRec(n);
+  return {orig:n||null,f:{n:n||"",cat:e.cat||"",musc:e.musc||"",tipo:n?r.tipo:"peso",sets:r.sets||3,val:r.val||"10",rest:r.rest??90,nota:r.nota||"",
+    pasos:(e.pasos||[]).join("\n"),fij:(e.fij||[]).join("\n"),err:(e.err||[]).join("\n"),alt:e.alt||"",rod:e.rod||"",codo:e.codo||"",
+    niveles:(e.niveles||[]).map(l=>{const p=parseDose(l.d);return {n:l.n,sets:p.sets||3,t:l.t||(p.unit==="seg"?"seg":"reps"),val:p.val||""};})}};
+}
+function libFormHtml(){
+  const f=libForm.f,cats=[...new Set(Object.values(LIB).map(e=>e.cat))];
+  const tx=(fld,lbl,ph)=>`<label class="edfull">${lbl}<textarea data-lf="${fld}" rows="3" placeholder="${ph||''}">${esc(f[fld])}</textarea></label>`;
+  const ip=(fld,lbl,ph,mode)=>`<label class="edfull">${lbl}<input type="text" ${mode?`inputmode="${mode}"`:''} data-lf="${fld}" value="${esc(f[fld])}" placeholder="${ph||''}"></label>`;
+  let h=`<div class="card"><h3>${libForm.orig?'✏️ Editar ejercicio':'➕ Nuevo ejercicio'}</h3>
+    ${ip("n","Nombre del ejercicio","Sentadilla goblet")}
+    <label class="edfull">Categoría<input type="text" list="catlist" data-lf="cat" value="${esc(f.cat)}" placeholder="Piernas"></label><datalist id="catlist">${cats.map(c=>`<option value="${esc(c)}">`).join("")}</datalist>
+    ${ip("musc","Músculos","Cuádriceps y glúteos")}
+    <div class="small" style="margin-top:8px">Tipo</div>
+    <div class="chips">${Object.keys(TIPOS).map(k=>`<button class="chip2 ${k===f.tipo?'on':''}" data-lftype="${k}">${TIPOS[k]}</button>`).join("")}</div>`;
+  if(f.tipo==="skill"){
+    h+=`<div class="edgrid"><label>⏸️ Descanso (s)<input type="text" inputmode="numeric" data-lf="rest" value="${esc(f.rest)}"></label></div>
+      <div class="small" style="margin-top:8px">Niveles de progresión</div>
+      ${f.niveles.map((l,i)=>`<div class="lvrow"><span>${i+1}</span>
+        <input type="text" data-lv="${i}|n" value="${esc(l.n)}" placeholder="Nombre del nivel">
+        <input type="text" inputmode="numeric" data-lv="${i}|sets" value="${esc(l.sets)}" placeholder="Series">
+        <select data-lv="${i}|t">${[["reps","reps"],["seg","seg"],["peso","kg+reps"]].map(([v,t])=>`<option value="${v}" ${l.t===v?'selected':''}>${t}</option>`).join("")}</select>
+        <input type="text" data-lv="${i}|val" value="${esc(l.val)}" placeholder="3-5">
+        <button class="trash" data-lvdel="${i}">🗑️</button></div>`).join("")}
+      <button class="edlink" data-lvadd="1">+ agregar nivel</button>`;
+  }else if(f.tipo==="marcar"){
+    h+=ip("nota","Detalle recomendado","2 min · 10 repeticiones");
+  }else{
+    h+=`<div class="small" style="margin-top:8px">Recomendado</div><div class="edgrid">
+      ${f.tipo!=="min"?`<label>Series<input type="text" inputmode="numeric" data-lf="sets" value="${esc(f.sets)}"></label>`:''}
+      <label>${VAL_LBL[f.tipo]}<input type="text" data-lf="val" value="${esc(f.val)}"></label>
+      ${f.tipo!=="min"?`<label>⏸️ Desc. (s)<input type="text" inputmode="numeric" data-lf="rest" value="${esc(f.rest)}"></label>`:''}</div>`;
+  }
+  h+=tx("pasos","Cómo se hace (un paso por línea)")+tx("fij","Fíjate en (uno por línea)")+tx("err","Errores comunes (uno por línea)")
+    +ip("alt","Si no está la máquina (opcional)")+ip("rod","🦵 Nota rodilla (opcional)")+ip("codo","💪 Nota codo (opcional)")
+    +`<button class="tile th-am" data-lfsave="1" style="margin-top:12px;width:100%">Guardar en la biblioteca</button>
+      <button class="edlink" data-lfcancel="1" style="margin-top:6px">cancelar</button></div>`;
+  return h;
+}
+function saveLibForm(){
+  const f=libForm.f,n=f.n.trim();
+  if(!n){toast("Escribe el nombre del ejercicio ✏️");return;}
+  if(n!==libForm.orig&&LIB[n]){toast("Ya existe un ejercicio con ese nombre");return;}
+  const lines=s=>String(s||"").split("\n").map(x=>x.trim()).filter(Boolean);
+  const old=libForm.orig?LIB[libForm.orig]:{};
+  const e={cat:f.cat.trim()||"Otros",musc:f.musc.trim()||"—",pasos:lines(f.pasos),fij:lines(f.fij),err:lines(f.err),
+    q:old&&old.q&&n===libForm.orig?old.q:n+" técnica"};
+  if(f.alt.trim())e.alt=f.alt.trim();if(f.rod.trim())e.rod=f.rod.trim();if(f.codo.trim())e.codo=f.codo.trim();
+  const rest=parseInt(f.rest,10);
+  if(f.tipo==="skill"){
+    e.skill=true;
+    e.niveles=f.niveles.filter(l=>l.n.trim()).map(l=>{const d=`${parseInt(l.sets,10)||3} × ${l.val||'10'}${l.t==="seg"?' seg':''}`;return l.t==="peso"?{n:l.n.trim(),d,t:"peso"}:{n:l.n.trim(),d};});
+    if(!e.niveles.length){toast("Agrega al menos un nivel");return;}
+    e.rec={tipo:"skill",rest:isNaN(rest)?90:rest};
+  }else e.rec={tipo:f.tipo,sets:parseInt(f.sets,10)||3,val:String(f.val||"10").replace(/\s/g,''),nota:f.tipo==="marcar"?f.nota:"",rest:isNaN(rest)?90:rest};
+  data.libEdits=data.libEdits||{};
+  if(libForm.orig&&libForm.orig!==n){
+    // Cambio de nombre: se actualiza en las rutinas y en el nivel guardado
+    if(LIB_BASE[libForm.orig])data.libEdits[libForm.orig]=null;else delete data.libEdits[libForm.orig];
+    Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n===libForm.orig)ex.n=n;})));
+    if(data.skillLv&&data.skillLv[libForm.orig]!=null){data.skillLv[n]=data.skillLv[libForm.orig];delete data.skillLv[libForm.orig];}
+  }
+  data.libEdits[n]=e;buildLib();save();libForm=null;toast("Guardado en la biblioteca 📚");renderLib();
+}
+function deleteLib(n){
+  const inR=Object.entries(data.routines).filter(([t,R])=>R.blocks.some(bl=>bl.ex.some(ex=>ex.n===n))).map(([t,R])=>R.nombre.split(' · ')[0]);
+  if(!confirm(inR.length?`"${n}" está en ${inR.join(" y ")}.\n\n¿Borrarlo de la biblioteca y quitarlo también de esas rutinas? Tu historial se conserva.`:`¿Borrar "${n}" de la biblioteca?`))return;
+  Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>{bl.ex=bl.ex.filter(ex=>ex.n!==n);}));
+  data.libEdits=data.libEdits||{};
+  if(LIB_BASE[n])data.libEdits[n]=null;else delete data.libEdits[n];
+  buildLib();save();toast("Borrado 🗑️");renderLib();
 }
 function renderLib(){
+  if(libForm){main.innerHTML=libFormHtml();bindLibForm();return;}
   const cats={};Object.entries(LIB).forEach(([n,e])=>{(cats[e.cat]=cats[e.cat]||[]).push([n,e]);});
-  let html=`<input class="search" id="libSearch" placeholder="🔍 Buscar ejercicio o músculo…">
+  let html=`<button class="tile th-am" id="libNew" style="width:100%;margin-bottom:12px">➕ Agregar ejercicio</button>
+  <input class="search" id="libSearch" placeholder="🔍 Buscar ejercicio o músculo…">
   <div class="card"><h3>📐 Cómo elegir el peso</h3>
     <p>Elige un peso con el que termines la serie sintiendo que <b>te quedaban 1-3 reps</b> (esfuerzo 7-9 de 10).</p>
     <p><b>Doble progresión:</b> si el rango es 3 × 10 y completas 10-10-10 con buena técnica, la próxima vez sube lo mínimo (1-2 kg) y vuelve a construir. La app te avisa con ⬆️.</p>
@@ -1111,16 +1325,32 @@ function renderLib(){
   Object.entries(cats).forEach(([c,arr])=>{
     html+=`<div class="cat" data-catname="${esc(c)}">${esc(c)}</div>`;
     arr.forEach(([n,e])=>{
-      html+=`<details class="item" data-search="${esc((n+" "+e.musc+" "+e.cat).toLowerCase())}"><summary><span>${esc(n)}<small>${esc(e.musc)}</small></span></summary><div class="ibody">${libHtml(n,e,false)}</div></details>`;
+      html+=`<details class="item" data-search="${esc((n+" "+e.musc+" "+e.cat).toLowerCase())}"><summary><span>${esc(n)}<small>${esc(e.musc)}</small></span></summary><div class="ibody">${libHtml(n,e,false,true)}</div></details>`;
     });
   });
   html+=`</div>`;
   main.innerHTML=html;
+  document.getElementById("libNew").onclick=()=>{libForm=libFormFrom(null);renderLib();window.scrollTo(0,0);};
+  main.querySelectorAll("[data-ledit]").forEach(b=>b.onclick=()=>{libForm=libFormFrom(b.dataset.ledit);renderLib();window.scrollTo(0,0);});
+  main.querySelectorAll("[data-ldel]").forEach(b=>b.onclick=()=>deleteLib(b.dataset.ldel));
   document.getElementById("libSearch").oninput=ev=>{
     const q=ev.target.value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
     main.querySelectorAll("details.item").forEach(el=>{el.style.display=el.dataset.search.normalize("NFD").replace(/[̀-ͯ]/g,"").includes(q)?"":"none";});
     main.querySelectorAll(".cat").forEach(el=>{el.style.display=q?"none":"";});
   };
+}
+
+function bindLibForm(){
+  const f=libForm.f;
+  main.querySelectorAll("[data-lf]").forEach(el=>{el.oninput=()=>{f[el.dataset.lf]=el.value;};});
+  main.querySelectorAll("[data-lftype]").forEach(b=>b.onclick=()=>{f.tipo=b.dataset.lftype;
+    if(f.tipo==="skill"&&!f.niveles.length)f.niveles=[{n:"",sets:3,t:"reps",val:""}];
+    if(f.tipo==="seg"&&!/seg/.test(f.val)&&+f.val<15)f.val="20";renderLib();});
+  main.querySelectorAll("[data-lv]").forEach(el=>{const h=()=>{const [i,k]=el.dataset.lv.split("|");f.niveles[+i][k]=el.value;};el.oninput=h;el.onchange=h;});
+  main.querySelectorAll("[data-lvdel]").forEach(b=>b.onclick=()=>{f.niveles.splice(+b.dataset.lvdel,1);renderLib();});
+  main.querySelectorAll("[data-lvadd]").forEach(b=>b.onclick=()=>{f.niveles.push({n:"",sets:3,t:"reps",val:""});renderLib();});
+  main.querySelector("[data-lfsave]").onclick=saveLibForm;
+  main.querySelector("[data-lfcancel]").onclick=()=>{libForm=null;renderLib();};
 }
 
 /* ---------- PROGRESO ---------- */
