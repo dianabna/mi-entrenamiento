@@ -202,6 +202,8 @@
   .timer-presets button.sel{border-color:var(--teal);background:var(--teal-light);color:var(--teal)}
   .timer-display{font-size:58px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:1px;margin:4px 0 14px;color:var(--ink)}
   .timer-display.warn{color:var(--terra)}
+  .timer-display.prep{color:var(--teal)}
+  .tm-phase{text-align:center;font-size:15px;font-weight:800;color:var(--teal);min-height:20px;text-transform:uppercase;letter-spacing:1px}
   .timer-ctrls{display:flex;gap:10px}
   .timer-ctrls button{flex:1;border:none;padding:15px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
   .tc-main{background:var(--teal);color:#fff}
@@ -262,6 +264,7 @@
     <button data-sec="300">5 min</button>
     <input id="tmCustom" type="text" inputmode="decimal" placeholder="otro (min)" style="width:92px;border:1px solid var(--line);border-radius:20px;padding:8px 10px;font-size:13px;text-align:center;font-family:inherit">
   </div>
+  <div class="tm-phase" id="tmPhase"></div>
   <div class="timer-display" id="tmDisplay">01:30</div>
   <div class="timer-ctrls">
     <button class="tc-main" id="tmStart">Iniciar</button>
@@ -1147,66 +1150,93 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
 /* ---------- CRONÓMETRO ---------- */
 (function(){
   const disp=document.getElementById("tmDisplay");
+  const phaseEl=document.getElementById("tmPhase");
   const presets=document.getElementById("tmPresets");
   const startBtn=document.getElementById("tmStart");
   const resetBtn=document.getElementById("tmReset");
+  const PREP_MS=5000;
   let mode="cd", running=false, iv=null;
   let swElapsed=0, swStart=0;
   let cdSet=90000, cdEnd=0, cdRemain=90000;
+  let phase="work";      // "prep" (5 s de preparación) o "work"
+  let lastSec=null;      // para los tics de 3-2-1
   let restMs=90000, label="Descanso";
   const title=document.getElementById("tmTitle");
   function setLabel(l){label=l;title.textContent="⏱️ "+l;}
-  let actx=null;
+  let actx=null, wake=null;
 
   function ensureAudio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();}catch(e){}}
-  function beep(){try{ensureAudio();for(let i=0;i<3;i++){const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=880;const t=actx.currentTime+i*0.28;g.gain.setValueAtTime(0.35,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.22);o.start(t);o.stop(t+0.22);}}catch(e){}if(navigator.vibrate)navigator.vibrate([200,100,200,100,300]);}
+  function tone(freq,dur,delay,vol){try{ensureAudio();const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);
+    o.frequency.value=freq;const t=actx.currentTime+(delay||0);g.gain.setValueAtTime(vol||0.35,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);o.start(t);o.stop(t+dur);}catch(e){}}
+  // Sonidos: tic (3-2-1), inicio (dos tonos que suben), fin (tres tonos largos)
+  function sndTick(){tone(660,0.12,0,0.25);}
+  function sndStart(){tone(880,0.15,0);tone(1320,0.3,0.17);if(navigator.vibrate)navigator.vibrate(150);}
+  function sndEnd(){for(let i=0;i<3;i++)tone(i<2?988:660,0.28,i*0.32);if(navigator.vibrate)navigator.vibrate([250,100,250,100,400]);}
+  function keepAwake(on){try{if(on&&!wake&&navigator.wakeLock)navigator.wakeLock.request("screen").then(w=>{wake=w;}).catch(()=>{});
+    if(!on&&wake){wake.release();wake=null;}}catch(e){}}
+
   function fmt(ms,ceil){let s=ceil?Math.ceil(ms/1000):Math.floor(ms/1000);if(s<0)s=0;const m=Math.floor(s/60);s=s%60;return String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');}
   const fab=document.getElementById("timerFab");
   function draw(){
     const showFab=running&&mode==="cd";
-    fab.textContent=showFab?fmt(cdRemain,true):"⏱️";fab.style.fontSize=showFab?"14px":"24px";fab.style.fontWeight="800";
-    if(mode==="sw"){disp.textContent=fmt(swElapsed,false);disp.classList.remove("warn");}
-    else{disp.textContent=fmt(cdRemain,true);disp.classList.toggle("warn",cdRemain<=5000&&cdRemain>0);}
+    fab.textContent=showFab?(phase==="prep"?"⏳"+Math.ceil(cdRemain/1000):fmt(cdRemain,true)):"⏱️";fab.style.fontSize=showFab?"14px":"24px";fab.style.fontWeight="800";
+    if(mode==="sw"){disp.textContent=fmt(swElapsed,false);disp.classList.remove("warn","prep");phaseEl.textContent="";return;}
+    disp.textContent=phase==="prep"?String(Math.max(1,Math.ceil(cdRemain/1000))):fmt(cdRemain,true);
+    disp.classList.toggle("prep",phase==="prep");
+    disp.classList.toggle("warn",phase==="work"&&cdRemain<=5000&&cdRemain>0);
+    phaseEl.textContent=phase==="prep"?"Prepárate…":(running&&label!=="Descanso"&&label!=="Temporizador"?"¡Vamos!":"");
   }
   function tick(){
-    if(mode==="sw"){swElapsed=Date.now()-swStart;draw();}
-    else{cdRemain=cdEnd-Date.now();if(cdRemain<=0){cdRemain=0;draw();stop();beep();setTimeout(beep,1200);
-      toast(label==="Descanso"?"⏰ ¡A la siguiente serie!":"✅ "+label+": ¡tiempo!");cdRemain=cdSet;setTimeout(draw,800);return;}draw();}
+    if(mode==="sw"){swElapsed=Date.now()-swStart;draw();return;}
+    cdRemain=cdEnd-Date.now();
+    const sec=Math.ceil(cdRemain/1000);
+    if(sec!==lastSec&&sec>0&&sec<=3){sndTick();}
+    lastSec=sec;
+    if(cdRemain>0){draw();return;}
+    if(phase==="prep"){                      // termina la preparación: parte el ejercicio
+      phase="work";sndStart();cdRemain=cdSet;cdEnd=Date.now()+cdSet;lastSec=null;draw();return;
+    }
+    cdRemain=0;draw();stop();sndEnd();
+    toast(label==="Descanso"?"⏰ ¡A la siguiente serie!":"✅ "+label+": ¡terminado!");
+    cdRemain=cdSet;setTimeout(draw,900);
   }
   function start(){
-    running=true;startBtn.textContent="Pausar";ensureAudio();
+    running=true;startBtn.textContent="Pausar";ensureAudio();keepAwake(true);
     if(mode==="sw"){swStart=Date.now()-swElapsed;}
-    else{if(cdRemain<=0)cdRemain=cdSet;cdEnd=Date.now()+cdRemain;}
+    else{if(cdRemain<=0){cdRemain=cdSet;phase="work";}cdEnd=Date.now()+cdRemain;lastSec=null;}
     iv=setInterval(tick,100);
   }
-  function stop(){running=false;startBtn.textContent="Iniciar";if(iv){clearInterval(iv);iv=null;}}
-  function reset(){stop();if(mode==="sw"){swElapsed=0;}else{cdRemain=cdSet;}draw();}
+  function stop(){running=false;startBtn.textContent="Iniciar";if(iv){clearInterval(iv);iv=null;}keepAwake(false);}
+  function reset(){stop();phase="work";if(mode==="sw"){swElapsed=0;}else{cdRemain=cdSet;}draw();}
 
   fab.onclick=()=>openSheet("timerSheet");
-  // Descanso automático al marcar una serie
-  function countdown(ms,l){stop();mode="cd";
+  function countdown(ms,l,prep){stop();mode="cd";
     document.querySelectorAll("#timerSheet [data-tm]").forEach(x=>x.classList.toggle("active",x.dataset.tm==="cd"));
-    presets.style.display="flex";setLabel(l);cdSet=ms;cdRemain=ms;start();}
-  window.TIMER={rest(){countdown(restMs,"Descanso");},
-    countdown(ms,l){countdown(ms,l);toast("▶ "+l+" · "+fmt(ms,true));}};
+    presets.style.display="flex";setLabel(l);cdSet=ms;
+    phase=prep?"prep":"work";cdRemain=prep?PREP_MS:ms;start();draw();}
+  window.TIMER={
+    // Descanso automático al marcar una serie: sin preparación, sin abrir la hoja
+    rest(){countdown(restMs,"Descanso",false);},
+    // ▶ de un ejercicio: abre el cronómetro, 5 s de preparación y luego el tiempo del ejercicio
+    countdown(ms,l){countdown(ms,l,true);openSheet("timerSheet");}};
   startBtn.onclick=()=>{running?stop():start();};
   resetBtn.onclick=reset;
 
   document.querySelectorAll("#timerSheet [data-tm]").forEach(b=>{
-    b.onclick=()=>{stop();mode=b.dataset.tm;
+    b.onclick=()=>{stop();mode=b.dataset.tm;phase="work";
       document.querySelectorAll("#timerSheet [data-tm]").forEach(x=>x.classList.toggle("active",x===b));
       presets.style.display=mode==="cd"?"flex":"none";
       if(mode==="cd"){cdRemain=cdSet;}else{swElapsed=0;}
       draw();};
   });
   document.querySelectorAll("#tmPresets [data-sec]").forEach(b=>{
-    b.onclick=()=>{cdSet=(+b.dataset.sec)*1000;cdRemain=cdSet;stop();
+    b.onclick=()=>{cdSet=(+b.dataset.sec)*1000;cdRemain=cdSet;phase="work";stop();
       if(+b.dataset.sec<=120){restMs=cdSet;setLabel("Descanso");}else setLabel("Temporizador");
       document.querySelectorAll("#tmPresets [data-sec]").forEach(x=>x.classList.toggle("sel",x===b));
       draw();};
   });
   document.getElementById("tmCustom").onchange=e=>{const v=parseFloat(e.target.value.replace(',','.'));if(isNaN(v)||v<=0)return;
-    stop();cdSet=Math.round(v*60)*1000;cdRemain=cdSet;setLabel("Temporizador");
+    stop();cdSet=Math.round(v*60)*1000;cdRemain=cdSet;phase="work";setLabel("Temporizador");
     document.querySelectorAll("#tmPresets [data-sec]").forEach(x=>x.classList.remove("sel"));draw();};
   draw();
 })();
