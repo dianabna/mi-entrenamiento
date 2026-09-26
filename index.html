@@ -1151,13 +1151,6 @@ function renderHoy(){
     const that=ss.filter(x=>dstr(new Date(x.date))===lastD);
     lastHtml=`<div class="lastday">${fmtDate(ss[ss.length-1].date)}</div>`+[...new Set(that.map(x=>sessName(x.tipo)))].map(t=>`<div class="wk"><span>${esc(t)}</span></div>`).join("");}
 
-  const rem=[];
-  const lastM=data.medidas.length?[...data.medidas].sort((a,b)=>a.date.localeCompare(b.date)).pop().date:null;
-  const daysM=lastM?Math.floor((new Date(todayStr())-new Date(lastM))/86400000):null;
-  if(daysM===null||daysM>=7)rem.push("📏 Toca registrar peso y cintura");
-  const daysF=data.lastFoto?Math.floor((new Date(todayStr())-new Date(data.lastFoto))/86400000):null;
-  if(daysF===null||daysF>=14)rem.push("📸 Toca foto de progreso");
-
   // Semanas para el selector de Fitia: la actual y 11 anteriores
   data.fitia=data.fitia||{};
   const thisMon=mondayOf(new Date());if(!fitiaWeek)fitiaWeek=thisMon;
@@ -1179,8 +1172,7 @@ function renderHoy(){
     <div class="tile th-am" id="qHs">🤸 + Clase handstand</div>
     <div class="tile th-am" id="qEs">🧗 + Escalada</div>
   </div>
-  <div class="card"><h3>⏮️ Último entrenamiento</h3>${lastHtml}</div>
-  <div class="tile th-am linkcard" data-go="hist"><span>📊 Historial</span><span class="arrow">›</span></div>
+  <div class="card"><h3>⏮️ Último entrenamiento</h3>${lastHtml}<button class="ulink" data-go="hist">📊 Ver historial</button></div>
   <div class="card">
     <h3>📆 Esta semana</h3>
     <div class="wk"><span>🏋️ Gym</span><div class="dots">${dots}</div></div>
@@ -1189,9 +1181,10 @@ function renderHoy(){
     <div class="wk"><span>🧗 Escalada</span><b>${esW}</b></div>
     <div class="wk"><span>🧘 Yoga</span><b>${yoW}</b></div>
   </div>
-  <div class="navcard th-am" data-go="prog"><div class="ttl"><span>📈 Progreso</span><span>›</span></div>
-    ${rem.map(r=>`<div class="rm">${r}</div>`).join("")||'<div class="rm">Medidas y fotos al día ✅</div>'}</div>
-  <div class="tile th-am linkcard" data-go="lib"><span>📚 Biblioteca de ejercicios</span><span class="arrow">›</span></div>
+  <div class="tiles t2">
+    <div class="tile th-am" data-go="prog">📈 Progreso</div>
+    <div class="tile th-am" data-go="lib">📚 Biblioteca</div>
+  </div>
   <div class="card">
     <h3>🎯 Metas diarias de comida</h3>
     <p><span class="macro">🔥 1.550–1.750 kcal</span><span class="macro">🥚 110–120 g prot</span><span class="macro">🍚 130–170 g carbos</span><span class="macro">🥑 50–60 g grasa</span><span class="macro">💧 2 L agua</span></p>
