@@ -86,7 +86,6 @@
   .playsm{margin-top:6px;border:none;border-radius:9px;padding:6px 10px;font-size:12px;font-weight:800;background:var(--teal-light);color:var(--teal);cursor:pointer}
   .logset{flex:1;border:none;border-radius:10px;padding:11px 8px;font-size:14px;font-weight:800;background:var(--terra);color:#fff;cursor:pointer;white-space:nowrap}
   .logset.extra{background:var(--sand);color:var(--ink);font-size:13px}
-  .openlog{margin-top:8px;border:1px solid var(--terra);background:#fff;color:var(--terra);font-weight:700;font-size:12.5px;border-radius:10px;padding:7px 12px;cursor:pointer}
   .ex.active{background:#fffaf4}
   .lvl{margin-top:5px;width:100%;border:1px solid var(--line);border-radius:9px;padding:6px 8px;font-size:12.5px;font-family:inherit;background:var(--teal-light);color:var(--teal);font-weight:700}
 
@@ -776,11 +775,10 @@ function setsHtml(ex,id,isAct){
   }
   if(m.byTime&&!sets.length)chips=`<span class="chip next">Pendiente</span>`;
   let h=`<div class="sets">${chips}</div>`;
-  if(!isAct)return h+`<button class="openlog" data-act="${id}">${sets.length?'✏️ Seguir registrando':'▸ Registrar series'}</button>`;
   const c=curVals(ex);
   const next=sets.length+1, extra=sets.length>=m.nSets;
   h+=`<div class="setrow">
-    ${m.byTime||!ex.log?'':`<label>kg<input type="text" inputmode="decimal" data-kgi="${id}" value="${c.kg?fmtKg(c.kg):''}" placeholder="0"></label>`}
+    ${m.byTime||m.secs||!ex.log?'':`<label>kg<input type="text" inputmode="decimal" data-kgi="${id}" value="${c.kg?fmtKg(c.kg):''}" placeholder="0"></label>`}
     <label>${m.byTime?'min':(m.unit==='reps'?'reps':'seg')}<input type="text" inputmode="numeric" data-rpi="${id}" value="${c.reps||''}"></label>
     ${m.byTime||m.secs||parseDur(effD(ex))?`<button class="play" data-play="${id}">▶</button>`:''}
     <button class="logset ${extra?'extra':''}" data-logset="${id}">${extra?`+ Extra`:(m.byTime?'✓ Listo':`✓ Serie ${next}`)}</button>
@@ -854,7 +852,7 @@ function bindRoutine(){
         const sec=m.byTime?Math.round(c.reps*60):(m.secs?c.reps:parseDur(effD(ex)));if(!(sec>0))return;
         const k=(((draft[n]||{}).sets)||[]).length+1, name=n.replace('★','').trim();
         const timed=m.byTime||m.secs;
-        TIMER.countdown(sec*1000,timed&&m.nSets>1?`${name} · serie ${k} de ${m.nSets}`:name,timed?()=>logSet(n,run):null);};
+        TIMER.countdown(sec*1000,timed&&m.nSets>1?`${name} · serie ${k} de ${m.nSets}`:name,timed?()=>logSet(n):null);};
       run();});
     on("tmr",v=>{const [sec,...rest]=v.split("|");TIMER.countdown(+sec*1000,rest.join("|"));});
     on("logset",id=>logSet(idMap[id]));
