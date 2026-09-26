@@ -1084,11 +1084,9 @@ function goTab(t){
   }
   draft={};cur={};activeEx=null;editMode=false;edOpen={};addOpen=null;libForm=null;sessionDate=todayStr();currentTab=t;render();window.scrollTo(0,0);
 }
+// Registra de inmediato con la fecha elegida (antes preguntaba una nota y "Cancelar" no guardaba nada)
 function quickLog(tipo){
-  const note=prompt(tipo==="handstand"?"🤸 Clase de handstand · ¿algo que anotar? (opcional)":"🧗 Escalada · ¿algo que anotar? (opcional)","");
-  if(note===null)return;
-  const logs=note.trim()?[{n:"Nota",v:note.trim()}]:[];
-  data.sessions.push({id:Date.now(),date:new Date((sessionDate||todayStr())+'T12:00:00').toISOString(),tipo,count:1,logs});
+  data.sessions.push({id:Date.now(),date:new Date((sessionDate||todayStr())+'T12:00:00').toISOString(),tipo,count:1,logs:[]});
   save();updateStats();render();toast("Registrado ✅ "+fmtShort(sessionDate||todayStr()));
 }
 
