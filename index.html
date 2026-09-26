@@ -808,7 +808,7 @@ function setsHtml(ex,id,isAct){
   const c=curVals(ex);
   const next=sets.length+1, extra=sets.length>=m.nSets;
   h+=`<div class="setrow">
-    ${m.byTime||m.secs||!ex.log?'':`<label>kg<input type="text" inputmode="decimal" data-kgi="${id}" value="${c.kg?fmtKg(c.kg):''}" placeholder="0"></label>`}
+    ${exType(ex)!=='peso'?'':`<label>kg<input type="text" inputmode="decimal" data-kgi="${id}" value="${c.kg?fmtKg(c.kg):''}" placeholder="0"></label>`}
     <label>${m.byTime?'min':(m.unit==='reps'?'reps':'seg')}<input type="text" inputmode="numeric" data-rpi="${id}" value="${c.reps||''}"></label>
     ${m.byTime||m.secs||parseDur(effD(ex))?`<button class="play" data-play="${id}">▶</button>`:''}
     <button class="logset ${extra?'extra':''}" data-logset="${id}">${extra?`+ Extra`:(m.byTime?'✓ Listo':`✓ Serie ${next}`)}</button>
@@ -824,6 +824,16 @@ const REST={
   "Crunch en polea":60,"Elevación de piernas colgada":60,"Oblicuos colgada":60,
   "Plancha":45,"Pallof press":45,"Elevaciones en compresión":45,"Hollow hold":30,
 };
+// Ejercicios de peso corporal: nunca llevan casilla de kg
+const BODYWEIGHT=new Set(["Flexiones inclinadas","Elevación de piernas colgada","Oblicuos colgada","Salida en rueda","Elevaciones en compresión","Hollow hold","Retracción escapular colgada","Flexiones de escápula","Encogimientos de hombros en handstand"]);
+function exType(ex){
+  if(ex.tipo)return ex.tipo;
+  const m=exMeta(ex);
+  if(m.byTime)return "min";
+  if(m.secs)return "seg";
+  if(!canLog(ex))return "marcar";
+  return ex.skill||BODYWEIGHT.has(ex.n)||!ex.log?"reps":"peso";
+}
 function canLog(ex){return !!ex.log||!!target(effD(ex));}
 // Descanso por defecto: 90 s en ejercicios de fuerza, 30 s en los de calentamiento/técnica
 function restOf(n){if(REST[n]!=null)return REST[n];const ex=exByName(n);return ex&&!ex.log?30:90;}
@@ -1358,7 +1368,8 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
     cdRemain=0;stop();draw();sndEnd();
     const isRest=label.startsWith("Descanso"), cb=onDone; onDone=null;
     toast(isRest?"⏰ ¡A la siguiente serie!":"✅ "+label+": ¡terminado!");
-    if(isRest&&autoClose){autoClose=false;clearTimeout(closeT);closeT=setTimeout(closeSheets,1200);}
+    autoClose=false;
+    if(!cb){clearTimeout(closeT);closeT=setTimeout(closeSheets,900);}
     if(cb){cb();                             // la serie con tiempo se registra sola y parte el descanso
       if(!running){cdRemain=cdSet;draw();clearTimeout(closeT);closeT=setTimeout(closeSheets,1200);}   // era la última serie: no hay descanso
       return;}
