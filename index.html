@@ -269,7 +269,7 @@
 <body>
 <header>
   <h1>🏔️ Mi Entrenamiento</h1>
-  <p>Diana · Gym + handstand · San Pedro</p>
+  <p>Diana · Gym + handstand · San Pedro · <span id="appver"></span></p>
   <div class="stats">
     <div class="stat"><b id="s-week">0/3</b><span>🏋️ gym (sem)</span></div>
     <div class="stat"><b id="s-hs">0</b><span>🤸 handstand (sem)</span></div>
@@ -329,7 +329,7 @@ function CAL(){return {t:"🔥 Calentamiento (~5 min)", ex:[
   {n:"Movilidad de hombros y caderas", d:"2 min"},
 ]};}
 function FIN(){return {t:"🚶‍♀️ Cardio (clave para bajar grasa)", ex:[
-  {n:"Caminadora inclinada", d:"12 min · 10-12% · sin agarrarte", log:true},
+  {n:"Bicicleta estática", d:"12 min · resistencia moderada", log:true},
 ]};}
 const APROX={n:"Serie de aproximación", d:"1 serie liviana del primer ejercicio de piernas"};
 
@@ -345,7 +345,7 @@ const DEFAULT_ROUTINES = {
       APROX,
       {n:"Prensa de piernas", d:"3 × 10", log:true},
       {n:"Extensión de cuádriceps", d:"3 × 10 · baja en 3 seg", log:true},
-      {n:"Abductores en máquina", d:"3 × 15", log:true},
+      {n:"Abducción acostada con mancuerna", d:"3 × 15 c/pierna", log:true},
     ]},
     {t:"🔥 Abdomen", ex:[
       {n:"Crunch en polea", d:"3 × 12 · superserie con la siguiente", log:true},
@@ -679,6 +679,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=6;
+const APP_VERSION="versión 6 oct";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -701,7 +702,12 @@ function load(){
   if(!d.routines){d.routines=JSON.parse(JSON.stringify(DEFAULT_ROUTINES));d.routinesVersion=ROUTINES_VERSION;d.planStart=todayStr();}
   return d;
 }
+const SWAPS={"Caminadora inclinada":{n:"Bicicleta estática",d:"12 min · resistencia moderada"},
+  "Abductores en máquina":{n:"Abducción acostada con mancuerna",d:"3 × 15 c/pierna"}};
 function checkRoutinesUpdate(){
+  // El gimnasio no tiene caminadora ni máquina de abductores: se reemplazan en las rutinas guardadas
+  if(!data.migSwaps){Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(ex=>{const w=SWAPS[ex.n];if(w&&!exInRoutine(R,w.n)){ex.n=w.n;ex.d=w.d;delete ex.tipo;}})));
+    data.migSwaps=true;save();}
   // Los colores/emojis de las rutinas se toman siempre del plan actual (sin tocar las ediciones de ejercicios)
   Object.keys(DEFAULT_ROUTINES).forEach(t=>{if(data.routines[t])data.routines[t].emoji=DEFAULT_ROUTINES[t].emoji;});
   if(data.routinesVersion!==ROUTINES_VERSION){
@@ -1004,6 +1010,7 @@ function logSet(n,cont){
   const again=cont&&activeEx===n&&setsLeft(ex)>0?cont:null;
   TIMER.rest(secs*1000,nx?`Descanso · luego ${nx.n.replace('★','').trim()} (serie ${k})`:"Descanso",again);
 }
+function exInRoutine(R,n){return R.blocks.some(bl=>bl.ex.some(e=>e.n===n));}
 function exByName(n){for(const bl of data.routines[currentTab].blocks)for(const ex of bl.ex)if(ex.n===n)return ex;return null;}
 function nextActive(afterName){
   const all=[];data.routines[currentTab].blocks.forEach(bl=>bl.ex.forEach(ex=>{if(canLog(ex))all.push(ex);}));
@@ -1722,6 +1729,7 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
   draw();
 })();
 
+document.getElementById("appver").textContent=APP_VERSION;
 checkRoutinesUpdate();
 updateStats();
 render();
