@@ -1526,6 +1526,23 @@ function progressText(){
   if(lv.length){L.push("","NIVELES DE SKILLS:");lv.forEach(n=>L.push(`- ${n}: nivel ${skillLv(n)+1} (${LIB[n].niveles[skillLv(n)].n})`));}
   return L.join("\n");
 }
+// Respaldo: archivo JSON con todo lo que está en localStorage (las fotos viven aparte, en IndexedDB)
+function downloadBackup(){
+  data.lastBackup=new Date().toISOString();save();
+  const blob=new Blob([JSON.stringify(data,null,1)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`respaldo-entrenamiento-${todayStr()}.json`;
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
+  toast("💾 Respaldo descargado");renderHist();
+}
+function restoreBackup(file){
+  if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{let d;try{d=JSON.parse(r.result);}catch(e){toast("⚠️ Ese archivo no es un respaldo válido");return;}
+    if(!d||!Array.isArray(d.sessions)||!d.routines){toast("⚠️ Ese archivo no es un respaldo de esta app");return;}
+    if(!confirm(`Restaurar este respaldo (${d.sessions.length} sesiones, ${(d.medidas||[]).length} medidas)?\n\nReemplaza los datos que tienes ahora en este teléfono.`))return;
+    data=d;if(!data.medidas)data.medidas=[];save();buildLib();checkRoutinesUpdate();updateStats();toast("✅ Respaldo restaurado");goTab("hoy");};
+  r.readAsText(file);
+}
 function exportProgress(){
   const txt=progressText();
   const fallback=()=>{main.insertAdjacentHTML("afterbegin",`<textarea id="expTxt" style="width:100%;height:220px;margin-bottom:10px;font-size:12px">${esc(txt)}</textarea>`);
@@ -1534,10 +1551,15 @@ function exportProgress(){
 }
 function renderHist(){
   const s=[...data.sessions].sort((a,b)=>new Date(b.date)-new Date(a.date));
-  if(!s.length){main.innerHTML=`<div class="empty">Todavía no registras sesiones.<br>¡Haz tu primer gym y guárdalo! 💪</div>`;return;}
   let html=`<button class="tile th-am" id="exportBtn" style="width:100%;margin-bottom:6px">📤 Copiar mi progreso</button>
-  <p class="small" style="margin:0 0 14px">Copia un resumen de tus sesiones, series, medidas y semanas de Fitia para pegarlo en tu chat con Claude.</p>
+  <p class="small" style="margin:0 0 10px">Copia un resumen de tus sesiones, series, medidas y semanas de Fitia para pegarlo en tu chat con Claude.</p>
+  <div class="card"><h3>💾 Respaldo</h3>
+    <p class="small">Guarda una copia de todos tus datos (sesiones, medidas, Fitia, niveles, rutinas y biblioteca). Las fotos no se incluyen. Hazlo cada cierto tiempo y guarda el archivo en Archivos o en tu correo.</p>
+    <div class="tiles t2" style="margin:8px 0 0"><div class="tile th-am" id="bkDown">⬇️ Descargar respaldo</div>
+    <label class="tile th-am" style="margin:0">⬆️ Restaurar respaldo<input type="file" accept="application/json,.json" id="bkUp" style="display:none"></label></div>
+    ${data.lastBackup?`<p class="small" style="margin-top:8px">Último respaldo: ${fmtDate(data.lastBackup)}</p>`:''}</div>
   <div class="intro" style="margin-bottom:14px">📊 Tu historial · ${data.sessions.length} sesiones registradas</div>`;
+  if(!s.length)html+=`<div class="empty">Todavía no registras sesiones.<br>¡Haz tu primer gym y guárdalo! 💪</div>`;
   s.forEach(sess=>{
     let logs="";(sess.logs||[]).forEach(l=>{logs+=`<div><b>${esc(l.n)}:</b> ${esc(l.v)}</div>`;});
     html+=`<div class="hitem">
@@ -1549,6 +1571,8 @@ function renderHist(){
   });
   main.innerHTML=html;
   document.getElementById("exportBtn").onclick=exportProgress;
+  document.getElementById("bkDown").onclick=downloadBackup;
+  document.getElementById("bkUp").onchange=e=>restoreBackup(e.target.files[0]);
   main.querySelectorAll("[data-del]").forEach(el=>{
     el.onclick=()=>{if(confirm("¿Borrar esta sesión?")){data.sessions=data.sessions.filter(x=>x.id!=el.dataset.del);save();updateStats();renderHist();}};
   });
