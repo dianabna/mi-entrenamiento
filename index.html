@@ -336,64 +336,50 @@ function FIN(){return {t:"🚶‍♀️ Cardio (clave para bajar grasa)", ex:[
 const APROX={n:"Serie de aproximación", d:"1 serie liviana del primer ejercicio de piernas"};
 
 const DEFAULT_ROUTINES = {
-  gymA:{nombre:"Gym A · Empuje + cuádriceps", emoji:"🟪", yoga:false, blocks:[
+  gymA:{nombre:"Gym A · Cuádriceps + abdomen", emoji:"🟪", yoga:false, blocks:[
     CAL(),
-    {t:"🤸 Calistenia", ex:[
-      {n:"Fondos en paralelas", skill:true, log:true},
-      {n:"Flexiones", skill:true, log:true},
-      {n:"Extensión de tríceps en polea", d:"2 × 12 · liviano, cuida el codo", log:true},
-    ]},
-    {t:"🦵 Piernas (prioridad)", ex:[
-      APROX,
-      {n:"Prensa de piernas", d:"3 × 10", log:true},
-      {n:"Extensión de cuádriceps", d:"3 × 10 · baja en 3 seg", log:true},
-      {n:"Abducción acostada con mancuerna", d:"3 × 15 c/pierna", log:true},
-    ]},
-    {t:"🔥 Abdomen", ex:[
-      {n:"Crunch en polea", d:"3 × 12 · superserie con la siguiente", log:true},
-      {n:"Elevación de piernas colgada", d:"3 × 10", log:true},
-    ]},
-    FIN(),
-  ]},
-  gymB:{nombre:"Gym B · Tirón + glúteos y femorales", emoji:"🟧", yoga:false, blocks:[
-    CAL(),
-    {t:"🤸 Calistenia", ex:[
+    {t:"🤸 Skill (5 min)", ex:[
       {n:"Dominadas", skill:true, log:true},
-      {n:"Pull-over", skill:true, log:true},
-      {n:"Face pull", d:"2 × 15 · liviano, postura", log:true},
     ]},
     {t:"🦵 Piernas (prioridad)", ex:[
       APROX,
-      {n:"Peso muerto con mancuernas", d:"3 × 8-10", log:true},
-      {n:"Hip thrust", d:"3 × 10", log:true},
-      {n:"Curl femoral", d:"3 × 12", log:true},
+      {n:"Prensa de piernas", d:"3 × 10", log:true, rest:120},
+      {n:"Extensión de cuádriceps", d:"3 × 10 · baja en 3 seg", log:true, rest:75},
+      {n:"Abducción acostada con mancuerna", d:"3 × 15 c/pierna", log:true, rest:60},
     ]},
-    {t:"🔥 Abdomen", ex:[
-      {n:"Plancha", skill:true, log:true},
-      {n:"Oblicuos colgada", d:"3 × 8 c/lado", log:true},
+    {t:"🔥 Abdomen · superserie de 3", ex:[
+      {n:"Sit-up con disco", d:"3 × 10 · superserie con la siguiente", log:true, tipo:"peso"},
+      {n:"Elevación de piernas acostada", d:"3 × 10 · superserie con la siguiente", log:true, tipo:"reps"},
+      {n:"Tijeras", d:"3 × 20", log:true, tipo:"reps", rest:60},
+    ]},
+    {t:"➕ Opcional (si hay tiempo)", ex:[
+      {n:"Elevación de piernas colgada", d:"2 × 10", log:true, rest:60},
     ]},
     FIN(),
   ]},
-  gymC:{nombre:"Gym C · L-sit + tirón + piernas", emoji:"🩷", yoga:false, blocks:[
+  gymB:{nombre:"Gym B · Glúteos y femorales + abdomen", emoji:"🟧", yoga:false, blocks:[
     CAL(),
-    {t:"🤸 Calistenia", ex:[
-      {n:"L-sit", skill:true, log:true},
-      {n:"Jalón al pecho o dominada asistida", d:"3 × 8", log:true},
-      {n:"Flexiones inclinadas", d:"3 × 10-12", log:true},
+    {t:"🤸 Skill (5 min) + tríceps", ex:[
+      {n:"Fondos en paralelas", skill:true, log:true},
+      {n:"Extensión de tríceps en polea", d:"3 × 12", log:true, rest:60},
     ]},
     {t:"🦵 Piernas (prioridad)", ex:[
       APROX,
-      {n:"Step-up a cajón con mancuernas", d:"3 × 8 c/pierna", log:true},
-      {n:"Peso muerto rumano con mancuernas", d:"3 × 10", log:true},
-      {n:"Extensión de cuádriceps", d:"3 × 10 · baja en 3 seg", log:true},
+      {n:"Peso muerto con mancuernas", d:"3 × 8-10", log:true, rest:120},
+      {n:"Hip thrust", d:"3 × 10-12", log:true, rest:120},
+      {n:"Curl femoral", d:"3 × 12", log:true, rest:60},
     ]},
-    {t:"🔥 Abdomen", ex:[
-      {n:"Crunch en polea", d:"3 × 12 · superserie con la siguiente", log:true},
-      {n:"Pallof press", d:"2 × 10 c/lado", log:true},
+    {t:"🔥 Abdomen · superserie de 3", ex:[
+      {n:"Crunch inverso", d:"3 × 12 · superserie con la siguiente", log:true, tipo:"reps"},
+      {n:"Bicho muerto", d:"3 × 10 c/lado · superserie con la siguiente", log:true, tipo:"reps"},
+      {n:"Plancha", skill:true, log:true, rest:60},
+    ]},
+    {t:"➕ Opcional (si hay tiempo)", ex:[
+      {n:"Oblicuos colgada", d:"2 × 8 c/lado", log:true, rest:60},
     ]},
     FIN(),
   ]},
-  casa:{nombre:"Handstand en casa · ~15 min", emoji:"🏠", yoga:false, blocks:[
+  casa:{nombre:"Handstand en casa · ~20 min", emoji:"🏠", yoga:false, blocks:[
     {t:"✋ Muñecas (3 min)", ex:[
       {n:"Calentamiento de muñecas", d:"3 min"},
     ]},
@@ -411,6 +397,9 @@ const DEFAULT_ROUTINES = {
     {t:"🪑 L-sit en paralelas de piso (3 min)", ex:[
       {n:"L-sit", skill:true, log:true},
       {n:"Elevaciones en compresión", d:"2 × 8", log:true},
+    ]},
+    {t:"💪 Flexiones", ex:[
+      {n:"Flexiones", skill:true, log:true},
     ]},
     {t:"🧘 Cierre (1 min)", ex:[
       {n:"Estiramiento de muñecas y pike", d:"1 min"},
@@ -432,21 +421,20 @@ const DEFAULT_ROUTINES = {
     ]},
   ]},
 };
-const GYM_ORDER=["gymA","gymB","gymC"];
+const GYM_ORDER=["gymA","gymB"];
 const THEME={gymA:"th-a",gymB:"th-b",gymC:"th-c",casa:"th-casa",yoga:"th-yoga"};
-const FOCUS={gymA:"Empuje",gymB:"Tirón",gymC:"L-sit"};
+const FOCUS={gymA:"Cuádriceps + abdomen",gymB:"Glúteos + abdomen"};
 const MUSC={
-  gymA:["💪 Tríceps · pecho · hombros","🦵 Cuádriceps · glúteos · glúteo medio","🔥 Abdomen"],
-  gymB:["💪 Dorsales · bíceps · hombro posterior","🦵 Glúteos · femorales · cuádriceps","🔥 Abdomen · oblicuos"],
-  gymC:["💪 Dorsales · bíceps · pecho · tríceps","🦵 Glúteos · cuádriceps · femorales","🔥 Abdomen · oblicuos"],
-  casa:["💪 Hombros · muñecas · tríceps","🔥 Abdomen · flexores de cadera"],
+  gymA:["🦵 Cuádriceps · glúteos · glúteo medio","🔥 Abdomen (recto y bajo)","🤸 Dorsales y bíceps (dominadas)"],
+  gymB:["🦵 Glúteos · femorales · cuádriceps","🔥 Abdomen y core profundo","🤸 Tríceps y pecho (fondos)"],
+  casa:["💪 Hombros · muñecas · tríceps · pecho","🔥 Abdomen · flexores de cadera"],
   yoga:["🧘 Movilidad y recuperación"],
 };
-const ROUTINE_TABS=["gymA","gymB","gymC","casa","yoga"];
+const ROUTINE_TABS=["gymA","gymB","casa","yoga"];
 const LEGACY={
   dia1:"1️⃣ Día 1 (calistenia)",dia2:"2️⃣ Día 2 (calistenia)",dia3:"3️⃣ Día 3 (calistenia)",
   parqueA:"🅰️ Parque A",parqueB:"🅱️ Parque B",casa:"🏠 Casa",
-  handstand:"🤸 Clase de handstand",escalada:"🧗 Escalada",
+  gymC:"🩷 Gym C",handstand:"🤸 Clase de handstand",escalada:"🧗 Escalada",
 };
 
 /* ---------- BIBLIOTECA ---------- */
@@ -650,6 +638,27 @@ const LIB_BASE={
     fij:["Es el mismo movimiento que con barra hexagonal: el peso va a los costados, no adelante.","Más flexión de rodilla que el rumano: trabaja también cuádriceps."],
     err:["Redondear la espalda.","Que la cadera suba antes que el pecho.","Echarte hacia atrás arriba."],
     rod:"Baja solo hasta donde no haya dolor; si molesta, apoya las mancuernas sobre un step para acortar el recorrido.",q:"peso muerto con mancuernas técnica"},
+  "Sit-up con disco":{v:"LnwfmLQ26dA",cat:"Abdomen",musc:"Recto abdominal y flexores de cadera",rec:{tipo:"peso",sets:3,val:"10",rest:60},
+    pasos:["Acostada boca arriba, rodillas dobladas y talones cerca de los glúteos, pies apoyados.","Disco (2,5-10 kg) pegado al pecho, sostenido con las dos manos.","Sube enrollando la columna vértebra por vértebra: primero cabeza y hombros, luego la espalda, sin despegar los pies.","Arriba, sentada, estira los brazos llevando el disco hacia el cielo.","Vuelve el disco al pecho y baja lento (2-3 seg), también vértebra por vértebra."],
+    fij:["La primera mitad es abdomen puro; de la mitad hacia arriba ayudan los flexores de cadera (útil para el L-sit).","Exhala al subir."],
+    err:["Subir con la espalda recta como un bloque.","Dejarte caer al bajar.","Tirar del cuello."],
+    alt:"Si molesta la espalda baja: crunch con disco (solo hasta despegar los hombros).",q:"sit up con disco"},
+  "Elevación de piernas acostada":{v:"mSejp5qK1pc",cat:"Abdomen",musc:"Abdomen bajo y flexores de cadera",rec:{tipo:"reps",sets:3,val:"10",rest:60},
+    pasos:["Acostada boca arriba, manos bajo los glúteos o a los costados.","Espalda baja pegada al suelo, piernas estiradas y juntas.","Sube las piernas hasta unos 90° (verticales).","Baja lento hasta casi tocar el suelo, sin que la espalda baja se despegue."],
+    fij:["Si la espalda baja se arquea, baja menos o dobla un poco las rodillas."],
+    err:["Arquear la zona lumbar al bajar.","Bajar las piernas de golpe."],q:"elevación de piernas acostado abdomen"},
+  "Tijeras":{v:"V9V-XXHo294",cat:"Abdomen",musc:"Abdomen bajo, flexores y aductores de cadera",rec:{tipo:"reps",sets:3,val:"20",rest:60},
+    pasos:["Acostada boca arriba, espalda baja pegada al suelo, manos bajo los glúteos.","Levanta las piernas estiradas a unos 30-45° del suelo (más alto = más fácil).","Abre y cierra las piernas cruzándolas, una vez por encima y otra por debajo.","Cuenta cada apertura y cierre como 1 repetición."],
+    fij:["Hombros y cabeza pueden despegarse un poco para apretar más el abdomen."],
+    err:["Espalda baja despegada del suelo.","Doblar las rodillas."],q:"tijeras abdominales"},
+  "Crunch inverso":{v:"mhhxLn7XEw4",cat:"Abdomen",musc:"Abdomen bajo",rec:{tipo:"reps",sets:3,val:"12",rest:60},
+    pasos:["Acostada boca arriba, brazos a los costados, rodillas dobladas a 90° y piernas en el aire.","Lleva las rodillas hacia el pecho enrollando la pelvis: la cadera se despega un poco del suelo.","Baja lento hasta volver a 90°, sin balancearte."],
+    fij:["El movimiento es corto: lo importante es despegar la cadera, no mover mucho las piernas."],
+    err:["Impulsarte con las piernas.","Dejar caer la pelvis de golpe."],q:"crunch inverso"},
+  "Bicho muerto":{v:"XkTtXA3-IqU",cat:"Abdomen",musc:"Core profundo (transverso) y recto abdominal",rec:{tipo:"reps",sets:3,val:"10",rest:60},
+    pasos:["Acostada boca arriba, brazos estirados hacia el techo y rodillas dobladas a 90° en el aire.","Pega la espalda baja al suelo y mantenla así todo el ejercicio.","Estira un brazo hacia atrás y la pierna contraria hacia adelante, lento, sin tocar el suelo.","Vuelve al centro y cambia de lado. Cada lado cuenta 1."],
+    fij:["Exhala al estirar.","Mientras más lento, más trabaja."],
+    err:["Que la espalda baja se despegue.","Hacerlo rápido."],q:"dead bug bicho muerto ejercicio"},
   "Crunch con disco en el suelo":{v:"crINlm-Vb9s",cat:"Abdomen",musc:"Recto abdominal (las 'calugas')",rec:{tipo:"peso",sets:3,val:"12-15",rest:60},
     pasos:["Tendida boca arriba en una colchoneta, rodillas dobladas y pies apoyados.","Sostén un disco (2,5-10 kg) sobre el pecho con los brazos cruzados.","Enrolla la columna levantando cabeza y hombros, como mirándote el ombligo; la espalda baja queda en el suelo.","Baja lento sin soltar la tensión."],
     fij:["Alternativa al crunch en polea: misma idea (abdomen con carga), en un rincón tranquilo.","Exhala al subir."],
@@ -691,8 +700,8 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 /* ---------- ESTADO ---------- */
 const KEY="entreno_diana_v1";
 const GOAL=36;
-const ROUTINES_VERSION=6;
-const APP_VERSION="versión 6 oct (3)";
+const ROUTINES_VERSION=7;
+const APP_VERSION="versión 8 oct";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -726,11 +735,16 @@ function checkRoutinesUpdate(){
     data.migSwaps2=true;save();}
   // Los colores/emojis de las rutinas se toman siempre del plan actual (sin tocar las ediciones de ejercicios)
   Object.keys(DEFAULT_ROUTINES).forEach(t=>{if(data.routines[t])data.routines[t].emoji=DEFAULT_ROUTINES[t].emoji;});
-  if(data.routinesVersion!==ROUTINES_VERSION){
-    // Plan nuevo de gimnasio: las rutinas anteriores eran de calistenia, se reemplazan. Las sesiones guardadas se conservan.
-    data.routines=JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
+  if((data.routinesVersion||0)<7){
+    // Plan v7 (8 oct 2026): gimnasio = piernas + abdomen en 2 rutinas. Historial, medidas, Fitia, niveles y biblioteca no se tocan.
+    data.routinesBackup=JSON.parse(JSON.stringify(data.routines));
+    ["gymA","gymB"].forEach(t=>{data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));});
+    delete data.routines.gymC;
+    if(!data.routines.casa)data.routines.casa=JSON.parse(JSON.stringify(DEFAULT_ROUTINES.casa));
+    else{const C=data.routines.casa;C.nombre=DEFAULT_ROUTINES.casa.nombre;
+      if(!exInRoutine(C,"Flexiones"))C.blocks.splice(Math.max(0,C.blocks.length-1),0,{t:"💪 Flexiones",ex:[{n:"Flexiones",skill:true,log:true}]});}
     data.routinesVersion=ROUTINES_VERSION;data.planStart=data.planStart||todayStr();save();render();updateStats();
-    toast("🆕 Plan nuevo: calistenia arriba + piernas con pesas · historial conservado");
+    toast("🆕 Rutinas nuevas: piernas + abdomen · tu historial está intacto");
   }
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){toast("⚠️ No se pudo guardar");}}
@@ -747,7 +761,7 @@ function fmtDate(iso){const d=new Date(iso);const dias=["dom","lun","mar","mié"
   return `${dias[d.getDay()]} ${d.getDate()} ${MES[d.getMonth()]} ${d.getFullYear()}`;}
 function fmtShort(ds){const d=new Date(ds.length===10?ds+'T12:00:00':ds);return d.getDate()+" "+MES[d.getMonth()];}
 function weekStart(dt){const x=new Date(dt);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x;}
-function isGym(t){return GYM_ORDER.includes(t);}
+function isGym(t){return GYM_ORDER.includes(t)||t==="gymC";}
 function sessName(t){const R=data.routines[t]||DEFAULT_ROUTINES[t];if(R)return R.emoji+" "+R.nombre.split(' · ')[0];return LEGACY[t]||t;}
 function sorted(){return [...data.sessions].sort((a,b)=>new Date(a.date)-new Date(b.date));}
 function thisWeek(){const ws=weekStart(new Date());return data.sessions.filter(s=>new Date(s.date)>=ws);}
@@ -1015,13 +1029,15 @@ function logSet(n,cont){
   draft[n]=draft[n]||{};draft[n].sets=draft[n].sets||[];
   draft[n].sets.push({kg:m.byTime?0:c.kg,reps:c.reps});draft[n].done=true;
   const nxt=ssFirst(ex)?neighbor(n,1):null;
-  const prv=neighbor(n,-1), partnerPrev=prv&&ssFirst(prv)?prv:null;
+  // Cadena de superserie: los ejercicios anteriores marcados "superserie con la siguiente"
+  const chain=[];let pv=neighbor(n,-1);while(pv&&ssFirst(pv)){chain.unshift(pv);pv=neighbor(pv.n,-1);}
   if(nxt&&setsLeft(nxt)>0){activeEx=nxt.n;render();toast("➡️ Superserie: sigue con "+nxt.n);return;}
-  if(partnerPrev&&setsLeft(partnerPrev)>0)activeEx=partnerPrev.n;
+  const back=chain.find(e=>setsLeft(e)>0);
+  if(back)activeEx=back.n;
   else if(setsLeft(ex)<=0)activeEx=nextActive(n)||n;
   render();
   if(m.byTime||!firstActive()||!window.TIMER)return;
-  const secs=Math.max(restOf(n),partnerPrev?restOf(partnerPrev.n):0);
+  const secs=Math.max(restOf(n),...chain.map(e=>restOf(e.n)));
   const nx=exByName(activeEx), k=nx?((((draft[nx.n]||{}).sets)||[]).length+1):0;
   const again=cont&&activeEx===n&&setsLeft(ex)>0?cont:null;
   TIMER.rest(secs*1000,nx?`Descanso · luego ${nx.n.replace('★','').trim()} (serie ${k})`:"Descanso",again);
@@ -1228,7 +1244,7 @@ function renderHoy(){
   const hist=Object.keys(data.fitia).sort().map(mon=>({mon,v:data.fitia[mon]}));
 
   let html=`
-  <div class="tiles t3">
+  <div class="tiles t2">
     ${GYM_ORDER.map(t=>`<div class="tile ${THEME[t]}" data-go="${t}">${data.routines[t].emoji} ${esc(data.routines[t].nombre.split(' · ')[0])}<small>${FOCUS[t]}</small></div>`).join("")}
   </div>
   <div class="tiles t2">
