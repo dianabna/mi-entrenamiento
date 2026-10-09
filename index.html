@@ -343,8 +343,8 @@ const DEFAULT_ROUTINES = {
     ]},
     {t:"🦵 Piernas (prioridad)", ex:[
       APROX,
-      {n:"Prensa de piernas", d:"3 × 10", log:true, rest:120},
-      {n:"Extensión de cuádriceps", d:"3 × 10 · baja en 3 seg", log:true, rest:75},
+      {n:"Prensa de piernas", d:"3 × 8-15", log:true, rest:120},
+      {n:"Extensión de cuádriceps", d:"3 × 10-15 · baja en 3 seg", log:true, rest:75},
       {n:"Abducción acostada con mancuerna", d:"3 × 15 c/pierna", log:true, rest:60},
     ]},
     {t:"🔥 Abdomen · superserie de 3", ex:[
@@ -365,8 +365,8 @@ const DEFAULT_ROUTINES = {
     ]},
     {t:"🦵 Piernas (prioridad)", ex:[
       APROX,
-      {n:"Peso muerto con mancuernas", d:"3 × 8-10", log:true, rest:120},
-      {n:"Hip thrust", d:"3 × 10-12", log:true, rest:120},
+      {n:"Peso muerto con mancuernas", d:"3 × 8-12", log:true, rest:120},
+      {n:"Hip thrust", d:"3 × 8-15", log:true, rest:120},
       {n:"Curl femoral", d:"3 × 12", log:true, rest:60},
     ]},
     {t:"🔥 Abdomen · superserie de 3", ex:[
@@ -701,7 +701,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 8 oct";
+const APP_VERSION="versión 9 oct";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -735,6 +735,11 @@ function checkRoutinesUpdate(){
     data.migSwaps2=true;save();}
   // Los colores/emojis de las rutinas se toman siempre del plan actual (sin tocar las ediciones de ejercicios)
   Object.keys(DEFAULT_ROUTINES).forEach(t=>{if(data.routines[t])data.routines[t].emoji=DEFAULT_ROUTINES[t].emoji;});
+  // Rangos amplios (9 oct): solo cambia la dosis de estos ejercicios en las rutinas guardadas
+  if(!data.migRanges){const RANGES={"Prensa de piernas":"3 × 8-15","Extensión de cuádriceps":"3 × 10-15","Peso muerto con mancuernas":"3 × 8-12","Hip thrust":"3 × 8-15"};
+    ["gymA","gymB"].forEach(t=>{const R=data.routines[t];if(!R)return;R.blocks.forEach(bl=>bl.ex.forEach(ex=>{const r=RANGES[ex.n];if(!r||!ex.d)return;
+      const p=parseDose(ex.d),m=r.match(/(\d+) × (.+)/);ex.d=buildDose(ex.tipo||"peso",{sets:+m[1],val:m[2],nota:p.nota,ss:p.ss});}));});
+    if((data.routinesVersion||0)>=7){data.migRanges=true;save();}}
   if((data.routinesVersion||0)<7){
     // Plan v7 (8 oct 2026): gimnasio = piernas + abdomen en 2 rutinas. Historial, medidas, Fitia, niveles y biblioteca no se tocan.
     data.routinesBackup=JSON.parse(JSON.stringify(data.routines));
