@@ -701,7 +701,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 9 oct (2)";
+const APP_VERSION="versión 10 oct";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -838,7 +838,7 @@ function renderRoutine(){
             const txt=L.sets?L.v:[L.kg?L.kg+" kg":"",L.reps||(!L.kg?L.v:"")].filter(Boolean).join(" · ");
             lastHtml=`<div class="last">↩︎ Última vez (${fmtShort(L.date)}): ${esc(txt)}</div>`;
             const t=target(effD(ex)), r=nums(L.reps);
-            if(t&&L.kg&&r.length>=t.sets&&r.slice(0,t.sets).every(x=>x>=t.top)) lastHtml+=`<div class="up">⬆️ Completaste todo: hoy sube 1-2 kg</div>`;
+            if(!sugOf(ex.n)&&t&&L.kg&&r.length>=t.sets&&r.slice(0,t.sets).every(x=>x>=t.top)) lastHtml+=`<div class="up">⬆️ Completaste todo: hoy sube de peso</div>`;
           }
         }
         const isAct=canLog(ex)&&activeEx===ex.n;
@@ -849,6 +849,7 @@ function renderRoutine(){
             ${ex.skill&&LIB[ex.n]&&LIB[ex.n].niveles?`<label class="lvlwrap">🪜 Tu nivel · toca para cambiarlo<select class="lvl" data-lvl="${id}">${LIB[ex.n].niveles.map((l,i)=>`<option value="${i}" ${i===skillLv(ex.n)?'selected':''}>Nivel ${i+1}: ${esc(l.n)} · ${esc(l.d)}</option>`).join("")}</select></label>`:''}
             ${effD(ex)?`<div class="ex-dose">${esc(effD(ex))}${canLog(ex)&&!exMeta(ex).byTime&&exMeta(ex).nSets>1?(ssFirst(ex)?' · sin descanso, pasa a la siguiente':` · descanso ${fmtDur(restOf(ex.n))}`):''}</div>`:''}
             ${lastHtml}
+            ${canLog(ex)&&sugOf(ex.n)?`<div class="up">🎯 Peso sugerido hoy: ${fmtKg(sugOf(ex.n)[0])} · ${esc(sugOf(ex.n)[1])}</div>`:''}
             ${canLog(ex)?setsHtml(ex,id,isAct):(parseDur(ex.d)?`<button class="playsm" data-tmr="${parseDur(ex.d)}|${esc(ex.n)}">▶ Temporizador ${fmtDur(parseDur(ex.d))}</button>`:'')}
           </div></div>`;
       }
@@ -932,6 +933,7 @@ function curVals(ex){
   const i=done.length, prevSet=done[i-1];
   const lastSet=L&&L.sets?(L.sets[i]||L.sets[L.sets.length-1]):null;
   let kg=prevSet?prevSet.kg:(lastSet?lastSet.kg:(L&&parseFloat(L.kg))||0);
+  const sg=sugOf(ex.n);if(sg&&!prevSet)kg=sg[0];
   // reps: el número recomendado de la rutina (en series siguientes, lo mismo que la anterior)
   let reps=prevSet?prevSet.reps:(m.t?m.t.top:(m.byTime?(parseDur(effD(ex))||900)/60:(m.secs?30:10)));
   return cur[ex.n]={kg:+kg||0,reps:+reps||0};
@@ -980,6 +982,17 @@ function exType(ex){
   if(!canLog(ex))return "marcar";
   return ex.skill||BODYWEIGHT.has(ex.n)||!ex.log?"reps":"peso";
 }
+const SUG={since:"2026-10-10",kg:{
+  "Prensa de piernas":[50,"meta 3×15 antes de subir · pies un poco más arriba"],
+  "Extensión de cuádriceps":[40,"mismo peso · baja en 3 seg"],
+  "Abducción acostada con mancuerna":[12,"si no hay de 12, 10 kg × 20"],
+  "Sit-up con disco":[5,"meta 3×12, después 7,5-10 kg"],
+  "Peso muerto con mancuernas":[24,"+2 kg por mancuerna · espalda recta"],
+  "Hip thrust":[50,"+5 kg por lado · 3×8-10"],
+  "Curl femoral":[5,"placa 5 · puntas de los pies hacia ti"],
+  "Extensión de tríceps en polea":[4,"placa 4 · 3×12"],
+}};
+function sugOf(n){const g=SUG.kg[n];if(!g)return null;const L=lastLog(n);if(L&&dstr(new Date(L.date))>=SUG.since)return null;return g;}
 function canLog(ex){if(ex.tipo==="marcar")return false;return !!ex.log||!!target(effD(ex));}
 const TIPOS={peso:"🏋️ Peso + reps",reps:"🔁 Reps",seg:"⏱️ Segundos",min:"🕒 Minutos",marcar:"☑️ Solo marcar",skill:"🪜 Skill con niveles"};
 const VAL_LBL={peso:"Reps",reps:"Reps",seg:"Seg",min:"Minutos"};
