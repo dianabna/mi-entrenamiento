@@ -347,8 +347,8 @@ const DEFAULT_ROUTINES = {
       {n:"Extensión de cuádriceps", d:"3 × 10-15 · baja en 3 seg", log:true, rest:75},
       {n:"Abducción acostada con mancuerna", d:"3 × 15 c/pierna", log:true, rest:60},
     ]},
-    {t:"🔥 Abdomen · banco + superserie de 2", ex:[
-      {n:"Abdominal en banco declinado", d:"3 × 10-12", log:true, tipo:"peso", rest:60},
+    {t:"🔥 Abdomen · superserie de 3", ex:[
+      {n:"Sit-up con disco", d:"3 × 10 · superserie con la siguiente", log:true, tipo:"peso"},
       {n:"Elevación de piernas acostada", d:"3 × 10 · superserie con la siguiente", log:true, tipo:"reps"},
       {n:"Tijeras", d:"3 × 20", log:true, tipo:"reps", rest:60},
     ]},
@@ -708,7 +708,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 10 oct (3)";
+const APP_VERSION="versión 10 oct (4)";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -757,6 +757,11 @@ function checkRoutinesUpdate(){
     if(R&&!exInRoutine(R,"Abdominal en banco declinado"))R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Crunch inverso"){ex.n="Abdominal en banco declinado";ex.d="3 × 10-12";ex.tipo="peso";ex.rest=60;
       if(/superserie de 3/.test(bl.t))bl.t="🔥 Abdomen · banco + superserie de 2";}}));
     data.migDeclB=true;save();}
+  // 10 oct: a Diana le gustó el sit-up en el suelo → vuelve al Gym A; el banco declinado queda solo en el Gym B
+  if(!data.migSitA&&(data.routinesVersion||0)>=7){const R=data.routines.gymA;
+    if(R&&!exInRoutine(R,"Sit-up con disco"))R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Abdominal en banco declinado"){ex.n="Sit-up con disco";ex.d="3 × 10 · superserie con la siguiente";ex.tipo="peso";delete ex.rest;
+      if(/banco/.test(bl.t))bl.t="🔥 Abdomen · superserie de 3";}}));
+    data.migSitA=true;save();}
   if((data.routinesVersion||0)<7){
     // Plan v7 (8 oct 2026): gimnasio = piernas + abdomen en 2 rutinas. Historial, medidas, Fitia, niveles y biblioteca no se tocan.
     data.routinesBackup=JSON.parse(JSON.stringify(data.routines));
