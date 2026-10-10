@@ -369,8 +369,8 @@ const DEFAULT_ROUTINES = {
       {n:"Hip thrust", d:"3 × 8-15", log:true, rest:120},
       {n:"Curl femoral", d:"3 × 12", log:true, rest:60},
     ]},
-    {t:"🔥 Abdomen · superserie de 3", ex:[
-      {n:"Crunch inverso", d:"3 × 12 · superserie con la siguiente", log:true, tipo:"reps"},
+    {t:"🔥 Abdomen · banco + superserie de 2", ex:[
+      {n:"Abdominal en banco declinado", d:"3 × 10-12", log:true, tipo:"peso", rest:60},
       {n:"Bicho muerto", d:"3 × 10 c/lado · superserie con la siguiente", log:true, tipo:"reps"},
       {n:"Plancha", skill:true, log:true, rest:60},
     ]},
@@ -509,13 +509,15 @@ const LIB_BASE={
     err:["Dejar que la barra se aleje del cuerpo.","Estirar los brazos a mitad del movimiento."],q:"pull over barra tutorial progresión principiante"},
   "L-sit":{v:"C16iV13HsoI",cat:"Calistenia",musc:"Flexores de cadera, abdomen, tríceps y hombros",skill:true,
     niveles:[
+      {n:"Asistido: pies en bloques, empujar y comprimir",d:"4 × 10-15 seg"},
+      {n:"Un pie en el bloque y el otro en el aire (alternando)",d:"4 × 8-10 seg"},
       {n:"Tuck L-sit (rodillas al pecho)",d:"4 × 10-15 seg"},
       {n:"Tuck avanzado (rodillas algo lejos del pecho)",d:"4 × 10 seg"},
       {n:"Una pierna estirada (alternando)",d:"4 × 10 seg"},
       {n:"Rodillas semiflectadas",d:"4 × 10 seg"},
       {n:"L-sit completo",d:"4 × 10 seg"},
     ],
-    pasos:["Apóyate en las paralelas (en el gimnasio o las de piso) con los brazos completamente estirados.","Empuja hacia abajo, alejando los hombros de las orejas.","Levanta las piernas según tu nivel y sostén respirando.","En el L-sit completo: piernas estiradas y juntas, paralelas al suelo, puntas estiradas."],
+    pasos:["Apóyate en las paralelas (en el gimnasio o las de piso) con los brazos completamente estirados.","Empuja hacia abajo, alejando los hombros de las orejas.","Nivel asistido: sentada entre las paralelas con los talones sobre bloques (o un cojín que deslice); empuja hasta despegar la cola del suelo y acerca los pies comprimiendo el abdomen todo lo que puedas, dejando que los pies se deslicen.","Levanta las piernas según tu nivel y sostén respirando.","En el L-sit completo: piernas estiradas y juntas, paralelas al suelo, puntas estiradas."],
     fij:["Subir las piernas es sobre todo trabajo de flexores de cadera; el complemento clave son las elevaciones en compresión.","Sube de nivel cuando completes todas las series del nivel actual."],
     err:["Doblar los codos.","Hombros hundidos (encogidos hacia las orejas)."],q:"progresión l-sit principiante tuck"},
   "Elevaciones en compresión":{v:"WR3C2cliSaA",cat:"Calistenia",musc:"Flexores de cadera y abdomen (lo que más ayuda al L-sit)",
@@ -706,7 +708,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 10 oct (2)";
+const APP_VERSION="versión 10 oct (3)";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -750,6 +752,11 @@ function checkRoutinesUpdate(){
     if(R&&!exInRoutine(R,"Abdominal en banco declinado"))R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Sit-up con disco"){ex.n="Abdominal en banco declinado";ex.d="3 × 10-12";ex.tipo="peso";ex.rest=60;
       if(/superserie de 3/.test(bl.t))bl.t="🔥 Abdomen · banco + superserie de 2";}}));
     data.migDecl=true;save();}
+  // 10 oct: en Gym B el banco declinado reemplaza al crunch inverso (idea de Diana)
+  if(!data.migDeclB&&(data.routinesVersion||0)>=7){const R=data.routines.gymB;
+    if(R&&!exInRoutine(R,"Abdominal en banco declinado"))R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Crunch inverso"){ex.n="Abdominal en banco declinado";ex.d="3 × 10-12";ex.tipo="peso";ex.rest=60;
+      if(/superserie de 3/.test(bl.t))bl.t="🔥 Abdomen · banco + superserie de 2";}}));
+    data.migDeclB=true;save();}
   if((data.routinesVersion||0)<7){
     // Plan v7 (8 oct 2026): gimnasio = piernas + abdomen en 2 rutinas. Historial, medidas, Fitia, niveles y biblioteca no se tocan.
     data.routinesBackup=JSON.parse(JSON.stringify(data.routines));
