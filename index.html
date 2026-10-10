@@ -347,8 +347,8 @@ const DEFAULT_ROUTINES = {
       {n:"Extensión de cuádriceps", d:"3 × 10-15 · baja en 3 seg", log:true, rest:75},
       {n:"Abducción acostada con mancuerna", d:"3 × 15 c/pierna", log:true, rest:60},
     ]},
-    {t:"🔥 Abdomen · superserie de 3", ex:[
-      {n:"Sit-up con disco", d:"3 × 10 · superserie con la siguiente", log:true, tipo:"peso"},
+    {t:"🔥 Abdomen · banco + superserie de 2", ex:[
+      {n:"Abdominal en banco declinado", d:"3 × 10-12", log:true, tipo:"peso", rest:60},
       {n:"Elevación de piernas acostada", d:"3 × 10 · superserie con la siguiente", log:true, tipo:"reps"},
       {n:"Tijeras", d:"3 × 20", log:true, tipo:"reps", rest:60},
     ]},
@@ -638,6 +638,11 @@ const LIB_BASE={
     fij:["Es el mismo movimiento que con barra hexagonal: el peso va a los costados, no adelante.","Más flexión de rodilla que el rumano: trabaja también cuádriceps."],
     err:["Redondear la espalda.","Que la cadera suba antes que el pecho.","Echarte hacia atrás arriba."],
     rod:"Baja solo hasta donde no haya dolor; si molesta, apoya las mancuernas sobre un step para acortar el recorrido.",q:"peso muerto con mancuernas técnica"},
+  "Abdominal en banco declinado":{v:"hhDJLXe4uhw",cat:"Abdomen",musc:"Recto abdominal y flexores de cadera",rec:{tipo:"peso",sets:3,val:"10-12",rest:60},
+    pasos:["Ajusta el banco con una inclinación suave para empezar (mientras más inclinado, más difícil).","Engancha los pies en los rodillos y recuéstate; disco pegado al pecho (o sin peso las primeras veces).","Sube enrollando la columna: primero cabeza y hombros, luego la espalda, llevando el pecho hacia las rodillas.","Baja lento (2-3 seg) y frena antes de apoyar toda la espalda: así el abdomen no descansa."],
+    fij:["Exhala al subir.","Anota 0 kg si lo haces sin disco.","Cuando completes 3×12, sube el disco o la inclinación."],
+    err:["Tirar con el cuello o los brazos.","Subir con la espalda recta como bloque (trabaja el flexor de cadera).","Dejarte caer al bajar."],
+    alt:"Si no está libre: sit-up con disco en el suelo.",q:"abdominales en banco declinado técnica"},
   "Sit-up con disco":{v:"LnwfmLQ26dA",cat:"Abdomen",musc:"Recto abdominal y flexores de cadera",rec:{tipo:"peso",sets:3,val:"10",rest:60},
     pasos:["Acostada boca arriba, rodillas dobladas y talones cerca de los glúteos, pies apoyados.","Disco (2,5-10 kg) pegado al pecho, sostenido con las dos manos.","Sube enrollando la columna vértebra por vértebra: primero cabeza y hombros, luego la espalda, sin despegar los pies.","Arriba, sentada, estira los brazos llevando el disco hacia el cielo.","Vuelve el disco al pecho y baja lento (2-3 seg), también vértebra por vértebra."],
     fij:["La primera mitad es abdomen puro; de la mitad hacia arriba ayudan los flexores de cadera (útil para el L-sit).","Exhala al subir."],
@@ -701,7 +706,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 10 oct";
+const APP_VERSION="versión 10 oct (2)";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -740,6 +745,11 @@ function checkRoutinesUpdate(){
     ["gymA","gymB"].forEach(t=>{const R=data.routines[t];if(!R)return;R.blocks.forEach(bl=>bl.ex.forEach(ex=>{const r=RANGES[ex.n];if(!r||!ex.d)return;
       const p=parseDose(ex.d),m=r.match(/(\d+) × (.+)/);ex.d=buildDose(ex.tipo||"peso",{sets:+m[1],val:m[2],nota:p.nota,ss:p.ss});}));});
     if((data.routinesVersion||0)>=7){data.migRanges=true;save();}}
+  // 10 oct: en Gym A el sit-up en el suelo pasa a banco declinado, hecho solo (no en superserie)
+  if(!data.migDecl&&(data.routinesVersion||0)>=7){const R=data.routines.gymA;
+    if(R&&!exInRoutine(R,"Abdominal en banco declinado"))R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Sit-up con disco"){ex.n="Abdominal en banco declinado";ex.d="3 × 10-12";ex.tipo="peso";ex.rest=60;
+      if(/superserie de 3/.test(bl.t))bl.t="🔥 Abdomen · banco + superserie de 2";}}));
+    data.migDecl=true;save();}
   if((data.routinesVersion||0)<7){
     // Plan v7 (8 oct 2026): gimnasio = piernas + abdomen en 2 rutinas. Historial, medidas, Fitia, niveles y biblioteca no se tocan.
     data.routinesBackup=JSON.parse(JSON.stringify(data.routines));
@@ -968,7 +978,7 @@ const REST={
   "Flexiones":90,"Jalón al pecho o dominada asistida":90,"Prensa de piernas":90,"Hip thrust":90,"Peso muerto rumano con mancuernas":90,
   "Flexiones inclinadas":60,"L-sit":60,"Handstand pecho a la pared":60,"Extensión de tríceps en polea":60,"Face pull":60,
   "Extensión de cuádriceps":60,"Abductores en máquina":60,"Curl femoral":60,"Step-up a cajón con mancuernas":60,
-  "Crunch en polea":60,"Elevación de piernas colgada":60,"Oblicuos colgada":60,
+  "Crunch en polea":60,"Abdominal en banco declinado":60,"Elevación de piernas colgada":60,"Oblicuos colgada":60,
   "Plancha":45,"Pallof press":45,"Elevaciones en compresión":45,"Hollow hold":30,
 };
 // Ejercicios de peso corporal: nunca llevan casilla de kg
@@ -987,6 +997,7 @@ const SUG={since:"2026-10-10",kg:{
   "Extensión de cuádriceps":[40,"mismo peso · baja en 3 seg"],
   "Abducción acostada con mancuerna":[12,"si no hay de 12, 10 kg × 20"],
   "Sit-up con disco":[5,"meta 3×12, después 7,5-10 kg"],
+  "Abdominal en banco declinado":[0,"primera vez sin peso · después disco de 5 kg"],
   "Peso muerto con mancuernas":[24,"+2 kg por mancuerna · espalda recta"],
   "Hip thrust":[50,"+5 kg por lado · 3×8-10"],
   "Curl femoral":[5,"placa 5 · puntas de los pies hacia ti"],
@@ -1053,6 +1064,7 @@ function logSet(n,cont){
   const back=chain.find(e=>setsLeft(e)>0);
   if(back)activeEx=back.n;
   else if(setsLeft(ex)<=0)activeEx=nextActive(n)||n;
+  else activeEx=n;   // quedan series de este mismo ejercicio
   render();
   if(m.byTime||!firstActive()||!window.TIMER)return;
   const secs=Math.max(restOf(n),...chain.map(e=>restOf(e.n)));
