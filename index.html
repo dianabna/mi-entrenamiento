@@ -115,6 +115,8 @@
   .logset{flex:1;border:none;border-radius:10px;padding:11px 8px;font-size:14px;font-weight:800;background:var(--terra);color:#fff;cursor:pointer;white-space:nowrap}
   .logset.extra{background:var(--sand);color:var(--ink);font-size:13px}
   .ex.active{background:#fffaf4}
+  .hbtns{display:flex;gap:6px;align-items:center}
+  .hlink{background:none;border:none;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer;padding:4px}
   .elapsed{font-size:12.5px;color:var(--teal);margin:-6px 2px 12px}
   .edcard{border-top:1px solid var(--line);padding:11px 14px;display:flex;flex-direction:column;gap:8px}
   .edtop{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14.5px}
@@ -708,7 +710,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 10 oct (4)";
+const APP_VERSION="versión 11 oct";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -832,7 +834,8 @@ function renderRoutine(){
     <button class="editbtn ${editMode?'on':''}" id="editToggle">${editMode?'✓ Listo':'✏️ Editar'}</button>
   </div>`;
   if(!editMode) html+=`<div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>
-    <div class="elapsed" id="elapsed">${elapsedHtml()}</div>`;
+    <div class="elapsed" id="elapsed">${elapsedHtml()}</div>
+    ${editingId!=null?`<div class="tip">✏️ <b>Sesión reabierta.</b> Sigue registrando; al guardar se actualiza la misma sesión y se conserva tu hora de inicio.</div>`:''}`;
   if(isYoga && !editMode) html+=`<div class="tip">💡 Ideal para días de terreno o de descanso. Respira lento y sin prisa.</div>`;
   if(!isYoga && !editMode) html+=`<div class="tip">💡 <b>Peso correcto:</b> termina cada serie sintiendo que te quedaban solo 1-3 reps. Cuando completes todas las series en el tope del rango, <b>sube 1-2 kg</b>. Al marcar una serie se abre el descanso recomendado (⏱️).</div>`;
 
@@ -1184,6 +1187,7 @@ function bindRoutine(){
 saveBtn.onclick=()=>{
   const done=Object.entries(draft).filter(([n,v])=>v.done);
   if(!done.length){toast("Marca al menos un ejercicio ✏️");return;}
+  if(firstActive()&&!confirm("Aún te quedan ejercicios sin terminar.\n\n¿Guardar y cerrar la sesión igual?\n(Después puedes reabrirla desde el historial.)"))return;
   const logs=[];
   Object.entries(draft).forEach(([n,v])=>{
     const sets=v.sets||[];if(!sets.length)return;
@@ -1194,13 +1198,54 @@ saveBtn.onclick=()=>{
       v:lv+sets.map(s=>fmtSet(s,byTime)).join(" · ")+(kgMax&&!byTime?" (kg×reps)":"")});
   });
   const iso=new Date((sessionDate||todayStr())+'T12:00:00').toISOString();
-  const sess={id:Date.now(),date:iso,tipo:currentTab,count:done.length,logs};
-  if(data.curStart&&data.curStart.tab===currentTab&&(sessionDate||todayStr())===todayStr()){sess.start=data.curStart.t;sess.end=Date.now();}
-  data.sessions.push(sess);delete data.curStart;
+  const doneNames=done.map(([n])=>n);
+  let sess=editingId!=null?data.sessions.find(x=>x.id===editingId):null;
+  if(sess){   // sesión reabierta: se actualiza la misma (conserva la hora de inicio)
+    sess.logs=logs;sess.count=done.length;sess.done=doneNames;
+    if(sess.start&&dstr(new Date(sess.date))===todayStr())sess.end=Date.now();
+  }else{
+    sess={id:Date.now(),date:iso,tipo:currentTab,count:done.length,logs,done:doneNames};
+    if(data.curStart&&data.curStart.tab===currentTab&&(sessionDate||todayStr())===todayStr()){sess.start=data.curStart.t;sess.end=Date.now();}
+    data.sessions.push(sess);
+  }
+  delete data.curStart;editingId=null;
   save();draft={};cur={};activeEx=null;sessionDate=todayStr();updateStats();
   toast(sess.start?`¡Sesión guardada! 🎉 ${Math.round((sess.end-sess.start)/60000)} min`:"¡Sesión guardada! 🎉");
   currentTab="hoy";render();
 };
+
+/* ---------- REABRIR Y UNIR SESIONES ---------- */
+let editingId=null;   // id de la sesión reabierta desde el historial
+function reopenSession(id){
+  const sess=data.sessions.find(x=>x.id==id);if(!sess)return;
+  if(!ROUTINE_TABS.includes(sess.tipo)||!data.routines[sess.tipo]){toast("Esa sesión no tiene rutina para reabrir");return;}
+  currentTab=sess.tipo;editMode=false;cur={};activeEx=null;draft={};
+  (sess.done||(sess.logs||[]).map(l=>l.n)).forEach(n=>{draft[n]={done:true};});
+  (sess.logs||[]).forEach(l=>{draft[l.n]=draft[l.n]||{done:true};if(l.sets)draft[l.n].sets=l.sets.map(x=>({kg:x.kg,reps:x.reps}));});
+  sessionDate=dstr(new Date(sess.date));editingId=sess.id;
+  if(sess.start){data.curStart={tab:sess.tipo,t:sess.start};save();}
+  render();window.scrollTo(0,0);toast("✏️ Sesión reabierta: sigue donde quedaste");
+}
+// Une las sesiones del mismo tipo y del mismo día (ej. se cerró por error y se empezó otra)
+function sameDay(a,b){return a.tipo===b.tipo&&dstr(new Date(a.date))===dstr(new Date(b.date));}
+function mergeSessions(id){
+  const base=data.sessions.find(x=>x.id==id);if(!base)return;
+  const grp=data.sessions.filter(x=>sameDay(x,base)).sort((a,b)=>(a.start||a.id)-(b.start||b.id));
+  if(grp.length<2)return;
+  if(!confirm(`¿Unir las ${grp.length} sesiones de ${sessName(base.tipo)} del ${fmtDate(base.date)} en una sola?`))return;
+  const keep=grp[0],logs=[],done=new Set();
+  grp.forEach(x=>{(x.done||(x.logs||[]).map(l=>l.n)).forEach(n=>done.add(n));
+    (x.logs||[]).forEach(l=>{const e=logs.find(y=>y.n===l.n);
+      if(!e){logs.push(JSON.parse(JSON.stringify(l)));return;}
+      if(e.sets&&l.sets){e.sets=e.sets.concat(l.sets);e.reps=e.sets.map(z=>z.reps).join(" ");const k=Math.max(...e.sets.map(z=>z.kg||0));e.kg=k?String(k):"";}
+      const sfx=" (kg×reps)",clean=v=>String(v||"").replace(sfx,""),lvl=(clean(e.v).match(/^Nivel \d+ · /)||[""])[0];
+      e.v=clean(e.v)+" · "+clean(l.v).replace(/^Nivel \d+ · /,"")+(String(e.v).includes(sfx)||String(l.v).includes(sfx)?sfx:"");});});
+  keep.logs=logs;keep.done=[...done];keep.count=Math.max(done.size,...grp.map(x=>x.count||0));
+  const st=grp.map(x=>x.start).filter(Boolean),en=grp.map(x=>x.end).filter(Boolean);
+  if(st.length)keep.start=Math.min(...st);if(en.length)keep.end=Math.max(...en);
+  data.sessions=data.sessions.filter(x=>x===keep||!grp.includes(x));
+  save();updateStats();renderHist();toast("🔗 Sesiones unidas");
+}
 
 /* ---------- RESUMEN ---------- */
 function goTab(t){
@@ -1208,6 +1253,7 @@ function goTab(t){
     if(!confirm("Tienes ejercicios marcados sin guardar. ¿Cambiar de todos modos?")) return;
     delete data.curStart;save();
   }
+  if(editingId!=null){editingId=null;delete data.curStart;save();}
   draft={};cur={};activeEx=null;editMode=false;edOpen={};addOpen=null;libForm=null;sessionDate=todayStr();currentTab=t;render();window.scrollTo(0,0);
 }
 // Registra de inmediato con la fecha elegida (antes preguntaba una nota y "Cancelar" no guardaba nada)
@@ -1656,7 +1702,7 @@ function renderHist(){
     let logs="";(sess.logs||[]).forEach(l=>{logs+=`<div><b>${esc(l.n)}:</b> ${esc(l.v)}</div>`;});
     html+=`<div class="hitem">
       <div class="hitem-h"><span class="hitem-t">${esc(sessName(sess.tipo))}</span>
-        <button class="del" data-del="${sess.id}">Borrar</button></div>
+        <span class="hbtns">${ROUTINE_TABS.includes(sess.tipo)?`<button class="hlink" data-reopen="${sess.id}">✏️ Reabrir</button>`:''}${data.sessions.some(x=>x!==sess&&sameDay(x,sess))&&ROUTINE_TABS.includes(sess.tipo)?`<button class="hlink" data-merge="${sess.id}">🔗 Unir</button>`:''}<button class="del" data-del="${sess.id}">Borrar</button></span></div>
       <div class="hitem-d">${fmtDate(sess.date)}${isGym(sess.tipo)||ROUTINE_TABS.includes(sess.tipo)?` · ${sess.count} ejercicios`:''}${durTxt(sess)?` · ${durTxt(sess)}`:''}</div>
       ${logs?`<div class="hitem-logs">${logs}</div>`:''}
     </div>`;
@@ -1665,6 +1711,8 @@ function renderHist(){
   document.getElementById("exportBtn").onclick=exportProgress;
   document.getElementById("bkDown").onclick=downloadBackup;
   document.getElementById("bkUp").onchange=e=>restoreBackup(e.target.files[0]);
+  main.querySelectorAll("[data-reopen]").forEach(el=>{el.onclick=()=>reopenSession(el.dataset.reopen);});
+  main.querySelectorAll("[data-merge]").forEach(el=>{el.onclick=()=>mergeSessions(el.dataset.merge);});
   main.querySelectorAll("[data-del]").forEach(el=>{
     el.onclick=()=>{if(confirm("¿Borrar esta sesión?")){data.sessions=data.sessions.filter(x=>x.id!=el.dataset.del);save();updateStats();renderHist();}};
   });
