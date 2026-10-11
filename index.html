@@ -118,6 +118,10 @@
   .ex.active{background:#fffaf4}
   .hbtns{display:flex;gap:6px;align-items:center}
   .hlink{background:none;border:none;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer;padding:4px}
+  .ypic{display:flex;align-items:center;gap:4px;margin:6px 0 2px;color:var(--teal)}
+  .ypic svg{width:132px;height:88px;background:var(--teal-light);border-radius:12px}
+  .ypic.seq svg{width:31%;height:auto}
+  .yarrow{color:var(--muted);font-size:14px}
   .ccard{background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:12.5px;line-height:1.45;cursor:pointer}
   .ccard .ct{font-weight:800;font-size:13.5px;display:flex;justify-content:space-between;margin-bottom:3px}
   .cbar{display:flex;height:16px;border-radius:8px;overflow:hidden;margin-top:6px}
@@ -796,7 +800,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 11 oct (6)";
+const APP_VERSION="versión 11 oct (7)";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -967,6 +971,7 @@ function renderRoutine(){
           <div class="ex-body">
             <div class="ex-top"><div class="ex-name">${nm}</div>${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}</div>
             ${ex.skill&&LIB[ex.n]&&LIB[ex.n].niveles?`<label class="lvlwrap">🪜 Tu nivel · toca para cambiarlo<select class="lvl" data-lvl="${id}">${LIB[ex.n].niveles.map((l,i)=>`<option value="${i}" ${i===skillLv(ex.n)?'selected':''}>Nivel ${i+1}: ${esc(l.n)} · ${esc(l.d)}</option>`).join("")}</select></label>`:''}
+            ${isYoga?yogaPic(ex.n):''}
             ${effD(ex)?`<div class="ex-dose">${esc(effD(ex))}${canLog(ex)&&!exMeta(ex).byTime&&exMeta(ex).nSets>1?(ssFirst(ex)?' · sin descanso, pasa a la siguiente':` · descanso ${fmtDur(restOf(ex.n))}`):''}</div>`:''}
             ${lastHtml}
             ${canLog(ex)&&sugOf(ex.n)?`<div class="up">🎯 Peso sugerido hoy: ${fmtKg(sugOf(ex.n)[0])} · ${esc(sugOf(ex.n)[1])}</div>`:''}
@@ -1312,6 +1317,43 @@ saveBtn.onclick=()=>{
   toast(sess.start?`¡Sesión guardada! 🎉 ${Math.round((sess.end-sess.start)/60000)} min`:"¡Sesión guardada! 🎉");
   currentTab="hoy";render();
 };
+
+/* ---------- DIBUJOS DE YOGA ---------- */
+// Figuras de palitos en un lienzo de 120×80 (suelo en y=70). h=cabeza [x,y]; p=líneas [x1,y1,x2,y2,...]; top=vista desde arriba (sin suelo); x=SVG extra.
+const YFIG={
+  pie:{h:[60,22],p:[[60,27,60,48],[60,48,55,70],[60,48,65,70],[60,31,48,8],[60,31,72,8]]},
+  gato:{h:[29,53],p:[[38,48,36,70],[80,48,80,70],[80,70,98,70]],x:'<path d="M38,48 Q59,32 80,48"/><path d="M38,48 Q59,62 80,48" stroke-dasharray="3 4" opacity=".5"/>'},
+  perro:{h:[45,58],p:[[25,70,62,25],[62,25,95,70]]},
+  pinza:{h:[44,60],p:[[66,70,68,34],[68,34,48,54],[49,54,54,69]]},
+  estocada:{h:[60,26],p:[[62,56,60,32],[62,56,42,52],[42,52,40,70],[62,56,82,70],[82,70,100,68],[60,35,49,12],[60,35,71,12]]},
+  guerrero:{h:[58,18],p:[[58,46,58,24],[58,46,32,50],[32,50,28,70],[58,46,95,70],[28,29,88,29]]},
+  triangulo:{h:[27,37],p:[[60,44,28,70],[60,44,92,70],[60,44,35,39],[37,40,33,62],[37,40,41,12]]},
+  torsion:{h:[60,30],p:[[60,64,60,36],[60,66,96,68],[60,64,74,46],[74,46,80,68],[60,40,74,48],[60,40,46,66]],x:'<path d="M48,24 A14,7 0 0 1 72,24" stroke-width="1.6"/><path d="M72,24 l-5,-2 M72,24 l-2,5" stroke-width="1.6"/>'},
+  nino:{h:[46,65],p:[[96,68,72,69],[72,69,90,57],[52,63,25,69]],x:'<path d="M90,57 Q72,50 52,62"/>'},
+  sentada:{h:[60,29],p:[[60,62,60,35],[60,64,42,68],[42,68,66,70],[60,64,78,68],[78,68,54,70],[60,40,47,60],[60,40,73,60]]},
+  hilo:{h:[37,65],p:[[80,70,80,46],[80,70,98,70],[80,46,46,64],[46,66,70,68],[45,63,22,68]]},
+  figura4:{h:[18,64],p:[[24,66,58,66],[58,66,66,38],[66,38,92,38],[58,66,86,54],[86,54,68,40],[38,64,62,48]]},
+  torsionT:{top:1,h:[60,13],p:[[60,19,60,46],[30,24,90,24],[60,46,84,50],[84,50,80,70]]},
+  mariposa:{top:1,h:[60,11],p:[[60,17,60,44],[60,22,40,40],[60,22,80,40],[60,44,40,58],[40,58,60,72],[60,44,80,58],[80,58,60,72]]},
+  pared:{h:[29,64],p:[[35,66,88,66],[88,66,92,22],[50,66,42,56]],x:'<path d="M96,6 V70" stroke-width="2" opacity=".6"/>'},
+  savasana:{h:[21,64],p:[[27,66,70,66],[70,66,104,68],[36,66,58,71]]},
+};
+// Qué figura(s) usa cada postura; el Saludo al Sol muestra tres en secuencia
+const YPIC={
+  "De pie: brazos arriba y respiración profunda":["pie"],"Gato-vaca":["gato"],"Gato-vaca muy lento":["gato"],
+  "Perro boca abajo, pedaleando los talones":["perro"],"Perro boca abajo":["perro"],"Saludo al Sol A":["pie","pinza","perro"],
+  "Estocada baja (anjaneyasana)":["estocada"],"Anjaneyasana (estocada baja)":["estocada"],"Guerrero II":["guerrero"],"Triángulo":["triangulo"],
+  "Torsión sentada (espalda alta)":["torsion"],"Postura del niño":["nino"],
+  "Respiración 4-6 (inhala en 4, exhala en 6)":["sentada"],"Centrado + respiración":["sentada"],"Hilo en la aguja (torsión en cuatro apoyos)":["hilo"],
+  "Figura 4 tumbada (caderas)":["figura4"],"Torsión tumbada":["torsionT"],"Mariposa reclinada":["mariposa"],
+  "Piernas en la pared":["pared"],"Savasana":["savasana"],"Perro boca abajo con empuje de hombros":["perro"],
+};
+function yFig(k){const f=YFIG[k];if(!f)return "";
+  return `${f.top?'<rect x="34" y="3" width="52" height="74" rx="6" stroke-width="1" opacity=".35"/>':'<path d="M6,74 H114" stroke-width="1" opacity=".35"/>'}
+    <circle cx="${f.h[0]}" cy="${f.h[1]}" r="5"/>${f.p.map(a=>`<polyline points="${a.join(",")}"/>`).join("")}${f.x||""}`;}
+function yogaPic(n){const ks=YPIC[n];if(!ks)return "";
+  const svg=k=>`<svg viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">${yFig(k)}</svg>`;
+  return `<div class="ypic${ks.length>1?' seq':''}">${ks.map(svg).join('<span class="yarrow">→</span>')}</div>`;}
 
 /* ---------- CICLO MENSTRUAL ---------- */
 // Fechas de día 1 en data.ciclo.starts (ISO). Nada de esto va en el código: la página es pública.
