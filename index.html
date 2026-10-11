@@ -46,6 +46,7 @@
   .th-c{background:#FBEAF0;color:#72243E;border-color:#ED93B1}
   .th-casa{background:#E1F5EE;color:#085041;border-color:#5DCAA5}
   .th-yoga{background:#EAF3DE;color:#27500A;border-color:#97C459}
+  .th-esc{background:#F1EFE8;color:#444441;border-color:#B4B2A9}
   .th-am{background:#FAEEDA;color:#633806;border-color:#EF9F27}
   .linkcard{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;padding:12px 14px;margin-bottom:10px}
   .linkcard .arrow{font-size:20px;font-weight:400}
@@ -412,6 +413,55 @@ const DEFAULT_ROUTINES = {
       {n:"Estiramiento de muñecas y pike", d:"1 min"},
     ]},
   ]},
+  escalada:{nombre:"Escalada · muro", emoji:"🧗", yoga:false, blocks:[
+    {t:"🔥 Activar (3 min)", ex:[
+      {n:"Activación general", d:"3 min · sáltalo si vienes del gimnasio o en bici"},
+    ]},
+    {t:"🤸 Movilidad (3 min)", ex:[
+      {n:"Movilidad para escalar", d:"3 min"},
+    ]},
+    {t:"💪 Hombros y agarre (3 min)", ex:[
+      {n:"Retracción escapular colgada", d:"2 × 8", log:true, tipo:"reps", rest:30},
+      {n:"Colgarse de presas grandes", d:"2 × 10 seg", log:true, tipo:"seg", rest:30},
+    ]},
+    {t:"🧗 Progresión (10-15 min)", ex:[
+      {n:"Rutas o bloques fáciles", d:"3-5 muy por debajo de tu nivel · presas grandes"},
+      {n:"Subir de a un grado", d:"2-3 intentos · 2 min de descanso entre cada uno"},
+    ]},
+    {t:"🧗 A escalar", ex:[
+      {n:"Sesión de escalada", d:"la app registra la hora de inicio y de término"},
+    ]},
+    {t:"🧘 Cierre (3 min)", ex:[
+      {n:"Estiramiento de antebrazos y dedos", d:"2 × 30 seg c/lado", log:true, tipo:"seg", rest:10},
+      {n:"Flexiones", skill:true, log:true},
+    ]},
+  ]},
+  escaladaR:{nombre:"Escalada · roca", emoji:"🧗", yoga:false, blocks:[
+    {t:"🔥 Activar", ex:[
+      {n:"Activación general", d:"la caminata de aproximación cuenta"},
+    ]},
+    {t:"🤸 Movilidad (3 min)", ex:[
+      {n:"Movilidad para escalar", d:"3 min"},
+    ]},
+    {t:"💪 Hombros y agarre (3 min)", ex:[
+      {n:"Flexiones de escápula", d:"1 × 10", log:true, tipo:"reps", rest:20},
+      {n:"Colgarse de presas grandes", d:"2 × 10 seg · en la base de la vía, con los pies apoyados", log:true, tipo:"seg", rest:30},
+    ]},
+    {t:"🦺 Seguridad", ex:[
+      {n:"Chequeo de seguridad", d:"nudo · arnés · asegurador · casco · cuerda"},
+    ]},
+    {t:"🧗 Progresión (10-15 min)", ex:[
+      {n:"Rutas o bloques fáciles", d:"1-2 vías por debajo de tu nivel, o travesía en la base 5 min"},
+      {n:"Subir de a un grado", d:"descansa bien entre vías"},
+    ]},
+    {t:"🧗 A escalar", ex:[
+      {n:"Sesión de escalada", d:"la app registra la hora de inicio y de término"},
+    ]},
+    {t:"🧘 Cierre (3 min)", ex:[
+      {n:"Estiramiento de antebrazos y dedos", d:"2 × 30 seg c/lado", log:true, tipo:"seg", rest:10},
+      {n:"Flexiones", skill:true, log:true},
+    ]},
+  ]},
   yoga:{nombre:"Yoga · movilidad y recuperación", emoji:"🧘", yoga:true, blocks:[
     {t:"🧘 Secuencia (~20 min)", ex:[
       {n:"Centrado + respiración", d:"10 respiraciones"},
@@ -429,15 +479,18 @@ const DEFAULT_ROUTINES = {
   ]},
 };
 const GYM_ORDER=["gymA","gymB"];
-const THEME={gymA:"th-a",gymB:"th-b",gymC:"th-c",casa:"th-casa",yoga:"th-yoga"};
+const THEME={gymA:"th-a",gymB:"th-b",gymC:"th-c",casa:"th-casa",yoga:"th-yoga",escalada:"th-esc",escaladaR:"th-esc"};
 const FOCUS={gymA:"Cuádriceps + abdomen",gymB:"Glúteos + abdomen"};
 const MUSC={
   gymA:["🦵 Cuádriceps · glúteos · glúteo medio","🔥 Abdomen (recto y bajo)","🤸 Dorsales y bíceps (dominadas)"],
   gymB:["🦵 Glúteos · femorales · cuádriceps","🔥 Abdomen y core profundo","🤸 Tríceps y pecho (fondos)"],
   casa:["💪 Hombros · muñecas · tríceps · pecho","🔥 Abdomen · flexores de cadera"],
+  escalada:["🧗 Dorsales · antebrazos · dedos · core","⚠️ Sin regletas chicas los primeros 15 min"],
+  escaladaR:["🧗 Dorsales · antebrazos · dedos · core","⚠️ Sin regletas chicas los primeros 15 min"],
   yoga:["🧘 Movilidad y recuperación"],
 };
-const ROUTINE_TABS=["gymA","gymB","casa","yoga"];
+const ROUTINE_TABS=["gymA","gymB","casa","escalada","escaladaR","yoga"];
+const ESC=["escalada","escaladaR"];
 const LEGACY={
   dia1:"1️⃣ Día 1 (calistenia)",dia2:"2️⃣ Día 2 (calistenia)",dia3:"3️⃣ Día 3 (calistenia)",
   parqueA:"🅰️ Parque A",parqueB:"🅱️ Parque B",casa:"🏠 Casa",
@@ -699,6 +752,34 @@ const LIB_BASE={
     fij:["Muy buena para glúteo."],err:["Colgarse de las barandas.","Pasos cortos en puntas."],
     rod:"Sube más la rodilla que la caminadora: si la tendinosis molesta, cambia a bicicleta o elíptica.",q:"escaladora stair climber técnica"},
 
+  /* Escalada */
+  "Activación general":{cat:"Escalada",musc:"Todo el cuerpo",
+    pasos:["2-3 minutos de saltos suaves, trote en el lugar o caminata rápida, hasta sentir el cuerpo tibio.","En roca: la caminata de aproximación ya cumple esta parte.","Si vienes del gimnasio o en bicicleta, sáltalo."],
+    fij:["La idea es subir la temperatura antes de exigir dedos y hombros."],err:[],q:"calentamiento general antes de escalar"},
+  "Movilidad para escalar":{cat:"Escalada",musc:"Muñecas, codos, hombros y caderas",
+    pasos:["Círculos de muñecas, codos y hombros: 10 por dirección.","Abre y cierra las manos 20 veces, estirando bien los dedos.","Círculos de cadera: 8 por lado.","Sentadilla profunda con apoyo (tomada de algo), meciéndote suave: 30 seg. Sirve para subir los pies alto.","Balanceo de piernas adelante y al lado: 10 por pierna."],
+    fij:["Movimientos amplios y sin rebote."],err:["Estirar en frío con fuerza."],
+    rod:"En la sentadilla profunda baja solo hasta donde la rodilla no moleste.",q:"movilidad calentamiento para escalada"},
+  "Colgarse de presas grandes":{cat:"Escalada",musc:"Dedos, antebrazos y hombros",
+    pasos:["Elige presas grandes (las que agarras con toda la mano).","Cuélgate con los brazos estirados y los hombros activos (lejos de las orejas).","Sostén 10 segundos y suelta con control.","En roca: hazlo en la base de la vía con los pies apoyados, cargando solo parte del peso."],
+    fij:["Es para despertar dedos y tendones, no para cansarte."],err:["Usar regletas chicas en frío.","Colgarte con los hombros sueltos."],
+    codo:"Si el codo molesta al colgarte, apoya los pies y carga menos peso.",q:"calentamiento dedos escalada colgarse presas grandes"},
+  "Rutas o bloques fáciles":{cat:"Escalada",musc:"Todo el cuerpo · técnica",
+    pasos:["Escala 3 a 5 rutas o bloques muy por debajo de tu nivel, con presas grandes.","Concéntrate en los pies: pisa con precisión y en silencio.","Muévete fluido, con los brazos estirados cuando puedas.","Descansa 1-2 minutos entre cada una."],
+    fij:["Nada de regletas chicas los primeros 15 minutos: los dedos se calientan lento."],err:["Partir directo en tu grado máximo."],q:"cómo calentar para escalar progresión"},
+  "Subir de a un grado":{cat:"Escalada",musc:"Todo el cuerpo",
+    pasos:["Después de las fáciles, sube la dificultad de a un grado por vez.","Descansa unos 2 minutos entre intentos.","Cuando llegues a tu nivel de trabajo, ya estás lista para la sesión."],
+    fij:["Si vienes cansada del gimnasio, quédate en volumen fácil o técnica: no es día de máximo."],err:[],q:"calentamiento progresivo escalada grados"},
+  "Chequeo de seguridad":{cat:"Escalada",musc:"—",
+    pasos:["Nudo: ocho bien hecho y repasado, con cola suficiente.","Arnés: hebillas cerradas, bien ajustado sobre la cadera.","Asegurador: cuerda bien puesta en el aparato y mosquetón cerrado.","Casco puesto, tú y quien asegura.","Cuerda: largo suficiente para la vía y nudo en el otro extremo."],
+    fij:["Revísense mutuamente antes de cada vía, siempre."],err:["Saltarse el chequeo por confianza."],q:"chequeo de compañero escalada partner check"},
+  "Sesión de escalada":{cat:"Escalada",musc:"Dorsales, antebrazos, dedos y core",
+    pasos:["Escala lo que tengas planeado.","La app marca la hora de inicio con tu primera casilla y la de término al guardar."],
+    fij:["Si el codo o los dedos molestan, corta la sesión.","Con las piernas cansadas se resbala más: cuida los pies."],err:[],q:"técnica de escalada principiantes pies"},
+  "Estiramiento de antebrazos y dedos":{cat:"Escalada",musc:"Antebrazos y dedos",
+    pasos:["Brazo estirado al frente, palma hacia arriba; con la otra mano lleva los dedos hacia abajo y atrás.","Sostén 30 segundos sin rebotar.","Repite con la palma hacia abajo.","Cambia de brazo."],
+    fij:["Suave: debe sentirse un estiramiento, no dolor."],err:["Rebotar o tirar fuerte."],q:"estiramiento antebrazos escalada"},
+
   /* Cardio */
   "Caminadora inclinada":{v:"Uu2cMyb4Dm8",cat:"Cardio",musc:"Glúteos, piernas y corazón",
     pasos:["Parte caminando en plano 1 minuto.","Sube la inclinación a 10-12% y la velocidad a un paso rápido (≈ 4,5-5,5 km/h) en el que puedas hablar, pero con esfuerzo.","Camina erguida, con pasos completos.","Al final baja la inclinación 1 minuto para enfriar."],
@@ -715,7 +796,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 11 oct (3)";
+const APP_VERSION="versión 11 oct (4)";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -769,6 +850,7 @@ function checkRoutinesUpdate(){
     if(R&&!exInRoutine(R,"Sit-up con disco"))R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Abdominal en banco declinado"){ex.n="Sit-up con disco";ex.d="3 × 10 · superserie con la siguiente";ex.tipo="peso";delete ex.rest;
       if(/banco/.test(bl.t))bl.t="🔥 Abdomen · superserie de 3";}}));
     data.migSitA=true;save();}
+  ESC.forEach(t=>{if(!data.routines[t]){data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));save();}});
   if((data.routinesVersion||0)<7){
     // Plan v7 (8 oct 2026): gimnasio = piernas + abdomen en 2 rutinas. Historial, medidas, Fitia, niveles y biblioteca no se tocan.
     data.routinesBackup=JSON.parse(JSON.stringify(data.routines));
@@ -836,6 +918,7 @@ function renderRoutine(){
   let html=`<div class="rhead ${THEME[currentTab]||'th-am'}"><div class="rt">${r.emoji} ${esc(r.nombre)}</div>
     ${(MUSC[currentTab]||[]).length?`<div class="rm">${MUSC[currentTab].map(esc).join("<br>")}</div>`:''}
     ${cicloLine()&&!r.yoga?`<div class="rm cl">${esc(cicloLine())}</div>`:''}</div>
+  ${ESC.includes(currentTab)&&!editMode?`<div class="seg"><button data-esc="escalada" class="${currentTab==='escalada'?'active':''}">🧱 Muro</button><button data-esc="escaladaR" class="${currentTab==='escaladaR'?'active':''}">🪨 Roca</button></div>`:''}
   <div class="introbar">
     <div class="intro">${editMode?'edita, borra o agrega ejercicios':'marca cada serie con los botones · ℹ️ = cómo se hace'}</div>
     <button class="editbtn ${editMode?'on':''}" id="editToggle">${editMode?'✓ Listo':'✏️ Editar'}</button>
@@ -1121,6 +1204,8 @@ function bindRoutine(){
   const sd=document.getElementById("sessDate");
   if(sd)sd.onchange=()=>{sessionDate=sd.value||todayStr();};
   main.querySelectorAll("[data-info]").forEach(el=>{el.onclick=()=>openInfo(el.dataset.info);});
+  main.querySelectorAll("[data-esc]").forEach(el=>{el.onclick=()=>{if(el.dataset.esc===currentTab)return;const st=data.curStart;goTab(el.dataset.esc);
+    if(ESC.includes(currentTab)){data.escModo=currentTab;if(st&&ESC.includes(st.tab))data.curStart={tab:currentTab,t:st.t};save();render();}};});
   if(!editMode){
     main.querySelectorAll("[data-cb]").forEach(el=>{
       el.onclick=()=>{markStart();const n=idMap[el.dataset.cb];draft[n]=draft[n]||{};draft[n].done=!draft[n].done;el.classList.toggle("on",draft[n].done);};
@@ -1416,7 +1501,7 @@ function fitiaChart(weeks){
 function renderHoy(){
   const wk=thisWeek();
   const gymW=wk.filter(s=>isGym(s.tipo)).length, hsW=wk.filter(s=>s.tipo==="handstand").length,
-    casaW=wk.filter(s=>s.tipo==="casa").length, esW=wk.filter(s=>s.tipo==="escalada").length, yoW=wk.filter(s=>s.tipo==="yoga").length;
+    casaW=wk.filter(s=>s.tipo==="casa").length, esW=wk.filter(s=>ESC.includes(s.tipo)).length, yoW=wk.filter(s=>s.tipo==="yoga").length;
   let dots="";for(let i=0;i<3;i++)dots+=`<div class="dot ${i<gymW?'on':''}">${i<gymW?'✓':i+1}</div>`;
 
   // Último entrenamiento: el último día con registros y todo lo hecho ese día
@@ -1440,15 +1525,13 @@ function renderHoy(){
   <div class="tiles t2">
     ${GYM_ORDER.map(t=>`<div class="tile ${THEME[t]}" data-go="${t}">${data.routines[t].emoji} ${esc(data.routines[t].nombre.split(' · ')[0])}<small>${FOCUS[t]}</small></div>`).join("")}
   </div>
-  <div class="tiles t2">
+  <div class="tiles t3">
     <div class="tile th-casa" data-go="casa">🏠 Handstand casa</div>
+    <div class="tile th-esc" data-go="${data.escModo||'escalada'}">🧗 Escalada</div>
     <div class="tile th-yoga" data-go="yoga">🧘 Yoga</div>
   </div>
   <div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>
-  <div class="tiles t2">
-    <div class="tile th-am" id="qHs">🤸 + Clase handstand</div>
-    <div class="tile th-am" id="qEs">🧗 + Escalada</div>
-  </div>
+  <div class="tile th-am" id="qHs" style="margin-bottom:10px">🤸 + Clase handstand (guiada)</div>
   <div class="card"><h3>⏮️ Último entrenamiento</h3>${lastHtml}<button class="ulink" data-go="hist">📊 Ver historial</button></div>
   <div class="card">
     <h3>📆 Esta semana</h3>
@@ -1482,7 +1565,6 @@ function renderHoy(){
   main.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
   document.getElementById("sessDate").onchange=e=>{sessionDate=e.target.value||todayStr();};
   document.getElementById("qHs").onclick=()=>quickLog("handstand");
-  document.getElementById("qEs").onclick=()=>quickLog("escalada");
   document.getElementById("fWeek").onchange=e=>{fitiaWeek=e.target.value;renderHoy();};
   document.getElementById("fHist").onclick=()=>{fitiaHist=!fitiaHist;renderHoy();};
   document.getElementById("fSave").onclick=()=>{
@@ -1829,7 +1911,7 @@ function updateStats(){
   const wk=thisWeek();
   document.getElementById("s-week").textContent=wk.filter(s=>isGym(s.tipo)).length+"/3";
   document.getElementById("s-hs").textContent=wk.filter(s=>s.tipo==="handstand").length;
-  document.getElementById("s-es").textContent=wk.filter(s=>s.tipo==="escalada").length;
+  document.getElementById("s-es").textContent=wk.filter(s=>ESC.includes(s.tipo)).length;
   const ps=data.planStart||todayStr();
   const total=data.sessions.filter(s=>isGym(s.tipo)&&dstr(new Date(s.date))>=ps).length;
   const pct=Math.min(100,Math.round(total/GOAL*100));
