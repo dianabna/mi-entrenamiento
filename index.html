@@ -118,6 +118,8 @@
   .ex.active{background:#fffaf4}
   .hbtns{display:flex;gap:6px;align-items:center}
   .hlink{background:none;border:none;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer;padding:4px}
+  .ccard{background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:12.5px;line-height:1.45;cursor:pointer}
+  .ccard .ct{font-weight:800;font-size:13.5px;display:flex;justify-content:space-between;margin-bottom:3px}
   .cbar{display:flex;height:16px;border-radius:8px;overflow:hidden;margin-top:6px}
   .cpos{position:relative;height:14px;font-size:11px}
   .cpos span{position:absolute;transform:translateX(-50%)}
@@ -281,7 +283,7 @@
   <h1>🏔️ Mi Entrenamiento</h1>
   <p>Diana · Gym + handstand · San Pedro · <span id="appver"></span></p>
   <div class="stats">
-    <div class="stat"><b id="s-week">0/3</b><span>🏋️ gym (sem)</span></div>
+    <div class="stat"><b id="s-week">0</b><span>🏋️ gym (sem)</span></div>
     <div class="stat"><b id="s-hs">0</b><span>🤸 handstand (sem)</span></div>
     <div class="stat"><b id="s-es">0</b><span>🧗 escalada (sem)</span></div>
   </div>
@@ -449,24 +451,35 @@ const DEFAULT_ROUTINES = {
       {n:"Flexiones", skill:true, log:true},
     ]},
   ]},
-  yoga:{nombre:"Yoga · movilidad y recuperación", emoji:"🧘", yoga:true, blocks:[
-    {t:"🧘 Secuencia (~20 min)", ex:[
-      {n:"Centrado + respiración", d:"10 respiraciones"},
-      {n:"Gato-vaca", d:"8 ciclos lentos"},
-      {n:"Perro boca abajo", d:"5 respiraciones"},
-      {n:"Saludo al Sol A", d:"3 rondas"},
+  yogaAM:{nombre:"Yoga AM · despertar", emoji:"☀️", yoga:true, blocks:[
+    {t:"☀️ Para despertar (~12 min)", ex:[
+      {n:"De pie: brazos arriba y respiración profunda", d:"5 respiraciones"},
+      {n:"Gato-vaca", d:"8 ciclos"},
+      {n:"Perro boca abajo, pedaleando los talones", d:"5 respiraciones"},
+      {n:"Saludo al Sol A", d:"3-4 rondas"},
+      {n:"Estocada baja (anjaneyasana)", d:"5 resp. c/lado"},
       {n:"Guerrero II", d:"5 resp. c/lado"},
       {n:"Triángulo", d:"5 resp. c/lado"},
-      {n:"Anjaneyasana (estocada baja)", d:"5 resp. c/lado"},
-      {n:"Paloma (caderas)", d:"8 resp. c/lado"},
       {n:"Torsión sentada (espalda alta)", d:"5 resp. c/lado"},
-      {n:"Postura del niño", d:"8 respiraciones"},
-      {n:"Savasana", d:"2-3 min"},
+      {n:"Postura del niño", d:"5 respiraciones"},
+    ]},
+  ]},
+  yoga:{nombre:"Yoga PM · recuperar y dormir", emoji:"🌙", yoga:true, blocks:[
+    {t:"🌙 Para soltar el día (~20 min)", ex:[
+      {n:"Respiración 4-6 (inhala en 4, exhala en 6)", d:"2 min"},
+      {n:"Gato-vaca muy lento", d:"8 ciclos"},
+      {n:"Postura del niño", d:"2 min"},
+      {n:"Hilo en la aguja (torsión en cuatro apoyos)", d:"5 resp. c/lado"},
+      {n:"Figura 4 tumbada (caderas)", d:"8 resp. c/lado"},
+      {n:"Torsión tumbada", d:"8 resp. c/lado"},
+      {n:"Mariposa reclinada", d:"2 min"},
+      {n:"Piernas en la pared", d:"4 min"},
+      {n:"Savasana", d:"3 min"},
     ]},
   ]},
 };
 const GYM_ORDER=["gymA","gymB"];
-const THEME={gymA:"th-a",gymB:"th-b",gymC:"th-c",casa:"th-casa",yoga:"th-yoga",escalada:"th-esc",escaladaR:"th-esc"};
+const THEME={gymA:"th-a",gymB:"th-b",gymC:"th-c",casa:"th-casa",yoga:"th-yoga",yogaAM:"th-yoga",escalada:"th-esc",escaladaR:"th-esc"};
 const FOCUS={gymA:"Cuádriceps + abdomen",gymB:"Glúteos + abdomen"};
 const MUSC={
   gymA:["🦵 Cuádriceps · glúteos · glúteo medio","🔥 Abdomen (recto y bajo)","🤸 Dorsales y bíceps (dominadas)"],
@@ -474,10 +487,12 @@ const MUSC={
   casa:["💪 Hombros · muñecas · tríceps · pecho","🔥 Abdomen · flexores de cadera"],
   escalada:["🧗 Dorsales · antebrazos · dedos · core","⚠️ Sin regletas chicas los primeros 15 min"],
   escaladaR:["🧗 Dorsales · antebrazos · dedos · core","⚠️ Sin regletas chicas los primeros 15 min"],
-  yoga:["🧘 Movilidad y recuperación"],
+  yoga:["🌙 Soltar tensión, calmar el sistema nervioso y preparar el sueño"],
+  yogaAM:["☀️ Despertar el cuerpo: columna, caderas y hombros"],
 };
-const ROUTINE_TABS=["gymA","gymB","casa","escalada","escaladaR","yoga"];
+const ROUTINE_TABS=["gymA","gymB","casa","escalada","escaladaR","yogaAM","yoga"];
 const ESC=["escalada","escaladaR"];
+const YOGA=["yogaAM","yoga"];
 const LEGACY={
   dia1:"1️⃣ Día 1 (calistenia)",dia2:"2️⃣ Día 2 (calistenia)",dia3:"3️⃣ Día 3 (calistenia)",
   parqueA:"🅰️ Parque A",parqueB:"🅱️ Parque B",casa:"🏠 Casa",
@@ -781,7 +796,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 11 oct (5)";
+const APP_VERSION="versión 11 oct (6)";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -836,6 +851,7 @@ function checkRoutinesUpdate(){
       if(/banco/.test(bl.t))bl.t="🔥 Abdomen · superserie de 3";}}));
     data.migSitA=true;save();}
   ESC.forEach(t=>{if(!data.routines[t]){data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));save();}});
+  if(!data.migYoga){YOGA.forEach(t=>{data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));});data.migYoga=true;save();}
   // 11 oct: escalada sin bloque "A escalar"; en roca sin presas, sin chequeo y sin progresión
   if(!data.migEsc2){ESC.forEach(t=>{data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));});data.migEsc2=true;save();}
   if((data.routinesVersion||0)<7){
@@ -904,8 +920,10 @@ function renderRoutine(){
 
   let html=`<div class="rhead ${THEME[currentTab]||'th-am'}"><div class="rt">${r.emoji} ${esc(r.nombre)}</div>
     ${(MUSC[currentTab]||[]).length?`<div class="rm">${MUSC[currentTab].map(esc).join("<br>")}</div>`:''}
-    ${cicloLine()&&!r.yoga?`<div class="rm cl">${esc(cicloLine())}</div>`:''}</div>
+</div>
   ${ESC.includes(currentTab)&&!editMode?`<div class="seg"><button data-esc="escalada" class="${currentTab==='escalada'?'active':''}">🧱 Muro</button><button data-esc="escaladaR" class="${currentTab==='escaladaR'?'active':''}">🪨 Roca</button></div>`:''}
+  ${YOGA.includes(currentTab)&&!editMode?`<div class="seg"><button data-esc="yogaAM" class="${currentTab==='yogaAM'?'active':''}">☀️ AM · despertar</button><button data-esc="yoga" class="${currentTab==='yoga'?'active':''}">🌙 PM · dormir</button></div>`:''}
+  ${!editMode?cicloCard():''}
   <div class="introbar">
     <div class="intro">${editMode?'edita, borra o agrega ejercicios':'marca cada serie con los botones · ℹ️ = cómo se hace'}</div>
     <button class="editbtn ${editMode?'on':''}" id="editToggle">${editMode?'✓ Listo':'✏️ Editar'}</button>
@@ -1191,8 +1209,10 @@ function bindRoutine(){
   const sd=document.getElementById("sessDate");
   if(sd)sd.onchange=()=>{sessionDate=sd.value||todayStr();};
   main.querySelectorAll("[data-info]").forEach(el=>{el.onclick=()=>openInfo(el.dataset.info);});
+  main.querySelectorAll(".ccard[data-go]").forEach(el=>{el.onclick=()=>goTab(el.dataset.go);});
   main.querySelectorAll("[data-esc]").forEach(el=>{el.onclick=()=>{if(el.dataset.esc===currentTab)return;const st=data.curStart;goTab(el.dataset.esc);
-    if(ESC.includes(currentTab)){data.escModo=currentTab;if(st&&ESC.includes(st.tab))data.curStart={tab:currentTab,t:st.t};save();render();}};});
+    const grp=ESC.includes(currentTab)?ESC:(YOGA.includes(currentTab)?YOGA:null);
+    if(grp){data[grp===ESC?"escModo":"yogaModo"]=currentTab;if(st&&grp.includes(st.tab))data.curStart={tab:currentTab,t:st.t};save();render();}};});
   if(!editMode){
     main.querySelectorAll("[data-cb]").forEach(el=>{
       el.onclick=()=>{markStart();const n=idMap[el.dataset.cb];draft[n]=draft[n]||{};draft[n].done=!draft[n].done;el.classList.toggle("on",draft[n].done);};
@@ -1334,6 +1354,14 @@ function cicloInfo(ref){
   const pred=[1,2,3].map(k=>({mid:add(last,L*k),lo:add(last,mn*k),hi:add(last,mx*k)}));
   const cuts=[5,Math.max(6,ov-2),ov+1,Math.max(ov+2,L-6),L];
   return {st,lens,use,avg,L,mn,mx,last,d,ov,f,pred,cuts,late:d>mx?d-mx:0};
+}
+// Tarjeta del ciclo dentro de cada sesión: fase de hoy y qué significa para entrenar
+function cicloCard(){
+  const c=cicloInfo();
+  if(!c)return `<div class="ccard" data-go="ciclo">🌙 <b>Tu ciclo:</b> registra tu día 1 para ver aquí cuánto exigirte hoy ›</div>`;
+  const F=FASES[c.f],yo=YOGA.includes(currentTab);
+  return `<div class="ccard" data-go="ciclo"><div class="ct">${F.e} Día ${c.d} · Fase ${F.n.toLowerCase()} <span>›</span></div>
+    <div>${c.late?'Tu menstruación debería llegar en estos días. ':''}${yo?F.sentir:F.entreno}</div></div>`;
 }
 function cicloLine(){const c=cicloInfo();if(!c)return "";const F=FASES[c.f];
   return c.late?`🌙 Día ${c.d} · tu menstruación debería llegar en estos días`:`🌙 Día ${c.d} · ${F.n.toLowerCase()}: ${F.rut}`;}
@@ -1488,8 +1516,7 @@ function fitiaChart(weeks){
 function renderHoy(){
   const wk=thisWeek();
   const gymW=wk.filter(s=>isGym(s.tipo)).length, hsW=wk.filter(s=>s.tipo==="handstand").length,
-    casaW=wk.filter(s=>s.tipo==="casa").length, esW=wk.filter(s=>ESC.includes(s.tipo)).length, yoW=wk.filter(s=>s.tipo==="yoga").length;
-  let dots="";for(let i=0;i<3;i++)dots+=`<div class="dot ${i<gymW?'on':''}">${i<gymW?'✓':i+1}</div>`;
+    casaW=wk.filter(s=>s.tipo==="casa").length, esW=wk.filter(s=>ESC.includes(s.tipo)).length, yoW=wk.filter(s=>YOGA.includes(s.tipo)).length;
 
   // Último entrenamiento: el último día con registros y todo lo hecho ese día
   const ss=sorted();let lastHtml=`<p class="small">Todavía no registras entrenamientos.</p>`;
@@ -1515,16 +1542,16 @@ function renderHoy(){
   <div class="tiles t3">
     <div class="tile th-casa" data-go="casa">🏠 Handstand casa</div>
     <div class="tile th-esc" data-go="${data.escModo||'escalada'}">🧗 Escalada</div>
-    <div class="tile th-yoga" data-go="yoga">🧘 Yoga</div>
+    <div class="tile th-yoga" data-go="${data.yogaModo||'yoga'}">🧘 Yoga</div>
   </div>
   <div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>
   <div class="tile th-am" id="qHs" style="margin-bottom:10px">🤸 + Clase handstand (guiada)</div>
   <div class="card"><h3>⏮️ Último entrenamiento</h3>${lastHtml}<button class="ulink" data-go="hist">📊 Ver historial</button></div>
   <div class="card">
     <h3>📆 Esta semana</h3>
-    <div class="wk"><span>🏋️ Gym</span><div class="dots">${dots}</div></div>
-    <div class="wk"><span>🤸 Clase de handstand</span><b>${hsW} / 1</b></div>
-    <div class="wk"><span>🏠 Handstand en casa</span><b>${casaW} / 2-4</b></div>
+    <div class="wk"><span>🏋️ Gym</span><b>${gymW}</b></div>
+    <div class="wk"><span>🤸 Clase de handstand</span><b>${hsW}</b></div>
+    <div class="wk"><span>🏠 Handstand en casa</span><b>${casaW}</b></div>
     <div class="wk"><span>🧗 Escalada</span><b>${esW}</b></div>
     <div class="wk"><span>🧘 Yoga</span><b>${yoW}</b></div>
   </div>
@@ -1896,7 +1923,7 @@ function renderHist(){
 
 function updateStats(){
   const wk=thisWeek();
-  document.getElementById("s-week").textContent=wk.filter(s=>isGym(s.tipo)).length+"/3";
+  document.getElementById("s-week").textContent=wk.filter(s=>isGym(s.tipo)).length;
   document.getElementById("s-hs").textContent=wk.filter(s=>s.tipo==="handstand").length;
   document.getElementById("s-es").textContent=wk.filter(s=>ESC.includes(s.tipo)).length;
   const ps=data.planStart||todayStr();
