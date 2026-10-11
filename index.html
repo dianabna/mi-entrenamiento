@@ -117,6 +117,11 @@
   .ex.active{background:#fffaf4}
   .hbtns{display:flex;gap:6px;align-items:center}
   .hlink{background:none;border:none;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer;padding:4px}
+  .cbar{display:flex;height:16px;border-radius:8px;overflow:hidden;margin-top:6px}
+  .cpos{position:relative;height:14px;font-size:11px}
+  .cpos span{position:absolute;transform:translateX(-50%)}
+  .clegend{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:4px}
+  .rhead .cl{margin-top:8px;padding-top:7px;border-top:1px dashed currentColor;font-weight:600}
   .elapsed{font-size:12.5px;color:var(--teal);margin:-6px 2px 12px}
   .edcard{border-top:1px solid var(--line);padding:11px 14px;display:flex;flex-direction:column;gap:8px}
   .edtop{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14.5px}
@@ -710,7 +715,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 11 oct";
+const APP_VERSION="versión 11 oct (2)";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -816,6 +821,7 @@ function render(){
   if(currentTab==="lib")return renderLib();
   if(currentTab==="prog")return renderProg();
   if(currentTab==="hist")return renderHist();
+  if(currentTab==="ciclo")return renderCiclo();
   renderRoutine();
 }
 
@@ -828,7 +834,8 @@ function renderRoutine(){
   saveBtn.className="save"+(isYoga?" yoga":"");
 
   let html=`<div class="rhead ${THEME[currentTab]||'th-am'}"><div class="rt">${r.emoji} ${esc(r.nombre)}</div>
-    ${(MUSC[currentTab]||[]).length?`<div class="rm">${MUSC[currentTab].map(esc).join("<br>")}</div>`:''}</div>
+    ${(MUSC[currentTab]||[]).length?`<div class="rm">${MUSC[currentTab].map(esc).join("<br>")}</div>`:''}
+    ${cicloLine()&&!r.yoga?`<div class="rm cl">${esc(cicloLine())}</div>`:''}</div>
   <div class="introbar">
     <div class="intro">${editMode?'edita, borra o agrega ejercicios':'marca cada serie con los botones · ℹ️ = cómo se hace'}</div>
     <button class="editbtn ${editMode?'on':''}" id="editToggle">${editMode?'✓ Listo':'✏️ Editar'}</button>
@@ -1007,15 +1014,15 @@ function exType(ex){
   if(!canLog(ex))return "marcar";
   return ex.skill||BODYWEIGHT.has(ex.n)||!ex.log?"reps":"peso";
 }
-const SUG={since:"2026-10-10",kg:{
+const SUG={since:"2026-10-12",kg:{
   "Prensa de piernas":[50,"meta 3×15 antes de subir · pies un poco más arriba"],
   "Extensión de cuádriceps":[40,"mismo peso · baja en 3 seg"],
   "Abducción acostada con mancuerna":[12,"si no hay de 12, 10 kg × 20"],
   "Sit-up con disco":[5,"meta 3×12, después 7,5-10 kg"],
-  "Abdominal en banco declinado":[0,"primera vez sin peso · después disco de 5 kg"],
-  "Peso muerto con mancuernas":[24,"+2 kg por mancuerna · espalda recta"],
-  "Hip thrust":[50,"+5 kg por lado · 3×8-10"],
-  "Curl femoral":[5,"placa 5 · puntas de los pies hacia ti"],
+  "Abdominal en banco declinado":[5,"disco de 5 kg · 3×10-12"],
+  "Peso muerto con mancuernas":[28,"sube ~1,5 kg por mancuerna · espalda recta"],
+  "Hip thrust":[50,"meta 3×15 completas; después 60 kg × 8"],
+  "Curl femoral":[5,"placa 5 · meta 3×12 sin calambre"],
   "Extensión de tríceps en polea":[4,"placa 4 · 3×12"],
 }};
 function sugOf(n){const g=SUG.kg[n];if(!g)return null;const L=lastLog(n);if(L&&dstr(new Date(L.date))>=SUG.since)return null;return g;}
@@ -1214,6 +1221,101 @@ saveBtn.onclick=()=>{
   currentTab="hoy";render();
 };
 
+/* ---------- CICLO MENSTRUAL ---------- */
+// Fechas de día 1 en data.ciclo.starts (ISO). Nada de esto va en el código: la página es pública.
+const FASES={
+  mens:{e:"🩸",n:"Menstrual",c:"#E24B4A",corto:"Escucha a tu cuerpo: entrena suave si hay dolor",rut:"si hay cólicos, baja la intensidad; si te sientes bien, entrena normal",
+    horm:"Estrógeno y progesterona están en su punto más bajo.",
+    sentir:"Cólicos y cansancio los primeros días; hacia el día 3 o 4 la energía suele volver.",
+    entreno:"Según cómo te sientas. Si hay dolor, baja la intensidad o cambia por yoga. Si te sientes bien, entrenar normal no hace daño.",
+    comida:"Alimentos con hierro (legumbres, huevo, carne), agua y comidas tibias."},
+  fol:{e:"🌱",n:"Folicular",c:"#97C459",corto:"Buen momento para exigirte",rut:"buen día para subir pesos o reps si la técnica acompaña",
+    horm:"El estrógeno sube de forma sostenida; la progesterona sigue baja.",
+    sentir:"Más energía, mejor ánimo y mejor recuperación.",
+    entreno:"Tu mejor ventana para exigirte: sube pesos, busca repeticiones nuevas y practica los niveles difíciles de tus skills.",
+    comida:"El apetito suele estar más estable: es un buen momento para mantener el déficit sin sufrir."},
+  ov:{e:"✨",n:"Ovulación",c:"#EF9F27",corto:"Energía alta: puedes ir fuerte",rut:"puedes ir fuerte; calienta bien rodilla y codo",
+    horm:"Pico de estrógeno y de LH (la hormona que libera el óvulo); leve alza de testosterona.",
+    sentir:"Energía y motivación altas. Algunas mujeres sienten una puntada en el bajo vientre.",
+    entreno:"Puedes entrenar fuerte. Calienta bien las articulaciones antes de cargar.",
+    comida:"Normal, según tus metas."},
+  lut1:{e:"🌕",n:"Lútea temprana",c:"#AFA9EC",corto:"Entrena normal y mantén las cargas",rut:"mantén las cargas e hidrátate más",
+    horm:"La progesterona sube y domina; el estrógeno tiene un segundo pico más bajo.",
+    sentir:"La temperatura corporal sube unas décimas y el pulso un poco: puedes sentir más calor al entrenar. La energía aún es buena.",
+    entreno:"Entrena normal y mantén las cargas. Toma más agua, sobre todo con el clima de Atacama.",
+    comida:"El gasto y el hambre suben un poco: suma proteína y carbohidratos de verdad (avena, fruta, legumbres) en vez de dulces."},
+  lut2:{e:"🌘",n:"Lútea tardía (premenstrual)",c:"#7F77DD",corto:"Hoy está bien bajar la exigencia",rut:"mantén los pesos, haz los 🔴 y no te exijas de más",
+    horm:"El estrógeno y la progesterona caen hasta que llega la menstruación.",
+    sentir:"Cansancio, antojos, hinchazón, ánimo más sensible y sueño más liviano.",
+    entreno:"Haz lo esencial (los 🔴) y mantén los pesos. Está bien no terminar o cambiar la sesión por yoga: no pierdes progreso.",
+    comida:"La balanza puede marcar entre 0,5 y 2 kg más por retención de agua: no es grasa. Para los antojos: algo dulce con grasa y fibra (dátiles con almendras, chocolate 80%)."},
+};
+function cicloInfo(ref){
+  const st=[...new Set(((data.ciclo||{}).starts)||[])].sort();if(!st.length)return null;
+  const D=x=>new Date(x+"T12:00:00"),days=(a,b)=>Math.round((D(b)-D(a))/86400000);
+  const lens=[];for(let i=1;i<st.length;i++){const l=days(st[i-1],st[i]);if(l>=18&&l<=45)lens.push(l);}
+  const use=lens.slice(-8),avg=use.length?use.reduce((a,b)=>a+b,0)/use.length:28;
+  const L=Math.round(avg),mn=use.length?Math.min(...use):L-2,mx=use.length?Math.max(...use):L+2;
+  const last=st[st.length-1],today=ref||todayStr(),d=days(last,today)+1,ov=L-14;
+  let f=d<=5?"mens":d<=ov-2?"fol":d<=ov+1?"ov":d<=L-6?"lut1":"lut2";
+  const add=(iso,n)=>{const x=D(iso);x.setDate(x.getDate()+n);return dstr(x);};
+  const pred=[1,2,3].map(k=>({mid:add(last,L*k),lo:add(last,mn*k),hi:add(last,mx*k)}));
+  const cuts=[5,Math.max(6,ov-2),ov+1,Math.max(ov+2,L-6),L];
+  return {st,lens,use,avg,L,mn,mx,last,d,ov,f,pred,cuts,late:d>mx?d-mx:0};
+}
+function cicloLine(){const c=cicloInfo();if(!c)return "";const F=FASES[c.f];
+  return c.late?`🌙 Día ${c.d} · tu menstruación debería llegar en estos días`:`🌙 Día ${c.d} · ${F.n.toLowerCase()}: ${F.rut}`;}
+function parseFechas(txt){
+  const out=[];String(txt||"").split(/[\n,;]+/).forEach(t=>{t=t.trim();let m;
+    if((m=t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)))out.push(`${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`);
+    else if((m=t.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/)))out.push(`${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`);});
+  return out.filter(x=>!isNaN(new Date(x+"T12:00:00")));
+}
+let cicloList=false;
+function renderCiclo(){
+  data.ciclo=data.ciclo||{starts:[]};
+  const c=cicloInfo(),fd=x=>fmtDate(x+"T12:00:00").replace(/ \d{4}$/,"");
+  let html=`<div class="rhead th-c"><div class="rt">🌙 Mi ciclo</div><div class="rm">Para saber cuándo exigirte y cuándo está bien bajar el ritmo.</div></div>`;
+  if(c){
+    const F=FASES[c.f],tot=Math.max(c.L,c.d),w=[c.cuts[0],c.cuts[1]-c.cuts[0],c.cuts[2]-c.cuts[1],c.cuts[3]-c.cuts[2],c.L-c.cuts[3]];
+    const keys=["mens","fol","ov","lut1","lut2"],pos=Math.min(100,(c.d-0.5)/c.L*100);
+    html+=`<div class="card"><h3>🌙 Día ${c.d} de ~${c.L}</h3>
+      <div class="cbar">${keys.map((k,i)=>`<div style="width:${w[i]/c.L*100}%;background:${FASES[k].c}"></div>`).join("")}</div>
+      <div class="cpos"><span style="left:${pos}%">▲</span></div>
+      <div class="clegend">${keys.map((k,i)=>`<span>${FASES[k].e} ${i?c.cuts[i-1]+1:1}-${i<4?c.cuts[i]:c.L}</span>`).join("")}</div>
+      ${c.late?`<div class="remind">Tu menstruación debería llegar en estos días (vas ${c.late} día${c.late>1?'s':''} sobre tu ciclo más largo). Cuando llegue, regístrala abajo.</div>`:''}</div>
+    <div class="card"><h3>${F.e} Fase ${F.n.toLowerCase()}</h3>
+      <p><b>🧪 Hormonas:</b> ${F.horm}</p><p><b>💭 Qué puedes sentir:</b> ${F.sentir}</p>
+      <p><b>🏋️ Entrenamiento:</b> ${F.entreno}</p><p><b>🍲 Comida:</b> ${F.comida}</p></div>
+    <div class="card"><h3>🔮 Próximas menstruaciones</h3>
+      ${c.pred.map(p=>`<div class="wk"><span>≈ ${fd(p.mid)}</span><span class="small">entre ${fd(p.lo)} y ${fd(p.hi)}</span></div>`).join("")}
+      <p class="small" style="margin-top:6px">Son estimaciones según tus ciclos anteriores. No sirven como método anticonceptivo.</p></div>`;
+  }else html+=`<div class="card"><p>Registra el <b>día 1</b> de tu última menstruación para ver en qué fase estás. Con 2 o más registros la app calcula tu ciclo y predice los siguientes.</p></div>`;
+  html+=`<div class="card"><h3>🩸 Registrar día 1</h3>
+    <div class="daterow" style="box-shadow:none;margin-bottom:8px">📅 Fecha <input type="date" id="cDate" value="${todayStr()}" max="${todayStr()}"></div>
+    <div class="tile th-am" id="cAdd">🩸 Registrar día 1 de menstruación</div></div>`;
+  if(c)html+=`<div class="card"><h3>📊 Tu ciclo</h3>
+    <div class="wk"><span>Duración promedio</span><b>${String(Math.round(c.avg*10)/10).replace('.',',')} días</b></div>
+    <div class="wk"><span>Rango</span><b>${c.mn}–${c.mx} días</b></div>
+    <div class="wk"><span>Regularidad</span><b>${c.use.length<2?'faltan datos':(c.mx-c.mn<=5?'Muy regular ✅':c.mx-c.mn<=8?'Regular':'Variable')}</b></div>
+    <div class="wk"><span>Ovulación estimada</span><b>día ${c.ov} aprox.</b></div></div>`;
+  html+=`<div class="card"><button class="ulink" id="cTog" style="margin-top:0">Ver mis ciclos registrados ${cicloList?'▴':'▾'}</button>
+    ${cicloList?`<div class="mlist">${(c?[...c.st].reverse():[]).map((x,i,a)=>{const prev=a[i+1];const l=prev?Math.round((new Date(x)-new Date(prev))/86400000):null;
+        return `<div><span>${fmtDate(x+"T12:00:00")}</span><span>${l?l+' días':'—'}</span><button class="del" data-cdel="${x}">Borrar</button></div>`;}).join("")||'<p class="small">Aún no hay registros.</p>'}</div>
+      <p class="small" style="margin-top:10px">Agregar varias fechas de día 1 (una por línea, formato 17-09-2026):</p>
+      <textarea id="cBulk" rows="4" style="width:100%;border:1px solid var(--line);border-radius:9px;padding:8px;font-family:inherit;font-size:14px;background:var(--cream)"></textarea>
+      <div class="tile th-am" id="cBulkAdd" style="margin-top:6px">Agregar fechas</div>`:''}</div>
+  <div class="card"><h3>🔬 Qué dice la ciencia</h3>
+    <p class="small">Los estudios más recientes <b>no muestran que la fase del ciclo cambie cuánta fuerza o músculo ganas</b>: el entrenamiento funciona igual todo el mes. Lo que sí cambia, y mucho entre una mujer y otra, es <b>cómo te sientes</b>. Usa esta página para entenderte y no castigarte, no como regla: si un día de fase lútea te sientes fuerte, entrena fuerte.</p></div>`;
+  main.innerHTML=html;
+  const addDates=arr=>{const set=new Set(data.ciclo.starts);arr.forEach(x=>set.add(x));data.ciclo.starts=[...set].sort();save();};
+  document.getElementById("cAdd").onclick=()=>{const v=document.getElementById("cDate").value||todayStr();addDates([v]);toast("🩸 Día 1 registrado: "+fmtShort(v));renderCiclo();};
+  document.getElementById("cTog").onclick=()=>{cicloList=!cicloList;renderCiclo();};
+  main.querySelectorAll("[data-cdel]").forEach(b=>b.onclick=()=>{if(confirm("¿Borrar este registro?")){data.ciclo.starts=data.ciclo.starts.filter(x=>x!==b.dataset.cdel);save();renderCiclo();}});
+  const ba=document.getElementById("cBulkAdd");
+  if(ba)ba.onclick=()=>{const f=parseFechas(document.getElementById("cBulk").value);if(!f.length){toast("No reconocí fechas. Usa 17-09-2026");return;}addDates(f);toast(`Se agregaron ${f.length} fechas ✅`);renderCiclo();};
+}
+
 /* ---------- REABRIR Y UNIR SESIONES ---------- */
 let editingId=null;   // id de la sesión reabierta desde el historial
 function reopenSession(id){
@@ -1331,7 +1433,10 @@ function renderHoy(){
   const fb=data.fitia[fitiaWeek]?evalWeek(fv):[];
   const hist=Object.keys(data.fitia).sort().map(mon=>({mon,v:data.fitia[mon]}));
 
+  const ci=cicloInfo();
   let html=`
+  <div class="navcard th-c" data-go="ciclo" style="margin-bottom:12px"><div class="ttl"><span>${ci?`🌙 Día ${ci.d} · Fase ${FASES[ci.f].n.toLowerCase()}`:'🌙 Mi ciclo'}</span><span>›</span></div>
+    <div class="rm">${ci?(ci.late?'Tu menstruación debería llegar en estos días':`${FASES[ci.f].corto} · próxima menstruación ≈ ${fmtDate(ci.pred[0].mid+"T12:00:00").replace(/ \d{4}$/,"")}`):'Registra tu día 1 para saber cuánto exigirte hoy'}</div></div>
   <div class="tiles t2">
     ${GYM_ORDER.map(t=>`<div class="tile ${THEME[t]}" data-go="${t}">${data.routines[t].emoji} ${esc(data.routines[t].nombre.split(' · ')[0])}<small>${FOCUS[t]}</small></div>`).join("")}
   </div>
@@ -1660,6 +1765,8 @@ function progressText(){
   if(M.length){L.push("","MEDIDAS:");M.forEach(m=>L.push(`- ${m.date} · peso ${m.peso??'—'} kg · cintura ${m.cintura??'—'} · cadera ${m.cadera??'—'} · cuello ${m.cuello??'—'}${navyBF(m)!=null?` · grasa ≈ ${navyBF(m)}%`:''}`));}
   const F=Object.keys(data.fitia||{}).sort();
   if(F.length){L.push("","FITIA (promedios semanales):");F.forEach(k=>{const v=data.fitia[k];L.push(`- semana ${weekLabel(k)} · ${v.kcal??'—'} kcal · ${v.p??'—'} g prot · ${v.c??'—'} g carbos · ${v.g??'—'} g grasa`);});}
+  const ci=cicloInfo();
+  if(ci){L.push("","CICLO MENSTRUAL:",`- hoy día ${ci.d} de ~${ci.L} · fase ${FASES[ci.f].n} · promedio ${Math.round(ci.avg*10)/10} días (${ci.mn}-${ci.mx})`,`- días 1 registrados: ${ci.st.slice(-6).join(", ")}`,`- próxima estimada: ${ci.pred[0].mid}`);}
   const lv=Object.keys(LIB).filter(n=>LIB[n].niveles&&data.skillLv&&data.skillLv[n]!=null);
   if(lv.length){L.push("","NIVELES DE SKILLS:");lv.forEach(n=>L.push(`- ${n}: nivel ${skillLv(n)+1} (${LIB[n].niveles[skillLv(n)].n})`));}
   return L.join("\n");
