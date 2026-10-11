@@ -428,9 +428,6 @@ const DEFAULT_ROUTINES = {
       {n:"Rutas o bloques fáciles", d:"3-5 muy por debajo de tu nivel · presas grandes"},
       {n:"Subir de a un grado", d:"2-3 intentos · 2 min de descanso entre cada uno"},
     ]},
-    {t:"🧗 A escalar", ex:[
-      {n:"Sesión de escalada", d:"la app registra la hora de inicio y de término"},
-    ]},
     {t:"🧘 Cierre (3 min)", ex:[
       {n:"Estiramiento de antebrazos y dedos", d:"2 × 30 seg c/lado", log:true, tipo:"seg", rest:10},
       {n:"Flexiones", skill:true, log:true},
@@ -443,19 +440,9 @@ const DEFAULT_ROUTINES = {
     {t:"🤸 Movilidad (3 min)", ex:[
       {n:"Movilidad para escalar", d:"3 min"},
     ]},
-    {t:"💪 Hombros y agarre (3 min)", ex:[
+    {t:"💪 Hombros y manos (3 min) · sin presas", ex:[
       {n:"Flexiones de escápula", d:"1 × 10", log:true, tipo:"reps", rest:20},
-      {n:"Colgarse de presas grandes", d:"2 × 10 seg · en la base de la vía, con los pies apoyados", log:true, tipo:"seg", rest:30},
-    ]},
-    {t:"🦺 Seguridad", ex:[
-      {n:"Chequeo de seguridad", d:"nudo · arnés · asegurador · casco · cuerda"},
-    ]},
-    {t:"🧗 Progresión (10-15 min)", ex:[
-      {n:"Rutas o bloques fáciles", d:"1-2 vías por debajo de tu nivel, o travesía en la base 5 min"},
-      {n:"Subir de a un grado", d:"descansa bien entre vías"},
-    ]},
-    {t:"🧗 A escalar", ex:[
-      {n:"Sesión de escalada", d:"la app registra la hora de inicio y de término"},
+      {n:"Activación de dedos y antebrazos", d:"2 min"},
     ]},
     {t:"🧘 Cierre (3 min)", ex:[
       {n:"Estiramiento de antebrazos y dedos", d:"2 × 30 seg c/lado", log:true, tipo:"seg", rest:10},
@@ -761,7 +748,7 @@ const LIB_BASE={
     fij:["Movimientos amplios y sin rebote."],err:["Estirar en frío con fuerza."],
     rod:"En la sentadilla profunda baja solo hasta donde la rodilla no moleste.",q:"movilidad calentamiento para escalada"},
   "Colgarse de presas grandes":{cat:"Escalada",musc:"Dedos, antebrazos y hombros",
-    pasos:["Elige presas grandes (las que agarras con toda la mano).","Cuélgate con los brazos estirados y los hombros activos (lejos de las orejas).","Sostén 10 segundos y suelta con control.","En roca: hazlo en la base de la vía con los pies apoyados, cargando solo parte del peso."],
+    pasos:["Elige presas grandes (las que agarras con toda la mano).","Cuélgate con los brazos estirados y los hombros activos (lejos de las orejas).","Sostén 10 segundos y suelta con control.","Solo para muro: en roca no se calienta con presas (usa la activación de dedos y antebrazos)."],
     fij:["Es para despertar dedos y tendones, no para cansarte."],err:["Usar regletas chicas en frío.","Colgarte con los hombros sueltos."],
     codo:"Si el codo molesta al colgarte, apoya los pies y carga menos peso.",q:"calentamiento dedos escalada colgarse presas grandes"},
   "Rutas o bloques fáciles":{cat:"Escalada",musc:"Todo el cuerpo · técnica",
@@ -770,12 +757,10 @@ const LIB_BASE={
   "Subir de a un grado":{cat:"Escalada",musc:"Todo el cuerpo",
     pasos:["Después de las fáciles, sube la dificultad de a un grado por vez.","Descansa unos 2 minutos entre intentos.","Cuando llegues a tu nivel de trabajo, ya estás lista para la sesión."],
     fij:["Si vienes cansada del gimnasio, quédate en volumen fácil o técnica: no es día de máximo."],err:[],q:"calentamiento progresivo escalada grados"},
-  "Chequeo de seguridad":{cat:"Escalada",musc:"—",
-    pasos:["Nudo: ocho bien hecho y repasado, con cola suficiente.","Arnés: hebillas cerradas, bien ajustado sobre la cadera.","Asegurador: cuerda bien puesta en el aparato y mosquetón cerrado.","Casco puesto, tú y quien asegura.","Cuerda: largo suficiente para la vía y nudo en el otro extremo."],
-    fij:["Revísense mutuamente antes de cada vía, siempre."],err:["Saltarse el chequeo por confianza."],q:"chequeo de compañero escalada partner check"},
-  "Sesión de escalada":{cat:"Escalada",musc:"Dorsales, antebrazos, dedos y core",
-    pasos:["Escala lo que tengas planeado.","La app marca la hora de inicio con tu primera casilla y la de término al guardar."],
-    fij:["Si el codo o los dedos molestan, corta la sesión.","Con las piernas cansadas se resbala más: cuida los pies."],err:[],q:"técnica de escalada principiantes pies"},
+  "Activación de dedos y antebrazos":{cat:"Escalada",musc:"Dedos, manos y antebrazos",
+    pasos:["Abre y cierra las manos con fuerza 20 veces, estirando bien los dedos al abrir.","Dedos contra dedos: junta las yemas de ambas manos frente al pecho y empuja 5 segundos; repite 5 veces.","Engancha los dedos de una mano con los de la otra (como dos ganchos) y tira suave 5 segundos; repite 5 veces y cambia la mano de arriba.","Círculos de muñeca y sacude las manos 10 segundos."],
+    fij:["Es la forma de calentar los dedos en roca, donde no se usan presas para calentar.","Suave y progresivo: debe sentirse tibio, no cansado."],err:["Tirar con fuerza máxima en frío."],
+    codo:"Si el codo molesta al tirar, hazlo más suave.",q:"calentamiento de dedos para escalar sin presas"},
   "Estiramiento de antebrazos y dedos":{cat:"Escalada",musc:"Antebrazos y dedos",
     pasos:["Brazo estirado al frente, palma hacia arriba; con la otra mano lleva los dedos hacia abajo y atrás.","Sostén 30 segundos sin rebotar.","Repite con la palma hacia abajo.","Cambia de brazo."],
     fij:["Suave: debe sentirse un estiramiento, no dolor."],err:["Rebotar o tirar fuerte."],q:"estiramiento antebrazos escalada"},
@@ -796,7 +781,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 11 oct (4)";
+const APP_VERSION="versión 11 oct (5)";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -851,6 +836,8 @@ function checkRoutinesUpdate(){
       if(/banco/.test(bl.t))bl.t="🔥 Abdomen · superserie de 3";}}));
     data.migSitA=true;save();}
   ESC.forEach(t=>{if(!data.routines[t]){data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));save();}});
+  // 11 oct: escalada sin bloque "A escalar"; en roca sin presas, sin chequeo y sin progresión
+  if(!data.migEsc2){ESC.forEach(t=>{data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));});data.migEsc2=true;save();}
   if((data.routinesVersion||0)<7){
     // Plan v7 (8 oct 2026): gimnasio = piernas + abdomen en 2 rutinas. Historial, medidas, Fitia, niveles y biblioteca no se tocan.
     data.routinesBackup=JSON.parse(JSON.stringify(data.routines));
