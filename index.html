@@ -88,6 +88,26 @@
   .kmeta{margin-top:8px;background:#FAEEDA;color:#633806;border-radius:10px;padding:9px 12px;font-size:14px}
   .ksum{margin:8px 0}
   .kbig{font-size:30px;font-weight:800;color:var(--terra-dark)}
+  nav.back{justify-content:flex-start;padding:10px 10px 6px}
+  nav .backlink{background:none!important;color:var(--ink)!important;border:none;padding:4px 6px;font-size:15px;font-weight:800;cursor:pointer}
+  .hoycard{background:#FAEEDA;border:1px solid #EF9F27;border-radius:14px;padding:11px 13px;margin-bottom:12px;color:#633806;cursor:pointer}
+  .hoycard .ht{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+  .hoycard .ht svg{width:20px;height:20px;flex:0 0 auto}
+  .hoycard .hs{font-size:12.5px;color:#854F0B;margin-top:4px}
+  .hoycard .hb{display:block;width:100%;margin-top:9px;border:none;border-radius:10px;background:#633806;color:#FAEEDA;font-weight:700;font-size:13px;padding:8px;cursor:pointer}
+  .wi{display:inline-flex;vertical-align:-3px;margin-right:7px;background:none!important}
+  .wi svg{width:17px;height:17px}
+  .exbtns{display:flex;gap:5px;align-items:center;flex:0 0 auto}
+  .edsm{border:1px solid var(--line);background:#fff;border-radius:14px;padding:3px 7px;font-size:11px;cursor:pointer;line-height:1.3}
+  .edsm.done{align-self:flex-end;background:#FAEEDA;border-color:#EF9F27;color:#633806;font-weight:700;font-size:12.5px;padding:6px 12px}
+  .addsm{display:block;width:100%;background:none;border:none;border-top:1px dashed var(--line);color:var(--muted);font-size:12.5px;padding:9px;cursor:pointer}
+  .ptip{font-size:12.5px;color:var(--teal);margin:0 2px 14px}
+  .ptip b{color:var(--teal)}
+  .yvid{position:relative;display:block;border-radius:12px;overflow:hidden;background:#000}
+  .yvid img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;opacity:.92}
+  .yvid span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .yt{font-weight:700;font-size:14px;margin-top:8px}
+  details.item .ibody li{margin:5px 0}
   nav::-webkit-scrollbar{display:none}
   nav button{
     flex:0 0 auto;border:none;background:var(--sand);color:var(--ink);
@@ -145,10 +165,6 @@
   .ex.active{background:#fffaf4}
   .hbtns{display:flex;gap:6px;align-items:center}
   .hlink{background:none;border:none;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer;padding:4px}
-  .ypic{display:flex;align-items:center;gap:4px;margin:6px 0 2px;color:var(--teal)}
-  .ypic svg{width:132px;height:88px;background:var(--teal-light);border-radius:12px}
-  .ypic.seq svg{width:31%;height:auto}
-  .yarrow{color:var(--muted);font-size:14px}
   .ccard{background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:12.5px;line-height:1.45;cursor:pointer}
   .ccard .ct{font-weight:800;font-size:13.5px;display:flex;justify-content:space-between;margin-bottom:3px}
   .cbar{display:flex;height:16px;border-radius:8px;overflow:hidden;margin-top:6px}
@@ -313,18 +329,13 @@
 <header>
   <h1>🏔️ Mi Entrenamiento</h1>
   <p>Diana · Gym + handstand · San Pedro · <span id="appver"></span></p>
-  <div class="stats">
-    <div class="stat"><b id="s-week">0</b><span>🏋️ gym (sem)</span></div>
-    <div class="stat"><b id="s-hs">0</b><span>🤸 handstand (sem)</span></div>
-    <div class="stat"><b id="s-es">0</b><span>🧗 escalada (sem)</span></div>
-  </div>
   <div class="progwrap">
     <div class="progbar"><div class="progfill" id="progfill" style="width:0%"></div></div>
-    <div class="progtxt" id="progtxt">Meta: 36 sesiones de gym en 12 semanas</div>
+    <div class="progtxt" id="progtxt"></div>
   </div>
 </header>
 
-<nav id="nav"><button data-tab="hoy" class="homelink">🏠 Home</button><button data-tab="entreno" class="homelink" id="navEnt">🏋️ Entrenamiento</button></nav>
+<nav id="nav"></nav>
 
 <main id="main"></main>
 
@@ -521,7 +532,8 @@ const MUSC={
   yoga:["🌙 Soltar tensión, calmar el sistema nervioso y preparar el sueño"],
   yogaAM:["☀️ Despertar el cuerpo: columna, caderas y hombros"],
 };
-const ROUTINE_TABS=["gymA","gymB","casa","escalada","escaladaR","yogaAM","yoga"];
+// Rutinas con ejercicios y series. Escalada y yoga son tarjetas (duración/video); sus rutinas quedan como calentamiento o rutina escrita opcional.
+const ROUTINE_TABS=["gymA","gymB","casa"];
 const ESC=["escalada","escaladaR"];
 const YOGA=["yogaAM","yoga"];
 const LEGACY={
@@ -826,9 +838,10 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 
 /* ---------- ESTADO ---------- */
 const KEY="entreno_diana_v1";
-const GOAL=36;
+// Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
+const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 17 oct";
+const APP_VERSION="versión 17 oct (2)";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -930,8 +943,7 @@ function effD(ex){const e=LIB[ex.n];return ex.skill&&e&&e.niveles?e.niveles[skil
 /* ---------- RENDER PRINCIPAL ---------- */
 function render(){
   idMap={};
-  // En las sesiones e historial aparece también el enlace para volver a Entrenamiento
-  document.getElementById("navEnt").style.display=[...ROUTINE_TABS,"caminata","natacion","hist"].includes(currentTab)?"":"none";
+  renderNav();
   const isRoutine=ROUTINE_TABS.includes(currentTab);
   document.body.className="";
   saveBtn.style.display="none";
@@ -945,45 +957,38 @@ function render(){
   if(currentTab==="comida")return renderComida();
   if(currentTab==="caminata")return renderCaminata();
   if(currentTab==="natacion")return renderNatacion();
+  if(currentTab==="clase")return renderClase();
+  if(currentTab==="esc")return renderEsc();
+  if(currentTab==="yogaC")return renderYoga();
   renderRoutine();
 }
 
 function renderRoutine(){
   const r=data.routines[currentTab];
-  const isYoga=r.yoga;
   if(!editMode&&(!activeEx||!exByName(activeEx)))activeEx=firstActive();
-  document.body.className=isYoga?"yoga":"";
   saveBtn.style.display=editMode?"none":"block";
-  saveBtn.className="save"+(isYoga?" yoga":"");
+  saveBtn.className="save";
 
-  let html=`<div class="rhead ${THEME[currentTab]||'th-am'}"><div class="rt">${r.emoji} ${esc(r.nombre)}</div>
-    ${(MUSC[currentTab]||[]).length?`<div class="rm">${MUSC[currentTab].map(esc).join("<br>")}</div>`:''}
-</div>
-  ${ESC.includes(currentTab)&&!editMode?`<div class="seg"><button data-esc="escalada" class="${currentTab==='escalada'?'active':''}">🧱 Muro</button><button data-esc="escaladaR" class="${currentTab==='escaladaR'?'active':''}">🪨 Roca</button></div>`:''}
-  ${YOGA.includes(currentTab)&&!editMode?`<div class="seg"><button data-esc="yogaAM" class="${currentTab==='yogaAM'?'active':''}">☀️ AM · despertar</button><button data-esc="yoga" class="${currentTab==='yoga'?'active':''}">🌙 PM · dormir</button></div>`:''}
-  ${!editMode?cicloCard():''}
-  <div class="introbar">
-    <div class="intro">${editMode?'edita, borra o agrega ejercicios':'marca cada serie con los botones · ℹ️ = cómo se hace'}</div>
-    <button class="editbtn ${editMode?'on':''}" id="editToggle">${editMode?'✓ Listo':'✏️ Editar'}</button>
-  </div>`;
-  if(!editMode) html+=`<div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>
-    <div class="elapsed" id="elapsed">${elapsedHtml()}</div>
-    ${editingId!=null?`<div class="tip">✏️ <b>Sesión reabierta.</b> Sigue registrando; al guardar se actualiza la misma sesión y se conserva tu hora de inicio.</div>`:''}`;
-  if(isYoga && !editMode) html+=`<div class="tip">💡 Ideal para días de terreno o de descanso. Respira lento y sin prisa.</div>`;
-  if(!isYoga && !editMode) html+=`<div class="tip">💡 <b>Peso correcto:</b> termina cada serie sintiendo que te quedaban solo 1-3 reps. Cuando completes todas las series en el tope del rango, <b>sube 1-2 kg</b>. Al marcar una serie se abre el descanso recomendado (⏱️).</div>`;
+  let html=editMode?`<div class="introbar"><div class="intro">Edita bloques, ejercicios y su orden</div><button class="editbtn on" id="editToggle">✓ Listo</button></div>`
+    :`${cicloTop(true)}${editingId!=null?`<div class="tip">✏️ <b>Sesión reabierta.</b> Sigue registrando; al guardar se actualiza la misma sesión y se conserva tu hora de inicio.</div>`:''}`;
+  html+=`<div class="rhead ${THEME[currentTab]||'th-am'}"><div class="rt">${r.emoji} ${esc(r.nombre)}</div>
+    ${(MUSC[currentTab]||[]).length?`<div class="rm">${MUSC[currentTab].map(esc).join("<br>")}</div>`:''}</div>`;
+  if(!editMode) html+=`<div class="ptip">💡 <b>Peso correcto:</b> termina cada serie sintiendo que te quedaban solo 1-3 reps. Cuando completes todas las series en el tope del rango, <b>sube 1-2 kg</b>. Al marcar una serie se abre el descanso recomendado (⏱️).</div>`;
 
   r.blocks.forEach((bl,bi)=>{
-    html+=`<div class="block${isYoga?' yoga':''}"><div class="block-h">`;
+    html+=`<div class="block"><div class="block-h">`;
     html+= editMode ? `<input value="${esc(bl.t)}" data-btitle="${bi}"><span class="mv"><button data-bup="${bi}">↑</button><button data-bdn="${bi}">↓</button><button data-bdel="${bi}">🗑️</button></span>` : esc(bl.t);
     html+=`</div>`;
     bl.ex.forEach((ex,ei)=>{
-      if(editMode){
-        const key=bi+"_"+ei,t=editTipo(ex),p=parseDose(ex.d);
+      const key=bi+"_"+ei;
+      if(editMode||exEd===key){
+        const t=editTipo(ex),p=parseDose(ex.d);
         const f={sets:p.sets,val:p.val,nota:t==="marcar"?(ex.d||""):p.nota,ss:p.ss,rest:restOf(ex.n)};
         html+=`<div class="edcard">
           <div class="edtop"><b>${esc(ex.n)}</b><span class="mv"><button data-up="${key}">↑</button><button data-dn="${key}">↓</button><button data-del="${key}">🗑️</button></span></div>
           ${typeRow(t,!!edOpen[key],`data-tog="${key}"`,`data-settype="${key}|`,LIB[ex.n]&&LIB[ex.n].niveles)}
           ${fieldsHtml(t,f,!!edOpen[key],`data-f="${key}|`,ex.n)}
+          ${editMode?'':`<button class="edsm done" data-exdone="1">✓ Listo</button>`}
         </div>`;
       }else{
         const id=exId(ex.n);
@@ -995,17 +1000,16 @@ function renderRoutine(){
           if(L){
             const txt=L.sets?L.v:[L.kg?L.kg+" kg":"",L.reps||(!L.kg?L.v:"")].filter(Boolean).join(" · ");
             lastHtml=`<div class="last">↩︎ Última vez (${fmtShort(L.date)}): ${esc(txt)}</div>`;
-            const t=target(effD(ex)), r=nums(L.reps);
-            if(!sugOf(ex.n)&&t&&L.kg&&r.length>=t.sets&&r.slice(0,t.sets).every(x=>x>=t.top)) lastHtml+=`<div class="up">⬆️ Completaste todo: hoy sube de peso</div>`;
+            const t=target(effD(ex)), rr=nums(L.reps);
+            if(!sugOf(ex.n)&&t&&L.kg&&rr.length>=t.sets&&rr.slice(0,t.sets).every(x=>x>=t.top)) lastHtml+=`<div class="up">⬆️ Completaste todo: hoy sube de peso</div>`;
           }
         }
         const isAct=canLog(ex)&&activeEx===ex.n;
         html+=`<div class="ex ${isAct?'active':''}">
           <div class="cbx ${st.done?'on':''}" data-cb="${id}"></div>
           <div class="ex-body">
-            <div class="ex-top"><div class="ex-name">${nm}</div>${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}</div>
+            <div class="ex-top"><div class="ex-name">${nm}</div><span class="exbtns">${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}<button class="edsm" data-exed="${key}" aria-label="Editar ejercicio">✏️</button></span></div>
             ${ex.skill&&LIB[ex.n]&&LIB[ex.n].niveles?`<label class="lvlwrap">🪜 Tu nivel · toca para cambiarlo<select class="lvl" data-lvl="${id}">${LIB[ex.n].niveles.map((l,i)=>`<option value="${i}" ${i===skillLv(ex.n)?'selected':''}>Nivel ${i+1}: ${esc(l.n)} · ${esc(l.d)}</option>`).join("")}</select></label>`:''}
-            ${isYoga?yogaPic(ex.n):''}
             ${effD(ex)?`<div class="ex-dose">${esc(effD(ex))}${canLog(ex)&&!exMeta(ex).byTime&&exMeta(ex).nSets>1?(ssFirst(ex)?' · sin descanso, pasa a la siguiente':` · descanso ${fmtDur(restOf(ex.n))}`):''}</div>`:''}
             ${lastHtml}
             ${canLog(ex)&&sugOf(ex.n)?`<div class="up">🎯 Peso sugerido hoy: ${fmtKg(sugOf(ex.n)[0])} · ${esc(sugOf(ex.n)[1])}</div>`:''}
@@ -1013,19 +1017,20 @@ function renderRoutine(){
           </div></div>`;
       }
     });
-    if(editMode) html+= addOpen===bi?addFormHtml(bi):`<button class="addex" data-addopen="${bi}">+ Agregar ejercicio</button>`;
+    html+= addOpen===bi?addFormHtml(bi):`<button class="${editMode?'addex':'addsm'}" data-addopen="${bi}">+ ${editMode?'Agregar ejercicio':'agregar ejercicio'}</button>`;
     html+=`</div>`;
   });
 
   if(editMode){
     html+=`<button class="addblock" id="addBlock">+ Agregar bloque nuevo</button>`;
     html+=`<button class="restore" id="restore">↺ Restaurar esta rutina original</button>`;
-  }
+  }else html+=`<button class="edlink" id="editToggle" style="display:block;margin:0 auto 10px">✏️ Editar bloques de la rutina</button>`;
   main.innerHTML=html;
   bindRoutine();
 }
 
 /* ---------- EDICIÓN (compacta, vinculada a la biblioteca) ---------- */
+let exEd=null;   // ejercicio abierto para editar (✏️ en la tarjeta)
 let edOpen={}, addOpen=null, addPick=null, addF=null, addTypeOpen=false;
 function typeRow(t,open,togAttr,setAttrPrefix,hasLevels){
   const opts=Object.keys(TIPOS).filter(k=>k!=="skill"||hasLevels);
@@ -1242,9 +1247,11 @@ function firstActive(){
   return null;
 }
 
+function click0(attr,fn){main.querySelectorAll(`[data-${attr}]`).forEach(el=>{el.onclick=()=>fn(el.dataset[attr]);});}
 function bindRoutine(){
   const et=document.getElementById("editToggle");
-  if(et)et.onclick=()=>{editMode=!editMode;draft={};cur={};activeEx=null;edOpen={};addOpen=null;render();};
+  if(et)et.onclick=()=>{if(!editMode&&Object.values(draft).some(v=>v.done)&&!confirm("Al editar los bloques se borran las series marcadas sin guardar. ¿Seguir?"))return;
+    editMode=!editMode;exEd=null;draft={};cur={};activeEx=null;edOpen={};addOpen=null;render();window.scrollTo(0,0);};
   const sd=document.getElementById("sessDate");
   if(sd)sd.onchange=()=>{sessionDate=sd.value||todayStr();};
   main.querySelectorAll("[data-info]").forEach(el=>{el.onclick=()=>openInfo(el.dataset.info);});
@@ -1270,14 +1277,16 @@ function bindRoutine(){
         const timed=m.byTime||m.secs;
         TIMER.countdown(sec*1000,timed&&m.nSets>1?`${name} · serie ${k} de ${m.nSets}`:name,timed?()=>logSet(n):null);};
       run();});
+    on("exed",k=>{exEd=k;edOpen={};addOpen=null;render();});
     on("tmr",v=>{markStart();const [sec,...rest]=v.split("|");TIMER.countdown(+sec*1000,rest.join("|"));});
     on("logset",id=>logSet(idMap[id]));
     on("rmset",v=>{
       const p=v.lastIndexOf("_"),n=idMap[v.slice(0,p)],i=+v.slice(p+1);
       if(confirm("¿Borrar esta serie?")){draft[n].sets.splice(i,1);if(!draft[n].sets.length)draft[n].done=false;delete cur[n];activeEx=n;render();}
     });
-    return;
   }
+  bindTop();
+  click0("exdone",()=>{exEd=null;render();});
   const R=data.routines[currentTab];
   const at=k=>{const p=k.split("_").map(Number);return [R.blocks[p[0]],p[1],p[0]];};
   const click=(attr,fn)=>main.querySelectorAll(`[data-${attr}]`).forEach(el=>{el.onclick=()=>fn(el.dataset[attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase())],el);});
@@ -1286,9 +1295,9 @@ function bindRoutine(){
   click("bup",b=>swap(R.blocks,+b,+b-1));
   click("bdn",b=>swap(R.blocks,+b,+b+1));
   click("bdel",b=>{if(confirm("¿Borrar este bloque completo?")){R.blocks.splice(+b,1);edOpen={};save();render();}});
-  click("up",k=>{const [bl,i]=at(k);swap(bl.ex,i,i-1);});
-  click("dn",k=>{const [bl,i]=at(k);swap(bl.ex,i,i+1);});
-  click("del",k=>{const [bl,i]=at(k);if(confirm("¿Quitar este ejercicio de la rutina?")){bl.ex.splice(i,1);edOpen={};save();render();}});
+  click("up",k=>{const [bl,i,b]=at(k);if(i>0&&exEd===k)exEd=b+"_"+(i-1);swap(bl.ex,i,i-1);});
+  click("dn",k=>{const [bl,i,b]=at(k);if(i<bl.ex.length-1&&exEd===k)exEd=b+"_"+(i+1);swap(bl.ex,i,i+1);});
+  click("del",k=>{const [bl,i]=at(k);if(confirm("¿Quitar este ejercicio de la rutina?")){bl.ex.splice(i,1);edOpen={};exEd=null;save();render();}});
   click("tog",k=>{edOpen[k]=!edOpen[k];render();});
   click("settype",v=>{const [k,t]=v.split("|"),[bl,i]=at(k);setType(bl.ex[i],t);save();render();});
   main.querySelectorAll("[data-f]").forEach(el=>{
@@ -1350,45 +1359,8 @@ saveBtn.onclick=()=>{
   delete data.curStart;editingId=null;
   save();draft={};cur={};activeEx=null;sessionDate=todayStr();updateStats();
   toast(sess.start?`¡Sesión guardada! 🎉 ${Math.round((sess.end-sess.start)/60000)} min`:"¡Sesión guardada! 🎉");
-  currentTab="hoy";render();window.scrollTo(0,0);kcalSheet(sess);
+  currentTab="entreno";render();window.scrollTo(0,0);kcalSheet(sess);
 };
-
-/* ---------- DIBUJOS DE YOGA ---------- */
-// Figuras de palitos en un lienzo de 120×80 (suelo en y=70). h=cabeza [x,y]; p=líneas [x1,y1,x2,y2,...]; top=vista desde arriba (sin suelo); x=SVG extra.
-const YFIG={
-  pie:{h:[60,22],p:[[60,27,60,48],[60,48,55,70],[60,48,65,70],[60,31,48,8],[60,31,72,8]]},
-  gato:{h:[29,53],p:[[38,48,36,70],[80,48,80,70],[80,70,98,70]],x:'<path d="M38,48 Q59,32 80,48"/><path d="M38,48 Q59,62 80,48" stroke-dasharray="3 4" opacity=".5"/>'},
-  perro:{h:[45,58],p:[[25,70,62,25],[62,25,95,70]]},
-  pinza:{h:[44,60],p:[[66,70,68,34],[68,34,48,54],[49,54,54,69]]},
-  estocada:{h:[60,26],p:[[62,56,60,32],[62,56,42,52],[42,52,40,70],[62,56,82,70],[82,70,100,68],[60,35,49,12],[60,35,71,12]]},
-  guerrero:{h:[58,18],p:[[58,46,58,24],[58,46,32,50],[32,50,28,70],[58,46,95,70],[28,29,88,29]]},
-  triangulo:{h:[27,37],p:[[60,44,28,70],[60,44,92,70],[60,44,35,39],[37,40,33,62],[37,40,41,12]]},
-  torsion:{h:[60,30],p:[[60,64,60,36],[60,66,96,68],[60,64,74,46],[74,46,80,68],[60,40,74,48],[60,40,46,66]],x:'<path d="M48,24 A14,7 0 0 1 72,24" stroke-width="1.6"/><path d="M72,24 l-5,-2 M72,24 l-2,5" stroke-width="1.6"/>'},
-  nino:{h:[46,65],p:[[96,68,72,69],[72,69,90,57],[52,63,25,69]],x:'<path d="M90,57 Q72,50 52,62"/>'},
-  sentada:{h:[60,29],p:[[60,62,60,35],[60,64,42,68],[42,68,66,70],[60,64,78,68],[78,68,54,70],[60,40,47,60],[60,40,73,60]]},
-  hilo:{h:[37,65],p:[[80,70,80,46],[80,70,98,70],[80,46,46,64],[46,66,70,68],[45,63,22,68]]},
-  figura4:{h:[18,64],p:[[24,66,58,66],[58,66,66,38],[66,38,92,38],[58,66,86,54],[86,54,68,40],[38,64,62,48]]},
-  torsionT:{top:1,h:[60,13],p:[[60,19,60,46],[30,24,90,24],[60,46,84,50],[84,50,80,70]]},
-  mariposa:{top:1,h:[60,11],p:[[60,17,60,44],[60,22,40,40],[60,22,80,40],[60,44,40,58],[40,58,60,72],[60,44,80,58],[80,58,60,72]]},
-  pared:{h:[29,64],p:[[35,66,88,66],[88,66,92,22],[50,66,42,56]],x:'<path d="M96,6 V70" stroke-width="2" opacity=".6"/>'},
-  savasana:{h:[21,64],p:[[27,66,70,66],[70,66,104,68],[36,66,58,71]]},
-};
-// Qué figura(s) usa cada postura; el Saludo al Sol muestra tres en secuencia
-const YPIC={
-  "De pie: brazos arriba y respiración profunda":["pie"],"Gato-vaca":["gato"],"Gato-vaca muy lento":["gato"],
-  "Perro boca abajo, pedaleando los talones":["perro"],"Perro boca abajo":["perro"],"Saludo al Sol A":["pie","pinza","perro"],
-  "Estocada baja (anjaneyasana)":["estocada"],"Anjaneyasana (estocada baja)":["estocada"],"Guerrero II":["guerrero"],"Triángulo":["triangulo"],
-  "Torsión sentada (espalda alta)":["torsion"],"Postura del niño":["nino"],
-  "Respiración 4-6 (inhala en 4, exhala en 6)":["sentada"],"Centrado + respiración":["sentada"],"Hilo en la aguja (torsión en cuatro apoyos)":["hilo"],
-  "Figura 4 tumbada (caderas)":["figura4"],"Torsión tumbada":["torsionT"],"Mariposa reclinada":["mariposa"],
-  "Piernas en la pared":["pared"],"Savasana":["savasana"],"Perro boca abajo con empuje de hombros":["perro"],
-};
-function yFig(k){const f=YFIG[k];if(!f)return "";
-  return `${f.top?'<rect x="34" y="3" width="52" height="74" rx="6" stroke-width="1" opacity=".35"/>':'<path d="M6,74 H114" stroke-width="1" opacity=".35"/>'}
-    <circle cx="${f.h[0]}" cy="${f.h[1]}" r="5"/>${f.p.map(a=>`<polyline points="${a.join(",")}"/>`).join("")}${f.x||""}`;}
-function yogaPic(n){const ks=YPIC[n];if(!ks)return "";
-  const svg=k=>`<svg viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">${yFig(k)}</svg>`;
-  return `<div class="ypic${ks.length>1?' seq':''}">${ks.map(svg).join('<span class="yarrow">→</span>')}</div>`;}
 
 /* ---------- CICLO MENSTRUAL ---------- */
 // Fechas de día 1 en data.ciclo.starts (ISO). Nada de esto va en el código: la página es pública.
@@ -1535,7 +1507,8 @@ function goTab(t){
   if(editingId!=null){editingId=null;delete data.curStart;save();}
   draft={};cur={};activeEx=null;editMode=false;edOpen={};addOpen=null;libForm=null;
   // El día elegido en Entrenamiento se mantiene al abrir una sesión
-  if(!["entreno","caminata","natacion",...ROUTINE_TABS].includes(t))sessionDate=todayStr();
+  if(!["entreno",...CARD_TABS,...ROUTINE_TABS].includes(t))sessionDate=todayStr();
+  exEd=null;yogaOff=0;
   currentTab=t;render();window.scrollTo(0,0);
 }
 // Registra de inmediato con la fecha elegida (antes preguntaba una nota y "Cancelar" no guardaba nada)
@@ -1660,35 +1633,59 @@ function kcalSheet(sess){
   openSheet("infoSheet");
 }
 
+/* ---------- NAVEGACIÓN Y LÍNEA DEL CICLO ---------- */
+const CARD_TABS=["caminata","natacion","clase","esc","yogaC"];
+// Página "padre" a la que vuelve la flecha ‹
+function parentOf(t){if(t==="hoy")return null;if([...ROUTINE_TABS,...CARD_TABS,"hist"].includes(t))return "entreno";return "hoy";}
+function renderNav(){
+  const nav=document.getElementById("nav"),p=parentOf(currentTab);
+  nav.className=p?"back":"";
+  nav.innerHTML=p?`<button class="backlink" data-tab="${p}">‹ ${p==="hoy"?"Home":"Entrenamiento"}</button>`:`<button class="homelink" data-tab="hoy">🏠 Home</button>`;
+  nav.querySelector("button").onclick=e=>goTab(e.currentTarget.dataset.tab);
+}
+// Fase del ciclo + fecha. En las sesiones la fecha es la tarjeta editable "Día de la sesión".
+function cicloTop(sesion){
+  const ci=cicloInfo(),now=new Date();
+  const cic=`<div class="hcic" data-go="ciclo">${ci?`🌙 Día ${ci.d} · ${ci.late?'tu menstruación debería llegar en estos días':FASES[ci.f].n.toLowerCase()+' · '+FASES[ci.f].corto.charAt(0).toLowerCase()+FASES[ci.f].corto.slice(1)}`:'🌙 Registra tu día 1 para ver tu fase'}</div>`;
+  return sesion?cic+`<div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>`
+    :cic+`<div class="hdate">${DIAS_L[now.getDay()]} ${now.getDate()} de ${MESES_L[now.getMonth()]}</div>`;
+}
+function bindTop(){
+  main.querySelectorAll(".hcic[data-go]").forEach(el=>el.onclick=()=>goTab("ciclo"));
+  const sd=document.getElementById("sessDate");if(sd)sd.onchange=()=>{sessionDate=sd.value||todayStr();};
+}
+
 /* ---------- HOME ---------- */
 const DIAS_L=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
 const MESES_L=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 function relDay(iso){const a=new Date(todayStr()+'T12:00:00'),b=new Date(dstr(new Date(iso))+'T12:00:00'),n=Math.round((a-b)/86400000);
-  return n===0?"hoy":n===1?"ayer":n<7?`hace ${n} días`:fmtShort(iso);}
+  return n===0?"hoy":n===1?"ayer":n<7?`el ${DIAS_L[b.getDay()]}`:`el ${fmtShort(iso)}`;}
 // Sesión "fuerte": gym, escalada o una caminata/terreno larga o con desnivel
 function fuerte(s){return isGym(s.tipo)||ESC.includes(s.tipo)||(s.tipo==="caminata"&&(sessMin(s)>=120||(s.desn||0)>=300))||(s.tipo==="natacion"&&s.int==="fuerte");}
+function sinEmoji(t){return sessName(t).replace(/^\S+\s/,"");}
+// Sugerencia del día con un motivo corto
 function hoyToca(){
-  const hoy=todayStr(),now=new Date(),dow=now.getDay();
+  const now=new Date(),dow=now.getDay();
   const ay=new Date();ay.setDate(ay.getDate()-1);const ayer=dstr(ay);
   const del=d=>data.sessions.filter(s=>dstr(new Date(s.date))===d);
-  const ci=cicloInfo(),suave=ci&&!ci.late&&(ci.f==="mens"||ci.f==="lut2");
-  const hechas=del(hoy);
-  if(hechas.length)return {done:true,t:`Hoy ya entrenaste ✅`,s:`${hechas.map(s=>sessName(s.tipo)).join(" + ")} · si te quedan ganas, yoga PM`,go:"yoga"};
+  const hechas=del(todayStr());
+  if(hechas.length){const hecho=`Hiciste ${hechas.map(s=>sinEmoji(s.tipo)).join(" y ")}.`;
+    return hechas.some(s=>YOGA.includes(s.tipo))?{t:"Hoy ya entrenaste ✅",s:hecho+" Ahora a descansar.",go:"hist",b:"Ver historial"}
+      :{t:"Hoy ya entrenaste ✅",s:hecho+" Si te quedan ganas, yoga PM.",go:"yogaC",b:"Abrir yoga"};}
   if((dow===1&&now.getHours()<12)||(dow===5&&now.getHours()<18))
-    return {t:`Clase de handstand (${dow===1?'lun 11:00':'vie 17:00'})`,s:"Regístrala en Entrenamiento al volver",go:"entreno"};
-  if(del(ayer).some(fuerte))return {t:"Yoga PM, handstand en casa o descanso",s:"Ayer fue un día fuerte: recupera",go:"yoga"};
-  const gymW=thisWeek().filter(s=>isGym(s.tipo)).length;
-  if(gymW<3){const g=nextGym();return {t:`${sessName(g)}${suave?' · suave':''}`,s:suave?FASES[ci.f].corto:`Gym ${gymW+1} de 3 esta semana`,go:g};}
-  return {t:"Handstand en casa o descanso",s:"Ya cumpliste tus 3 gym de la semana 💪",go:"casa"};
+    return {t:"Hoy te toca: clase de handstand",s:`Hoy hay clase a las ${dow===1?'11:00':'17:00'}.`,go:"clase",b:"Registrar clase"};
+  const fa=del(ayer).filter(fuerte);
+  if(fa.length)return {t:"Hoy te toca: yoga PM o descanso",s:`Ayer hiciste ${sinEmoji(fa[0].tipo)}: toca recuperar.`,go:"yogaC",b:"Abrir yoga"};
+  const gw=thisWeek().filter(s=>isGym(s.tipo)).length;
+  if(gw<3){const g=nextGym(),gs=sorted().filter(s=>isGym(s.tipo)),lg=gs[gs.length-1];
+    let why=`Llevas ${gw} de 3 gym esta semana`;
+    if(!del(ayer).length)why+=" y ayer descansaste";else if(lg)why+=`; el último fue ${sinEmoji(lg.tipo)} ${relDay(lg.date)}`;
+    return {t:`Hoy te toca: ${sinEmoji(g)}`,s:why+".",go:g,b:`Abrir ${sinEmoji(g)}`};}
+  return {t:"Hoy te toca: handstand en casa o descanso",s:"Ya cumpliste tus 3 gym de la semana.",go:"casa",b:"Abrir handstand casa"};
 }
 function renderHoy(){
-  const now=new Date(),ci=cicloInfo(),h=hoyToca(),d=diaKcal();
-  const ss=sorted(),last=ss[ss.length-1];
-  const wkN=thisWeek().length;
-  main.innerHTML=`
-  <div class="hdate">${DIAS_L[now.getDay()]} ${now.getDate()} de ${MESES_L[now.getMonth()]}</div>
-  <div class="hcic" data-go="ciclo">${ci?`🌙 Día ${ci.d} · ${ci.late?'tu menstruación debería llegar en estos días':FASES[ci.f].n.toLowerCase()+' · '+FASES[ci.f].corto.charAt(0).toLowerCase()+FASES[ci.f].corto.slice(1)}`:'🌙 Registra tu día 1 para ver tu fase'}</div>
-  <div class="menu hoyrow">${mrow(h.go,"bulb","ic-amber",h.done?esc(h.t):`Hoy te toca: ${esc(h.t)}`,`${esc(h.s)}${last&&!h.done?` · Último: ${relDay(last.date)}, ${esc(sessName(last.tipo))}`:''}`)}</div>
+  const ci=cicloInfo(),d=diaKcal(),wkN=thisWeek().length;
+  main.innerHTML=`${cicloTop(false)}
   <div class="menu">
     ${mrow("entreno","barbell","ic-coral","Entrenamiento",`${wkN} ${wkN===1?'sesión':'sesiones'} esta semana`)}
     ${mrow("comida","salad","ic-green","Alimentación",`Gasto hoy ~${nfmt(d.gasto)} · meta ~${nfmt(d.meta)} kcal`)}
@@ -1696,57 +1693,139 @@ function renderHoy(){
     ${mrow("lib","books","ic-gray","Biblioteca","Cómo se hace cada ejercicio")}
     ${mrow("ciclo","moon","ic-pink","Mi ciclo",ci?`Próxima ≈ ${fmtShort(ci.pred[0].mid)}`:'Registra tu día 1')}
   </div>`;
-  main.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
+  main.querySelectorAll(".mrow[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
+  bindTop();
 }
 
 /* ---------- ENTRENAMIENTO ---------- */
+function wi(icon,cls){return `<span class="wi ${cls}">${ico(icon)}</span>`;}
 function renderEntreno(){
-  const wk=thisWeek(),n=f=>wk.filter(f).length;
+  const wk=thisWeek(),n=f=>wk.filter(f).length,h=hoyToca();
   const ss=sorted();let lastHtml=`<p class="small">Todavía no registras entrenamientos.</p>`;
   if(ss.length){const lastD=dstr(new Date(ss[ss.length-1].date));
     const that=ss.filter(x=>dstr(new Date(x.date))===lastD);
-    lastHtml=`<div class="lastday">${fmtDate(ss[ss.length-1].date)}</div>`+that.filter((x,i,a)=>x.tipo==="caminata"||x.tipo==="natacion"||a.findIndex(y=>y.tipo===x.tipo)===i).map(x=>`<div class="wk"><span>${esc(sessName(x.tipo))}</span><span class="small">${durTxt(x)||(x.dur?x.dur+' min':'')}</span></div>`).join("");}
+    lastHtml=`<div class="lastday">${fmtDate(ss[ss.length-1].date)}</div>`+that.filter((x,i,a)=>!ROUTINE_TABS.includes(x.tipo)||a.findIndex(y=>y.tipo===x.tipo)===i).map(x=>`<div class="wk"><span>${esc(sessName(x.tipo))}</span><span class="small">${durTxt(x)||(x.dur?x.dur+' min':'')}</span></div>`).join("");}
   const R=data.routines,nm=t=>esc(R[t].nombre.split(' · ')[0]);
-  main.innerHTML=`
-  <div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>
-  <div class="ehead"><span>Sesiones</span><button class="pill" id="qHs">🤸 + Clase handstand</button></div>
+  main.innerHTML=`${cicloTop(false)}
+  <div class="hoycard" data-go="${h.go}"><div class="ht">${ico("bulb")}<span>${esc(h.t)}</span></div><div class="hs">${esc(h.s)}</div><button class="hb">${esc(h.b)}</button></div>
   <div class="menu">
     ${GYM_ORDER.map(t=>mrow(t,"barbell",t==="gymA"?"ic-purple":"ic-coral",nm(t),FOCUS[t])).join("")}
-    ${mrow("casa","stretching","ic-teal","Handstand casa","~20 min")}
-    ${mrow(data.escModo||"escalada","mountain","ic-gray","Escalada","Muro o roca")}
-    ${mrow(data.yogaModo||"yoga","yoga","ic-green","Yoga","AM despertar · PM dormir")}
-    ${mrow("caminata","trekking","ic-amber","Caminata / terreno","Duración, altura, desnivel, mochila")}
+    ${mrow("clase","hand-stop","ic-amber","Clase de handstand","lun 11:00 · vie 17:00")}
+    ${mrow("casa","stretching","ic-teal","Handstand casa","Hombros, muñecas y L-sit · ~20 min")}
+    ${mrow("esc","mountain","ic-gray","Escalada","Muro o roca · duración")}
+    ${mrow("yogaC","yoga","ic-green","Yoga","Video AM despertar · PM dormir")}
+    ${mrow("caminata","trekking","ic-amber","Caminata / terreno","Altura, desnivel, mochila")}
     ${mrow("natacion","swimming","ic-blue","Natación","Minutos e intensidad")}
   </div>
   <div class="card"><h3>⏮️ Último entrenamiento</h3>${lastHtml}<button class="ulink" data-go="hist">📊 Ver historial</button></div>
   <div class="card">
     <h3>📆 Esta semana</h3>
-    <div class="wk"><span>🏋️ Gym</span><b>${n(s=>isGym(s.tipo))}</b></div>
-    <div class="wk"><span>🤸 Clase de handstand</span><b>${n(s=>s.tipo==="handstand")}</b></div>
-    <div class="wk"><span>🏠 Handstand en casa</span><b>${n(s=>s.tipo==="casa")}</b></div>
-    <div class="wk"><span>🧗 Escalada</span><b>${n(s=>ESC.includes(s.tipo))}</b></div>
-    <div class="wk"><span>🧘 Yoga</span><b>${n(s=>YOGA.includes(s.tipo))}</b></div>
-    <div class="wk"><span>🥾 Caminata / terreno</span><b>${n(s=>s.tipo==="caminata")}</b></div>
-    <div class="wk"><span>🏊 Natación</span><b>${n(s=>s.tipo==="natacion")}</b></div>
+    <div class="wk"><span>${wi("barbell","ic-coral")}Gym</span><b>${n(s=>isGym(s.tipo))}</b></div>
+    <div class="wk"><span>${wi("hand-stop","ic-amber")}Clase de handstand</span><b>${n(s=>s.tipo==="handstand")}</b></div>
+    <div class="wk"><span>${wi("stretching","ic-teal")}Handstand en casa</span><b>${n(s=>s.tipo==="casa")}</b></div>
+    <div class="wk"><span>${wi("mountain","ic-gray")}Escalada</span><b>${n(s=>ESC.includes(s.tipo))}</b></div>
+    <div class="wk"><span>${wi("yoga","ic-green")}Yoga</span><b>${n(s=>YOGA.includes(s.tipo))}</b></div>
+    <div class="wk"><span>${wi("trekking","ic-amber")}Caminata / terreno</span><b>${n(s=>s.tipo==="caminata")}</b></div>
+    <div class="wk"><span>${wi("swimming","ic-blue")}Natación</span><b>${n(s=>s.tipo==="natacion")}</b></div>
   </div>`;
   main.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
-  document.getElementById("sessDate").onchange=e=>{sessionDate=e.target.value||todayStr();};
-  document.getElementById("qHs").onclick=()=>{quickLog("handstand");};
+  bindTop();
+}
+
+/* ---------- TARJETAS: CLASE DE HANDSTAND, ESCALADA, YOGA ---------- */
+function kEst(id,txt){return `<div class="kest" id="${id}">${txt}</div>`;}
+function renderClase(){
+  main.innerHTML=`${cicloTop(true)}
+  <div class="rhead th-am"><div class="rt">🤸 Clase de handstand</div><div class="rm">lun 11:00 · vie 17:00 · clase guiada</div></div>
+  <div class="card"><div class="form fgrid">
+    <label>🕐 Hora (opcional)<input type="time" id="kHora"></label>
+    <label>⏱️ Duración (min)<input type="text" inputmode="numeric" id="kDur" value="60"></label>
+  </div>
+  <div class="form"><label>📝 Notas<input type="text" id="kNota" placeholder="qué practicaste, cómo te sentiste"></label></div>
+  ${kEst("kEst","")}
+  <button class="btn" id="kSave">✓ Guardar clase</button></div>`;
+  const upd=()=>{const m=numv("kDur");document.getElementById("kEst").innerHTML=m?`🔥 ~<b>${nfmt(MET.handstand*pesoActual()*m/60)} kcal</b>`:'Anota la duración';};
+  document.getElementById("kDur").oninput=upd;upd();bindTop();
+  document.getElementById("kSave").onclick=()=>{const m=numv("kDur");if(!m){toast("Anota la duración ⏱️");return;}
+    const hora=document.getElementById("kHora").value,nota=(document.getElementById("kNota").value||"").trim();
+    saveActividad({tipo:"handstand",dur:Math.round(m),hora,nota,logs:[{n:"Clase",v:[`${Math.round(m)} min`,hora,nota].filter(Boolean).join(" · ")}]});};
+}
+// Calentamiento o rutina escrita, opcional y plegada
+function optList(t,title){
+  const R=data.routines[t];if(!R)return "";
+  return `<details class="item"><summary>${title}<small>opcional</small></summary><div class="ibody">${R.blocks.map(bl=>`<h4>${esc(bl.t)}</h4><ul>${bl.ex.map(ex=>`<li>${esc(ex.n)}${effD(ex)?` · <span class="small">${esc(effD(ex))}</span>`:''}${LIB[ex.n]?` <button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}</li>`).join("")}</ul>`).join("")}</div></details>`;
+}
+function renderEsc(){
+  const t=data.escModo||"escalada";
+  main.innerHTML=`${cicloTop(true)}
+  <div class="rhead th-esc"><div class="rt">🧗 Escalada</div><div class="rm">${(MUSC.escalada||[]).map(esc).join("<br>")}</div></div>
+  <div class="seg"><button data-em="escalada" class="${t==='escalada'?'active':''}">🧱 Muro</button><button data-em="escaladaR" class="${t==='escaladaR'?'active':''}">🪨 Roca</button></div>
+  <div class="card"><div class="form fgrid">
+    <label>⏱️ Duración (min)<input type="text" inputmode="numeric" id="eDur" placeholder="120"></label>
+    <label>📈 Grado máx (opcional)<input type="text" id="eGr" placeholder="6a"></label>
+  </div>
+  <div class="form"><label>📝 Notas<input type="text" id="eNota" placeholder="${t==='escaladaR'?'sector, rutas':'rutas, cómo te sentiste'}"></label></div>
+  ${kEst("eEst","")}
+  <button class="btn" id="eSave">✓ Guardar escalada</button></div>
+  ${optList(t,"🔥 Calentamiento sugerido")}`;
+  const upd=()=>{const m=numv("eDur");document.getElementById("eEst").innerHTML=m?`🔥 ~<b>${nfmt(MET.escalada*pesoActual()*m/60)} kcal</b>`:'Anota la duración para estimar las calorías';};
+  document.getElementById("eDur").oninput=upd;upd();bindTop();
+  main.querySelectorAll("[data-em]").forEach(b=>b.onclick=()=>{data.escModo=b.dataset.em;save();renderEsc();});
+  main.querySelectorAll("[data-info]").forEach(el=>{el.onclick=e=>{e.preventDefault();openInfo(el.dataset.info);};});
+  document.getElementById("eSave").onclick=()=>{const m=numv("eDur");if(!m){toast("Anota cuánto duró ⏱️");return;}
+    const gr=(document.getElementById("eGr").value||"").trim(),nota=(document.getElementById("eNota").value||"").trim();
+    saveActividad({tipo:t,dur:Math.round(m),grado:gr,nota,logs:[{n:t==="escaladaR"?"Roca":"Muro",v:[`${Math.round(m)} min`,gr?`grado máx ${gr}`:"",nota].filter(Boolean).join(" · ")}]});};
+}
+// Videos de yoga: cambian cada lunes (rotan desde el lunes 5 oct 2026); "otro video" pasa al siguiente.
+// [id de YouTube, título, canal, minutos]
+const VIDEOS={
+  yogaAM:[["p81lnqtkZcA","Yoga para despertar","Xuan Lan",11],["NTdH0g0OtZQ","Yoga al despertar","Elena Malova",16],
+    ["g1XWiZ6Ejbs","Yoga por la mañana","Anabel Otero",16],["ncIxxUpyfoc","Yoga por la mañana","Xuan Lan",14],
+    ["v1c_hMWT7bs","Empieza tu día con buena energía","Elena Malova",16],["vV-Y8euGt6U","Tu clase perfecta para despertar","Anabel Otero",14],
+    ["BOonFDQ4TeY","Yoga para estirar por la mañana","Xuan Lan",14],["mFgylJueFcI","15 minutos de yoga para despertar","Anabel Otero",16]],
+  yoga:[["kK_UWE_f-s0","Yoga para dormir: asanas para un buen descanso","Xuan Lan",13],["_ycYIPNszMo","Yoga suave para dormir y descansar","Elena Malova",21],
+    ["i2WsfawlmTY","Yoga en la cama para dormir","Anabel Otero",11],["CYNQHZBytPk","Yoga para dormir mejor","Xuan Lan",17],
+    ["HNQb13WqfW8","Estiramientos para dormir","Elena Malova",15],["3iM4Rb2ub7I","Yoga para preparar una buena noche de sueño","Xuan Lan",12],
+    ["Xl147xXUDxM","Para dormir, relajar, anti stress","Elena Malova",20],["q6Ae0fiCS0I","Yoga Nidra para descanso profundo","Anabel Otero",22]],
+};
+let yogaOff=0;
+function videoSemana(t){const L=VIDEOS[t],w=Math.floor((new Date(mondayOf(new Date())+'T12:00:00')-new Date('2026-10-05T12:00:00'))/(7*86400000));
+  return L[(((w+yogaOff)%L.length)+L.length)%L.length];}
+function renderYoga(){
+  const t=data.yogaModo||"yoga",v=videoSemana(t);
+  main.innerHTML=`${cicloTop(true)}
+  <div class="rhead th-yoga"><div class="rt">🧘 Yoga</div><div class="rm">${t==="yogaAM"?"Despertar el cuerpo: columna, caderas y hombros":"Soltar tensión, calmar el sistema nervioso y preparar el sueño"}</div></div>
+  <div class="seg"><button data-ym="yogaAM" class="${t==='yogaAM'?'active':''}">☀️ AM · despertar</button><button data-ym="yoga" class="${t==='yoga'?'active':''}">🌙 PM · dormir</button></div>
+  <div class="card">
+    <p class="small" style="margin:0 0 6px">${yogaOff?'Otro video':'Video de esta semana · cambia cada lunes'}</p>
+    <a class="yvid" href="https://www.youtube.com/watch?v=${v[0]}" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/${v[0]}/hqdefault.jpg" alt=""><span>▶</span></a>
+    <div class="yt">${esc(v[1])}</div><div class="small">${esc(v[2])} · ${v[3]} min · se abre en YouTube</div>
+    <button class="ulink" id="yOtro" style="text-align:left">otro video ›</button>
+    <div class="form" style="margin-top:8px"><label>⏱️ Minutos<input type="text" inputmode="numeric" id="yMin" value="${v[3]}"></label></div>
+    <button class="btn" id="ySave">✓ Guardar yoga</button>
+  </div>
+  ${optList(t,"📝 Rutina escrita (sin video)")}`;
+  bindTop();
+  main.querySelectorAll("[data-ym]").forEach(b=>b.onclick=()=>{data.yogaModo=b.dataset.ym;yogaOff=0;save();renderYoga();});
+  main.querySelectorAll("[data-info]").forEach(el=>{el.onclick=e=>{e.preventDefault();openInfo(el.dataset.info);};});
+  document.getElementById("yOtro").onclick=()=>{yogaOff++;renderYoga();};
+  document.getElementById("ySave").onclick=()=>{const m=numv("yMin");if(!m){toast("Anota los minutos ⏱️");return;}
+    saveActividad({tipo:t,dur:Math.round(m),video:v[0],logs:[{n:"Video",v:`${v[1]} · ${v[2]}`}]});};
 }
 
 /* ---------- CAMINATA / TERRENO y NATACIÓN ---------- */
 let natInt="moderada";
 // dec=true: acepta decimales con punto o coma; si no, el punto es separador de miles (4.200)
 function numv(id,dec){let s=document.getElementById(id).value||"";s=dec?s.replace(',','.'):s.replace(/\./g,'').replace(',','.');const v=parseFloat(s);return isNaN(v)?null:v;}
-function actDateRow(){return `<div class="daterow">📅 Día <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>`;}
+function actDateRow(){return "";}
 function saveActividad(sess){
   sess.id=Date.now();sess.date=new Date((sessionDate||todayStr())+'T12:00:00').toISOString();sess.count=1;
   sess.kcal=kcalOf(sess);
   data.sessions.push(sess);save();updateStats();
-  sessionDate=todayStr();currentTab="hoy";render();window.scrollTo(0,0);kcalSheet(sess);
+  sessionDate=todayStr();currentTab="entreno";render();window.scrollTo(0,0);kcalSheet(sess);
 }
 function renderCaminata(){
-  main.innerHTML=`<div class="rhead th-am"><div class="rt">🥾 Caminata / terreno</div><div class="rm">Cuenta como cardio. La altura y el desnivel suben el gasto.</div></div>
+  main.innerHTML=`${cicloTop(true)}<div class="rhead th-am"><div class="rt">🥾 Caminata / terreno</div><div class="rm">Cuenta como cardio. La altura y el desnivel suben el gasto.</div></div>
   ${actDateRow()}
   <div class="card"><div class="form fgrid">
     <label>⏱️ Horas<input type="text" inputmode="numeric" id="cH" placeholder="2"></label>
@@ -1760,15 +1839,14 @@ function renderCaminata(){
   <button class="btn" id="cSave">✓ Guardar caminata</button></div>`;
   const get=()=>{const h=numv("cH")||0,m=numv("cM")||0;return {dur:Math.round(h*60+m),alt:numv("cAlt"),desn:numv("cDes"),mochila:numv("cMoc",true)};};
   const upd=()=>{const v=get();document.getElementById("cEst").innerHTML=v.dur?`🔥 ~<b>${nfmt(kcalCaminata(v.dur,pesoActual(),v.mochila,v.desn,v.alt))} kcal</b>${(v.alt||0)>3000?' · incluye +10% por altura':''}`:'Anota la duración para estimar las calorías';};
-  main.querySelectorAll("input").forEach(i=>i.oninput=upd);
-  document.getElementById("sessDate").onchange=e=>{sessionDate=e.target.value||todayStr();};
+  main.querySelectorAll(".card input").forEach(i=>i.oninput=upd);bindTop();
   document.getElementById("cSave").onclick=()=>{const v=get();if(!v.dur){toast("Anota cuánto duró ⏱️");return;}
     const nota=(document.getElementById("cNota").value||"").trim();
     const txt=[`${Math.floor(v.dur/60)?Math.floor(v.dur/60)+' h ':''}${v.dur%60?v.dur%60+' min':''}`.trim(),v.alt?`máx ${nfmt(v.alt)} msnm`:"",v.desn?`+${nfmt(v.desn)} m`:"",v.mochila?`mochila ${fmtKg(v.mochila)} kg`:"",nota].filter(Boolean).join(" · ");
     saveActividad({tipo:"caminata",...v,nota,logs:[{n:"Caminata",v:txt}]});};
 }
 function renderNatacion(){
-  main.innerHTML=`<div class="rhead th-am" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB"><div class="rt">🏊 Natación</div><div class="rm">Cuenta como cardio.</div></div>
+  main.innerHTML=`${cicloTop(true)}<div class="rhead th-am" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB"><div class="rt">🏊 Natación</div><div class="rm">Cuenta como cardio.</div></div>
   ${actDateRow()}
   <div class="card"><div class="form"><label>⏱️ Minutos<input type="text" inputmode="numeric" id="nMin" placeholder="20"></label></div>
   <p class="small" style="margin:10px 0 6px">Intensidad</p>
@@ -1779,7 +1857,7 @@ function renderNatacion(){
   const upd=()=>{const m=numv("nMin");document.getElementById("nEst").innerHTML=m?`🔥 ~<b>${nfmt(NAT_MET[natInt]*pesoActual()*m/60)} kcal</b>`:'Anota los minutos para estimar las calorías';};
   document.getElementById("nMin").oninput=upd;upd();
   main.querySelectorAll("[data-int]").forEach(b=>b.onclick=()=>{natInt=b.dataset.int;main.querySelectorAll("[data-int]").forEach(x=>x.classList.toggle("on",x===b));upd();});
-  document.getElementById("sessDate").onchange=e=>{sessionDate=e.target.value||todayStr();};
+  bindTop();
   document.getElementById("nSave").onclick=()=>{const m=numv("nMin");if(!m){toast("Anota los minutos ⏱️");return;}
     const nota=(document.getElementById("nNota").value||"").trim();
     saveActividad({tipo:"natacion",dur:Math.round(m),int:natInt,nota,logs:[{n:"Natación",v:[`${Math.round(m)} min`,NAT_TXT[natInt].slice(2).toLowerCase(),nota].filter(Boolean).join(" · ")}]});};
@@ -1795,7 +1873,7 @@ function renderComida(){
   const fv=data.fitia[fitiaWeek]||{};
   const fb=data.fitia[fitiaWeek]?evalWeek(fv):[];
   const hist=Object.keys(data.fitia).sort().map(mon=>({mon,v:data.fitia[mon]}));
-  main.innerHTML=`
+  main.innerHTML=`${cicloTop(false)}
   <div class="card">
     <h3>🔥 Gasto de hoy</h3>
     ${d.ss.length?d.ss.map(s=>`<div class="wk"><span>${esc(sessName(s.tipo))} <span class="small">${sessMin(s)} min</span></span><span>~${nfmt(kcalOf(s))} kcal</span></div>`).join(""):'<p class="small">Hoy aún no registras entrenamientos.</p>'}
@@ -1828,6 +1906,7 @@ function renderComida(){
     if(v.kcal==null&&v.p==null){toast("Anota al menos kcal o proteína ✏️");return;}
     data.fitia[fitiaWeek]=v;save();toast("Semana guardada 🥗");renderComida();
   };
+  bindTop();
 }
 
 /* ---------- BIBLIOTECA ---------- */
@@ -2164,15 +2243,12 @@ function renderHist(){
 
 function updateStats(){
   const wk=thisWeek();
-  document.getElementById("s-week").textContent=wk.filter(s=>isGym(s.tipo)).length;
-  document.getElementById("s-hs").textContent=wk.filter(s=>s.tipo==="handstand").length;
-  document.getElementById("s-es").textContent=wk.filter(s=>ESC.includes(s.tipo)).length;
-  const ps=data.planStart||todayStr();
+  const ps=BLOCK.start,GOAL=BLOCK.goal;
   const total=data.sessions.filter(s=>isGym(s.tipo)&&dstr(new Date(s.date))>=ps).length;
   const pct=Math.min(100,Math.round(total/GOAL*100));
-  const wkN=Math.min(12,Math.floor((new Date(todayStr())-new Date(ps))/(7*86400000))+1);
+  const wkN=Math.floor((new Date(todayStr())-new Date(ps))/(7*86400000))+1;
   document.getElementById("progfill").style.width=pct+"%";
-  document.getElementById("progtxt").textContent=`Semana ${wkN} de 12 · ${total} / ${GOAL} sesiones de gym (${pct}%)`;
+  document.getElementById("progtxt").textContent=wkN>BLOCK.weeks?`✅ Terminaste las ${BLOCK.weeks} semanas · ${total} / ${GOAL} gym · toca actualizar la rutina`:`Semana ${wkN} de ${BLOCK.weeks} · ${total} / ${GOAL} sesiones de gym (${pct}%)`;
 }
 
 let toastT;
