@@ -31,7 +31,7 @@
   .progfill{height:100%;background:#fff;border-radius:20px;transition:width .4s}
   .progtxt{font-size:10px;opacity:.9;margin-top:4px;text-align:center}
 
-  nav{display:flex;justify-content:center;padding:12px 12px 8px;position:sticky;top:0;background:var(--cream);z-index:10}
+  nav{display:flex;justify-content:center;gap:4px;padding:12px 12px 8px;position:sticky;top:0;background:var(--cream);z-index:10}
   nav .homelink{background:none!important;color:var(--ink)!important;border:none;padding:4px 8px;font-size:15px;font-weight:800;text-decoration:underline;text-underline-offset:5px;cursor:pointer}
 
   /* Resumen: botones de colores */
@@ -61,6 +61,33 @@
   .rhead{border-radius:14px;padding:12px 14px;margin-bottom:12px;border:1px solid}
   .rhead .rt{font-weight:800;font-size:15px}
   .rhead .rm{font-size:12.5px;margin-top:6px;line-height:1.55;opacity:.9}
+  /* Home y Entrenamiento: menú en lista */
+  .hdate{font-size:13px;color:var(--muted);font-weight:600;margin:2px 2px 2px;text-transform:none}
+  .hcic{font-size:12.5px;color:#993556;font-weight:600;margin:0 2px 12px;cursor:pointer}
+  .menu{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+  .mrow{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--line);cursor:pointer}
+  .mrow:first-child{border-top:none}
+  .mrow:active{background:var(--cream)}
+  .mic{flex:0 0 auto;width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+  .mic svg{width:21px;height:21px}
+  .mtx{flex:1;min-width:0}
+  .mt{font-weight:700;font-size:15px}
+  .ms{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .chev{color:var(--muted);font-size:20px;flex:0 0 auto}
+  .hoyrow{background:#FAEEDA;border-color:#EF9F27}
+  .hoyrow .mrow{padding:9px 12px}
+  .hoyrow .mt{font-size:14px;color:#633806}
+  .hoyrow .ms{color:#854F0B}
+  .hoyrow .mic{background:#fff}
+  .ic-coral{background:#FAECE7;color:#993C1D} .ic-green{background:#EAF3DE;color:#3B6D11} .ic-teal{background:#E1F5EE;color:#0F6E56}
+  .ic-gray{background:#F1EFE8;color:#5F5E5A} .ic-pink{background:#FBEAF0;color:#993556} .ic-purple{background:#EEEDFE;color:#534AB7}
+  .ic-amber{background:#FAEEDA;color:#854F0B} .ic-blue{background:#E6F1FB;color:#185FA5}
+  .ehead{display:flex;justify-content:space-between;align-items:center;margin:0 2px 8px;font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .pill{border:1px solid #EF9F27;background:#FAEEDA;color:#633806;border-radius:20px;padding:6px 12px;font-size:12.5px;font-weight:700;cursor:pointer;text-transform:none;letter-spacing:0}
+  .kest{margin-top:12px;font-size:13.5px;color:var(--terra-dark);text-align:center}
+  .kmeta{margin-top:8px;background:#FAEEDA;color:#633806;border-radius:10px;padding:9px 12px;font-size:14px}
+  .ksum{margin:8px 0}
+  .kbig{font-size:30px;font-weight:800;color:var(--terra-dark)}
   nav::-webkit-scrollbar{display:none}
   nav button{
     flex:0 0 auto;border:none;background:var(--sand);color:var(--ink);
@@ -297,7 +324,7 @@
   </div>
 </header>
 
-<nav id="nav"><button data-tab="hoy" class="homelink">🏠 Resumen</button></nav>
+<nav id="nav"><button data-tab="hoy" class="homelink">🏠 Home</button><button data-tab="entreno" class="homelink" id="navEnt">🏋️ Entrenamiento</button></nav>
 
 <main id="main"></main>
 
@@ -501,6 +528,7 @@ const LEGACY={
   dia1:"1️⃣ Día 1 (calistenia)",dia2:"2️⃣ Día 2 (calistenia)",dia3:"3️⃣ Día 3 (calistenia)",
   parqueA:"🅰️ Parque A",parqueB:"🅱️ Parque B",casa:"🏠 Casa",
   gymC:"🩷 Gym C",handstand:"🤸 Clase de handstand",escalada:"🧗 Escalada",
+  caminata:"🥾 Caminata / terreno",natacion:"🏊 Natación",
 };
 
 /* ---------- BIBLIOTECA ---------- */
@@ -800,7 +828,7 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 const GOAL=36;
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 11 oct (7)";
+const APP_VERSION="versión 17 oct";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -902,6 +930,8 @@ function effD(ex){const e=LIB[ex.n];return ex.skill&&e&&e.niveles?e.niveles[skil
 /* ---------- RENDER PRINCIPAL ---------- */
 function render(){
   idMap={};
+  // En las sesiones e historial aparece también el enlace para volver a Entrenamiento
+  document.getElementById("navEnt").style.display=[...ROUTINE_TABS,"caminata","natacion","hist"].includes(currentTab)?"":"none";
   const isRoutine=ROUTINE_TABS.includes(currentTab);
   document.body.className="";
   saveBtn.style.display="none";
@@ -911,6 +941,10 @@ function render(){
   if(currentTab==="prog")return renderProg();
   if(currentTab==="hist")return renderHist();
   if(currentTab==="ciclo")return renderCiclo();
+  if(currentTab==="entreno")return renderEntreno();
+  if(currentTab==="comida")return renderComida();
+  if(currentTab==="caminata")return renderCaminata();
+  if(currentTab==="natacion")return renderNatacion();
   renderRoutine();
 }
 
@@ -1312,10 +1346,11 @@ saveBtn.onclick=()=>{
     if(data.curStart&&data.curStart.tab===currentTab&&(sessionDate||todayStr())===todayStr()){sess.start=data.curStart.t;sess.end=Date.now();}
     data.sessions.push(sess);
   }
+  sess.kcal=null;sess.kcal=kcalOf(sess);
   delete data.curStart;editingId=null;
   save();draft={};cur={};activeEx=null;sessionDate=todayStr();updateStats();
   toast(sess.start?`¡Sesión guardada! 🎉 ${Math.round((sess.end-sess.start)/60000)} min`:"¡Sesión guardada! 🎉");
-  currentTab="hoy";render();
+  currentTab="hoy";render();window.scrollTo(0,0);kcalSheet(sess);
 };
 
 /* ---------- DIBUJOS DE YOGA ---------- */
@@ -1484,7 +1519,7 @@ function mergeSessions(id){
       if(e.sets&&l.sets){e.sets=e.sets.concat(l.sets);e.reps=e.sets.map(z=>z.reps).join(" ");const k=Math.max(...e.sets.map(z=>z.kg||0));e.kg=k?String(k):"";}
       const sfx=" (kg×reps)",clean=v=>String(v||"").replace(sfx,""),lvl=(clean(e.v).match(/^Nivel \d+ · /)||[""])[0];
       e.v=clean(e.v)+" · "+clean(l.v).replace(/^Nivel \d+ · /,"")+(String(e.v).includes(sfx)||String(l.v).includes(sfx)?sfx:"");});});
-  keep.logs=logs;keep.done=[...done];keep.count=Math.max(done.size,...grp.map(x=>x.count||0));
+  keep.logs=logs;keep.done=[...done];delete keep.kcal;keep.count=Math.max(done.size,...grp.map(x=>x.count||0));
   const st=grp.map(x=>x.start).filter(Boolean),en=grp.map(x=>x.end).filter(Boolean);
   if(st.length)keep.start=Math.min(...st);if(en.length)keep.end=Math.max(...en);
   data.sessions=data.sessions.filter(x=>x===keep||!grp.includes(x));
@@ -1498,7 +1533,10 @@ function goTab(t){
     delete data.curStart;save();
   }
   if(editingId!=null){editingId=null;delete data.curStart;save();}
-  draft={};cur={};activeEx=null;editMode=false;edOpen={};addOpen=null;libForm=null;sessionDate=todayStr();currentTab=t;render();window.scrollTo(0,0);
+  draft={};cur={};activeEx=null;editMode=false;edOpen={};addOpen=null;libForm=null;
+  // El día elegido en Entrenamiento se mantiene al abrir una sesión
+  if(!["entreno","caminata","natacion",...ROUTINE_TABS].includes(t))sessionDate=todayStr();
+  currentTab=t;render();window.scrollTo(0,0);
 }
 // Registra de inmediato con la fecha elegida (antes preguntaba una nota y "Cancelar" no guardaba nada)
 function quickLog(tipo){
@@ -1555,55 +1593,221 @@ function fitiaChart(weeks){
   return `<svg class="chart" viewBox="0 0 ${W} ${H}">${g}</svg><p class="small">Barras: kcal promedio · Línea: cintura en cm (de 📈 Progreso)${pts.length<2?' · registra tu cintura cada semana para ver la línea':''}</p>`;
 }
 
-function renderHoy(){
-  const wk=thisWeek();
-  const gymW=wk.filter(s=>isGym(s.tipo)).length, hsW=wk.filter(s=>s.tipo==="handstand").length,
-    casaW=wk.filter(s=>s.tipo==="casa").length, esW=wk.filter(s=>ESC.includes(s.tipo)).length, yoW=wk.filter(s=>YOGA.includes(s.tipo)).length;
+/* ---------- ÍCONOS DEL MENÚ (Tabler Icons, licencia MIT) ---------- */
+const ICO={"barbell":"<path d=\"M2 12h1\"/><path d=\"M6 8h-2a1 1 0 0 0 -1 1v6a1 1 0 0 0 1 1h2\"/><path d=\"M6 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1z\"/><path d=\"M9 12h6\"/><path d=\"M15 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1z\"/><path d=\"M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2\"/><path d=\"M22 12h-1\"/>","books":"<path d=\"M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\"/><path d=\"M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\"/><path d=\"M5 8h4\"/><path d=\"M9 16h4\"/><path d=\"M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z\"/><path d=\"M14 9l4 -1\"/><path d=\"M16 16l3.923 -.98\"/>","bulb":"<path d=\"M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7\"/><path d=\"M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3\"/><path d=\"M9.7 17l4.6 0\"/>","chart-line":"<path d=\"M4 19l16 0\"/><path d=\"M4 15l4 -6l4 2l4 -5l4 4\"/>","hand-stop":"<path d=\"M8 13v-7.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M11 5.5v-2a1.5 1.5 0 1 1 3 0v8.5\"/><path d=\"M14 5.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M17 7.5a1.5 1.5 0 0 1 3 0v8.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7a69.74 69.74 0 0 1 -.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47\"/>","home":"<path d=\"M5 12l-2 0l9 -9l9 9l-2 0\"/><path d=\"M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7\"/><path d=\"M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6\"/>","moon":"<path d=\"M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z\"/>","mountain":"<path d=\"M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612z\"/><path d=\"M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2\"/>","salad":"<path d=\"M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1z\"/><path d=\"M18.5 11c.351 -1.017 .426 -2.236 .5 -3.714v-1.286h-2.256c-2.83 0 -4.616 .804 -5.64 2.076\"/><path d=\"M5.255 11.008a12.204 12.204 0 0 1 -.255 -2.008v-1h1.755c.98 0 1.801 .124 2.479 .35\"/><path d=\"M8 8l1 -4l4 2.5\"/><path d=\"M13 11v-.5a2.5 2.5 0 1 0 -5 0v.5\"/>","stretching":"<path d=\"M16 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M5 20l5 -.5l1 -2\"/><path d=\"M18 20v-5h-5.5l2.5 -6.5l-5.5 1l1.5 2\"/>","swimming":"<path d=\"M16 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M6 11l4 -2l3.5 3l-1.5 2\"/><path d=\"M3 16.75a2.4 2.4 0 0 0 1 .25a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 1 -.25\"/>","trekking":"<path d=\"M12 4m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 21l2 -4\"/><path d=\"M13 21v-4l-3 -3l1 -6l3 4l3 2\"/><path d=\"M10 14l-1.827 -1.218a2 2 0 0 1 -.831 -2.15l.28 -1.117a2 2 0 0 1 1.939 -1.515h1.439l4 1l3 -2\"/><path d=\"M17 12v9\"/><path d=\"M16 20h2\"/>","yoga":"<path d=\"M12 4m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M4 20h4l1.5 -3\"/><path d=\"M17 20l-1 -5h-5l1 -7\"/><path d=\"M4 10l4 -1l4 -1l4 1.5l4 1.5\"/>"};
+function ico(n){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO[n]||""}</svg>`;}
+function mrow(go,icon,cls,title,sub,id){
+  return `<div class="mrow" ${go?`data-go="${go}"`:''} ${id?`id="${id}"`:''}><div class="mic ${cls}">${ico(icon)}</div>
+    <div class="mtx"><div class="mt">${title}</div>${sub?`<div class="ms">${sub}</div>`:''}</div><span class="chev">›</span></div>`;}
 
-  // Último entrenamiento: el último día con registros y todo lo hecho ese día
+/* ---------- CALORÍAS ----------
+   Sesión: MET × peso × horas. Caminata: 3,5 MET × (peso + mochila) × h + ~0,6 kcal por metro de desnivel (con 65 kg), +10% sobre 3.000 m.
+   Día: mantención = Mifflin-St Jeor (mujer, 28 años, 160 cm) × 1,4 (+100 kcal en fase lútea).
+   Meta para comer = mantención + 0,8 × ejercicio neto − 350 (déficit), nunca menos de 1.400. */
+const MET={gymA:5,gymB:5,gymC:5,casa:3.8,escalada:5.8,escaladaR:5.8,yogaAM:2.8,yoga:2,handstand:4};
+const DUR_DEF={gymA:60,gymB:60,gymC:60,casa:30,escalada:90,escaladaR:90,yogaAM:12,yoga:20,handstand:60};
+const NAT_MET={suave:5.8,moderada:7,fuerte:9.8};
+const NAT_TXT={suave:"🙂 Suave",moderada:"😤 Moderada",fuerte:"🔥 Fuerte"};
+function pesoActual(){const M=data.medidas.filter(m=>m.peso).sort((a,b)=>a.date.localeCompare(b.date));return M.length?M[M.length-1].peso:65;}
+function sessMin(s){
+  if(s.dur)return s.dur;
+  if(s.start&&s.end){const m=Math.round((s.end-s.start)/60000);if(m>=5&&m<=300)return m;}
+  return DUR_DEF[s.tipo]||45;
+}
+function kcalCaminata(min,kg,mochila,desn,alt){
+  const carga=kg+(mochila||0);
+  let k=3.5*carga*min/60+0.6*(desn||0)*carga/65;
+  if((alt||0)>3000)k*=1.1;
+  return k;
+}
+function kcalOf(s,kg){
+  if(s.kcal!=null)return s.kcal;
+  kg=kg||pesoActual();const h=sessMin(s)/60;
+  if(s.tipo==="caminata")return Math.round(kcalCaminata(sessMin(s),kg,s.mochila,s.desn,s.alt));
+  if(s.tipo==="natacion")return Math.round((NAT_MET[s.int]||7)*kg*h);
+  return Math.round((MET[s.tipo]||4)*kg*h);
+}
+// Gasto "extra" del ejercicio: se resta 1 MET (lo que igual gastarías en reposo)
+function netOf(s,kg){kg=kg||pesoActual();return Math.max(0,kcalOf(s,kg)-kg*sessMin(s)/60);}
+function baseDia(ds){
+  const kg=pesoActual(),bmr=10*kg+6.25*160-5*28-161;
+  const c=cicloInfo(ds),lut=c&&!c.late&&(c.f==="lut1"||c.f==="lut2");
+  return {base:Math.round(bmr*1.4)+(lut?100:0),lut};
+}
+function r10(x){return Math.round(x/10)*10;}
+function nfmt(x){return Math.round(x).toLocaleString('es-CL');}
+function diaKcal(ds){
+  ds=ds||todayStr();
+  const ss=data.sessions.filter(s=>dstr(new Date(s.date))===ds);
+  const ej=ss.reduce((a,s)=>a+kcalOf(s),0),net=ss.reduce((a,s)=>a+netOf(s),0);
+  const {base,lut}=baseDia(ds);
+  return {ss,ej,net,base,lut,gasto:r10(base+net),meta:Math.max(1400,r10(base+0.8*net-350))};
+}
+// Resumen que aparece al guardar una sesión
+function kcalSheet(sess){
+  const d=diaKcal(dstr(new Date(sess.date)));
+  document.getElementById("infoBody").innerHTML=`<h2>🔥 ${esc(sessName(sess.tipo))}</h2>
+    <div class="ksum">
+      <div class="kbig">~${nfmt(kcalOf(sess))} kcal</div><div class="small">en esta sesión · ${sessMin(sess)} min${sess.start||sess.dur?'':' (duración estimada)'}</div>
+      <div class="wk"><span>Gasto total del día</span><b>~${nfmt(d.gasto)} kcal</b></div>
+      <div class="wk"><span>Mantención sin ejercicio</span><span>~${nfmt(d.base)} kcal</span></div>
+      <div class="wk"><span>🎯 Te conviene comer hoy</span><b>~${nfmt(d.meta)} kcal</b></div>
+    </div>
+    ${d.lut?`<div class="knee">🌕 Estás en fase lútea: tu gasto sube ~100 kcal y el hambre también. Suma proteína y carbohidratos de verdad (avena, fruta, legumbres).</div>`:''}
+    <p class="small" style="margin-top:10px">Es una estimación (±20%). La meta deja un déficit suave para bajar grasa sin pasar hambre.</p>
+    <button class="btn" data-close>Listo</button>`;
+  document.querySelector("#infoBody [data-close]").onclick=closeSheets;
+  openSheet("infoSheet");
+}
+
+/* ---------- HOME ---------- */
+const DIAS_L=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const MESES_L=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+function relDay(iso){const a=new Date(todayStr()+'T12:00:00'),b=new Date(dstr(new Date(iso))+'T12:00:00'),n=Math.round((a-b)/86400000);
+  return n===0?"hoy":n===1?"ayer":n<7?`hace ${n} días`:fmtShort(iso);}
+// Sesión "fuerte": gym, escalada o una caminata/terreno larga o con desnivel
+function fuerte(s){return isGym(s.tipo)||ESC.includes(s.tipo)||(s.tipo==="caminata"&&(sessMin(s)>=120||(s.desn||0)>=300))||(s.tipo==="natacion"&&s.int==="fuerte");}
+function hoyToca(){
+  const hoy=todayStr(),now=new Date(),dow=now.getDay();
+  const ay=new Date();ay.setDate(ay.getDate()-1);const ayer=dstr(ay);
+  const del=d=>data.sessions.filter(s=>dstr(new Date(s.date))===d);
+  const ci=cicloInfo(),suave=ci&&!ci.late&&(ci.f==="mens"||ci.f==="lut2");
+  const hechas=del(hoy);
+  if(hechas.length)return {done:true,t:`Hoy ya entrenaste ✅`,s:`${hechas.map(s=>sessName(s.tipo)).join(" + ")} · si te quedan ganas, yoga PM`,go:"yoga"};
+  if((dow===1&&now.getHours()<12)||(dow===5&&now.getHours()<18))
+    return {t:`Clase de handstand (${dow===1?'lun 11:00':'vie 17:00'})`,s:"Regístrala en Entrenamiento al volver",go:"entreno"};
+  if(del(ayer).some(fuerte))return {t:"Yoga PM, handstand en casa o descanso",s:"Ayer fue un día fuerte: recupera",go:"yoga"};
+  const gymW=thisWeek().filter(s=>isGym(s.tipo)).length;
+  if(gymW<3){const g=nextGym();return {t:`${sessName(g)}${suave?' · suave':''}`,s:suave?FASES[ci.f].corto:`Gym ${gymW+1} de 3 esta semana`,go:g};}
+  return {t:"Handstand en casa o descanso",s:"Ya cumpliste tus 3 gym de la semana 💪",go:"casa"};
+}
+function renderHoy(){
+  const now=new Date(),ci=cicloInfo(),h=hoyToca(),d=diaKcal();
+  const ss=sorted(),last=ss[ss.length-1];
+  const wkN=thisWeek().length;
+  main.innerHTML=`
+  <div class="hdate">${DIAS_L[now.getDay()]} ${now.getDate()} de ${MESES_L[now.getMonth()]}</div>
+  <div class="hcic" data-go="ciclo">${ci?`🌙 Día ${ci.d} · ${ci.late?'tu menstruación debería llegar en estos días':FASES[ci.f].n.toLowerCase()+' · '+FASES[ci.f].corto.charAt(0).toLowerCase()+FASES[ci.f].corto.slice(1)}`:'🌙 Registra tu día 1 para ver tu fase'}</div>
+  <div class="menu hoyrow">${mrow(h.go,"bulb","ic-amber",h.done?esc(h.t):`Hoy te toca: ${esc(h.t)}`,`${esc(h.s)}${last&&!h.done?` · Último: ${relDay(last.date)}, ${esc(sessName(last.tipo))}`:''}`)}</div>
+  <div class="menu">
+    ${mrow("entreno","barbell","ic-coral","Entrenamiento",`${wkN} ${wkN===1?'sesión':'sesiones'} esta semana`)}
+    ${mrow("comida","salad","ic-green","Alimentación",`Gasto hoy ~${nfmt(d.gasto)} · meta ~${nfmt(d.meta)} kcal`)}
+    ${mrow("prog","chart-line","ic-teal","Progreso","Medidas, fotos y fuerza")}
+    ${mrow("lib","books","ic-gray","Biblioteca","Cómo se hace cada ejercicio")}
+    ${mrow("ciclo","moon","ic-pink","Mi ciclo",ci?`Próxima ≈ ${fmtShort(ci.pred[0].mid)}`:'Registra tu día 1')}
+  </div>`;
+  main.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
+}
+
+/* ---------- ENTRENAMIENTO ---------- */
+function renderEntreno(){
+  const wk=thisWeek(),n=f=>wk.filter(f).length;
   const ss=sorted();let lastHtml=`<p class="small">Todavía no registras entrenamientos.</p>`;
   if(ss.length){const lastD=dstr(new Date(ss[ss.length-1].date));
     const that=ss.filter(x=>dstr(new Date(x.date))===lastD);
-    lastHtml=`<div class="lastday">${fmtDate(ss[ss.length-1].date)}</div>`+that.filter((x,i,a)=>a.findIndex(y=>y.tipo===x.tipo)===i).map(x=>`<div class="wk"><span>${esc(sessName(x.tipo))}</span><span class="small">${durTxt(x)}</span></div>`).join("");}
-
-  // Semanas para el selector de Fitia: la actual y 11 anteriores
-  data.fitia=data.fitia||{};
-  const thisMon=mondayOf(new Date());if(!fitiaWeek)fitiaWeek=thisMon;
-  const mons=[];for(let i=0;i<12;i++){const d=new Date(thisMon+'T12:00:00');d.setDate(d.getDate()-7*i);mons.push(dstr(d));}
-  const fv=data.fitia[fitiaWeek]||{};
-  const fb=data.fitia[fitiaWeek]?evalWeek(fv):[];
-  const hist=Object.keys(data.fitia).sort().map(mon=>({mon,v:data.fitia[mon]}));
-
-  const ci=cicloInfo();
-  let html=`
-  <div class="navcard th-c" data-go="ciclo" style="margin-bottom:12px"><div class="ttl"><span>${ci?`🌙 Día ${ci.d} · Fase ${FASES[ci.f].n.toLowerCase()}`:'🌙 Mi ciclo'}</span><span>›</span></div>
-    <div class="rm">${ci?(ci.late?'Tu menstruación debería llegar en estos días':`${FASES[ci.f].corto} · próxima menstruación ≈ ${fmtDate(ci.pred[0].mid+"T12:00:00").replace(/ \d{4}$/,"")}`):'Registra tu día 1 para saber cuánto exigirte hoy'}</div></div>
-  <div class="tiles t2">
-    ${GYM_ORDER.map(t=>`<div class="tile ${THEME[t]}" data-go="${t}">${data.routines[t].emoji} ${esc(data.routines[t].nombre.split(' · ')[0])}<small>${FOCUS[t]}</small></div>`).join("")}
-  </div>
-  <div class="tiles t3">
-    <div class="tile th-casa" data-go="casa">🏠 Handstand casa</div>
-    <div class="tile th-esc" data-go="${data.escModo||'escalada'}">🧗 Escalada</div>
-    <div class="tile th-yoga" data-go="${data.yogaModo||'yoga'}">🧘 Yoga</div>
-  </div>
+    lastHtml=`<div class="lastday">${fmtDate(ss[ss.length-1].date)}</div>`+that.filter((x,i,a)=>x.tipo==="caminata"||x.tipo==="natacion"||a.findIndex(y=>y.tipo===x.tipo)===i).map(x=>`<div class="wk"><span>${esc(sessName(x.tipo))}</span><span class="small">${durTxt(x)||(x.dur?x.dur+' min':'')}</span></div>`).join("");}
+  const R=data.routines,nm=t=>esc(R[t].nombre.split(' · ')[0]);
+  main.innerHTML=`
   <div class="daterow">📅 Día de la sesión <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>
-  <div class="tile th-am" id="qHs" style="margin-bottom:10px">🤸 + Clase handstand (guiada)</div>
+  <div class="ehead"><span>Sesiones</span><button class="pill" id="qHs">🤸 + Clase handstand</button></div>
+  <div class="menu">
+    ${GYM_ORDER.map(t=>mrow(t,"barbell",t==="gymA"?"ic-purple":"ic-coral",nm(t),FOCUS[t])).join("")}
+    ${mrow("casa","stretching","ic-teal","Handstand casa","~20 min")}
+    ${mrow(data.escModo||"escalada","mountain","ic-gray","Escalada","Muro o roca")}
+    ${mrow(data.yogaModo||"yoga","yoga","ic-green","Yoga","AM despertar · PM dormir")}
+    ${mrow("caminata","trekking","ic-amber","Caminata / terreno","Duración, altura, desnivel, mochila")}
+    ${mrow("natacion","swimming","ic-blue","Natación","Minutos e intensidad")}
+  </div>
   <div class="card"><h3>⏮️ Último entrenamiento</h3>${lastHtml}<button class="ulink" data-go="hist">📊 Ver historial</button></div>
   <div class="card">
     <h3>📆 Esta semana</h3>
-    <div class="wk"><span>🏋️ Gym</span><b>${gymW}</b></div>
-    <div class="wk"><span>🤸 Clase de handstand</span><b>${hsW}</b></div>
-    <div class="wk"><span>🏠 Handstand en casa</span><b>${casaW}</b></div>
-    <div class="wk"><span>🧗 Escalada</span><b>${esW}</b></div>
-    <div class="wk"><span>🧘 Yoga</span><b>${yoW}</b></div>
+    <div class="wk"><span>🏋️ Gym</span><b>${n(s=>isGym(s.tipo))}</b></div>
+    <div class="wk"><span>🤸 Clase de handstand</span><b>${n(s=>s.tipo==="handstand")}</b></div>
+    <div class="wk"><span>🏠 Handstand en casa</span><b>${n(s=>s.tipo==="casa")}</b></div>
+    <div class="wk"><span>🧗 Escalada</span><b>${n(s=>ESC.includes(s.tipo))}</b></div>
+    <div class="wk"><span>🧘 Yoga</span><b>${n(s=>YOGA.includes(s.tipo))}</b></div>
+    <div class="wk"><span>🥾 Caminata / terreno</span><b>${n(s=>s.tipo==="caminata")}</b></div>
+    <div class="wk"><span>🏊 Natación</span><b>${n(s=>s.tipo==="natacion")}</b></div>
+  </div>`;
+  main.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
+  document.getElementById("sessDate").onchange=e=>{sessionDate=e.target.value||todayStr();};
+  document.getElementById("qHs").onclick=()=>{quickLog("handstand");};
+}
+
+/* ---------- CAMINATA / TERRENO y NATACIÓN ---------- */
+let natInt="moderada";
+// dec=true: acepta decimales con punto o coma; si no, el punto es separador de miles (4.200)
+function numv(id,dec){let s=document.getElementById(id).value||"";s=dec?s.replace(',','.'):s.replace(/\./g,'').replace(',','.');const v=parseFloat(s);return isNaN(v)?null:v;}
+function actDateRow(){return `<div class="daterow">📅 Día <input type="date" id="sessDate" value="${sessionDate}" max="${todayStr()}"></div>`;}
+function saveActividad(sess){
+  sess.id=Date.now();sess.date=new Date((sessionDate||todayStr())+'T12:00:00').toISOString();sess.count=1;
+  sess.kcal=kcalOf(sess);
+  data.sessions.push(sess);save();updateStats();
+  sessionDate=todayStr();currentTab="hoy";render();window.scrollTo(0,0);kcalSheet(sess);
+}
+function renderCaminata(){
+  main.innerHTML=`<div class="rhead th-am"><div class="rt">🥾 Caminata / terreno</div><div class="rm">Cuenta como cardio. La altura y el desnivel suben el gasto.</div></div>
+  ${actDateRow()}
+  <div class="card"><div class="form fgrid">
+    <label>⏱️ Horas<input type="text" inputmode="numeric" id="cH" placeholder="2"></label>
+    <label>Minutos<input type="text" inputmode="numeric" id="cM" placeholder="30"></label>
+    <label>⛰️ Altura máx (msnm)<input type="text" inputmode="numeric" id="cAlt" placeholder="4.200"></label>
+    <label>↗️ Desnivel + (m)<input type="text" inputmode="numeric" id="cDes" placeholder="400"></label>
+    <label>🎒 Mochila (kg, opcional)<input type="text" inputmode="decimal" id="cMoc" placeholder="6"></label>
   </div>
-  <div class="tiles t2">
-    <div class="tile th-am" data-go="prog">📈 Progreso</div>
-    <div class="tile th-am" data-go="lib">📚 Biblioteca</div>
+  <div class="form"><label>📝 Notas<input type="text" id="cNota" placeholder="terreno, ruta, cómo te sentiste"></label></div>
+  <div class="kest" id="cEst">Anota la duración para estimar las calorías</div>
+  <button class="btn" id="cSave">✓ Guardar caminata</button></div>`;
+  const get=()=>{const h=numv("cH")||0,m=numv("cM")||0;return {dur:Math.round(h*60+m),alt:numv("cAlt"),desn:numv("cDes"),mochila:numv("cMoc",true)};};
+  const upd=()=>{const v=get();document.getElementById("cEst").innerHTML=v.dur?`🔥 ~<b>${nfmt(kcalCaminata(v.dur,pesoActual(),v.mochila,v.desn,v.alt))} kcal</b>${(v.alt||0)>3000?' · incluye +10% por altura':''}`:'Anota la duración para estimar las calorías';};
+  main.querySelectorAll("input").forEach(i=>i.oninput=upd);
+  document.getElementById("sessDate").onchange=e=>{sessionDate=e.target.value||todayStr();};
+  document.getElementById("cSave").onclick=()=>{const v=get();if(!v.dur){toast("Anota cuánto duró ⏱️");return;}
+    const nota=(document.getElementById("cNota").value||"").trim();
+    const txt=[`${Math.floor(v.dur/60)?Math.floor(v.dur/60)+' h ':''}${v.dur%60?v.dur%60+' min':''}`.trim(),v.alt?`máx ${nfmt(v.alt)} msnm`:"",v.desn?`+${nfmt(v.desn)} m`:"",v.mochila?`mochila ${fmtKg(v.mochila)} kg`:"",nota].filter(Boolean).join(" · ");
+    saveActividad({tipo:"caminata",...v,nota,logs:[{n:"Caminata",v:txt}]});};
+}
+function renderNatacion(){
+  main.innerHTML=`<div class="rhead th-am" style="background:#E6F1FB;color:#0C447C;border-color:#85B7EB"><div class="rt">🏊 Natación</div><div class="rm">Cuenta como cardio.</div></div>
+  ${actDateRow()}
+  <div class="card"><div class="form"><label>⏱️ Minutos<input type="text" inputmode="numeric" id="nMin" placeholder="20"></label></div>
+  <p class="small" style="margin:10px 0 6px">Intensidad</p>
+  <div class="chips">${Object.keys(NAT_MET).map(k=>`<button class="chip2 ${k===natInt?'on':''}" data-int="${k}">${NAT_TXT[k]}</button>`).join("")}</div>
+  <div class="form" style="margin-top:8px"><label>📝 Notas<input type="text" id="nNota" placeholder="estilo, piscina, cómo te sentiste"></label></div>
+  <div class="kest" id="nEst">Anota los minutos para estimar las calorías</div>
+  <button class="btn" id="nSave">✓ Guardar natación</button></div>`;
+  const upd=()=>{const m=numv("nMin");document.getElementById("nEst").innerHTML=m?`🔥 ~<b>${nfmt(NAT_MET[natInt]*pesoActual()*m/60)} kcal</b>`:'Anota los minutos para estimar las calorías';};
+  document.getElementById("nMin").oninput=upd;upd();
+  main.querySelectorAll("[data-int]").forEach(b=>b.onclick=()=>{natInt=b.dataset.int;main.querySelectorAll("[data-int]").forEach(x=>x.classList.toggle("on",x===b));upd();});
+  document.getElementById("sessDate").onchange=e=>{sessionDate=e.target.value||todayStr();};
+  document.getElementById("nSave").onclick=()=>{const m=numv("nMin");if(!m){toast("Anota los minutos ⏱️");return;}
+    const nota=(document.getElementById("nNota").value||"").trim();
+    saveActividad({tipo:"natacion",dur:Math.round(m),int:natInt,nota,logs:[{n:"Natación",v:[`${Math.round(m)} min`,NAT_TXT[natInt].slice(2).toLowerCase(),nota].filter(Boolean).join(" · ")}]});};
+}
+
+/* ---------- ALIMENTACIÓN ---------- */
+function renderComida(){
+  const d=diaKcal();
+  // Semanas para el selector de Fitia: la actual y 11 anteriores
+  data.fitia=data.fitia||{};
+  const thisMon=mondayOf(new Date());if(!fitiaWeek)fitiaWeek=thisMon;
+  const mons=[];for(let i=0;i<12;i++){const x=new Date(thisMon+'T12:00:00');x.setDate(x.getDate()-7*i);mons.push(dstr(x));}
+  const fv=data.fitia[fitiaWeek]||{};
+  const fb=data.fitia[fitiaWeek]?evalWeek(fv):[];
+  const hist=Object.keys(data.fitia).sort().map(mon=>({mon,v:data.fitia[mon]}));
+  main.innerHTML=`
+  <div class="card">
+    <h3>🔥 Gasto de hoy</h3>
+    ${d.ss.length?d.ss.map(s=>`<div class="wk"><span>${esc(sessName(s.tipo))} <span class="small">${sessMin(s)} min</span></span><span>~${nfmt(kcalOf(s))} kcal</span></div>`).join(""):'<p class="small">Hoy aún no registras entrenamientos.</p>'}
+    <div class="wk"><span>Mantención sin ejercicio${d.lut?' (+100 lútea)':''}</span><span>~${nfmt(d.base)} kcal</span></div>
+    <div class="wk"><span>Gasto total del día</span><b>~${nfmt(d.gasto)} kcal</b></div>
+    <div class="kmeta">🎯 Te conviene comer hoy: <b>~${nfmt(d.meta)} kcal</b></div>
+    ${d.lut?`<p class="small" style="margin-top:6px">🌕 Fase lútea: el gasto y el hambre suben un poco. Es normal.</p>`:''}
+    <p class="small" style="margin-top:6px">Estimación con tu último peso (${fmtKg(pesoActual())} kg). Los días con mucho ejercicio o terreno la meta sube para que no pases hambre.</p>
   </div>
   <div class="card">
     <h3>🎯 Metas diarias de comida</h3>
-    <p><span class="macro">🔥 1.550–1.750 kcal</span><span class="macro">🥚 110–120 g prot</span><span class="macro">🍚 130–170 g carbos</span><span class="macro">🥑 50–60 g grasa</span><span class="macro">💧 2 L agua</span></p>
+    <p><span class="macro">🔥 1.550–1.750 kcal (día normal)</span><span class="macro">🥚 110–120 g prot</span><span class="macro">🍚 130–170 g carbos</span><span class="macro">🥑 50–60 g grasa</span><span class="macro">💧 2 L agua</span></p>
     <p class="small" style="margin-top:10px">🥗 Promedio semanal (Fitia)</p>
     <select class="full" id="fWeek">${mons.map(m=>`<option value="${m}" ${m===fitiaWeek?'selected':''}>Semana ${weekLabel(m)}${data.fitia[m]?' ✓':''}</option>`).join("")}</select>
     <div class="form fgrid">
@@ -1617,17 +1821,12 @@ function renderHoy(){
     <button class="ulink" id="fHist">Historial ${fitiaHist?'▴':'▾'}</button>
     ${fitiaHist?(hist.length?`<div style="margin-top:8px">${fitiaChart(hist)}<div class="mlist">${[...hist].reverse().map(h=>`<div><span>${weekLabel(h.mon)}</span><span>${h.v.kcal??'—'} kcal · ${h.v.p??'—'} P · ${h.v.c??'—'} C · ${h.v.g??'—'} G</span></div>`).join("")}</div></div>`:'<p class="small">Aún no guardas semanas.</p>'):''}
   </div>`;
-  main.innerHTML=html;
-  main.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
-  document.getElementById("sessDate").onchange=e=>{sessionDate=e.target.value||todayStr();};
-  document.getElementById("qHs").onclick=()=>quickLog("handstand");
-  document.getElementById("fWeek").onchange=e=>{fitiaWeek=e.target.value;renderHoy();};
-  document.getElementById("fHist").onclick=()=>{fitiaHist=!fitiaHist;renderHoy();};
+  document.getElementById("fWeek").onchange=e=>{fitiaWeek=e.target.value;renderComida();};
+  document.getElementById("fHist").onclick=()=>{fitiaHist=!fitiaHist;renderComida();};
   document.getElementById("fSave").onclick=()=>{
-    const num=id=>{const v=parseFloat((document.getElementById(id).value||"").replace(/\./g,'').replace(',','.'));return isNaN(v)?null:v;};
-    const v={kcal:num("fK"),p:num("fP"),c:num("fC"),g:num("fG")};
+    const v={kcal:numv("fK"),p:numv("fP"),c:numv("fC"),g:numv("fG")};
     if(v.kcal==null&&v.p==null){toast("Anota al menos kcal o proteína ✏️");return;}
-    data.fitia[fitiaWeek]=v;save();toast("Semana guardada 🥗");renderHoy();
+    data.fitia[fitiaWeek]=v;save();toast("Semana guardada 🥗");renderComida();
   };
 }
 
@@ -1897,7 +2096,7 @@ function progressText(){
   const L=[`PROGRESO DE DIANA · ${fmtDate(new Date().toISOString())}`,""];
   const ss=[...data.sessions].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,40);
   L.push(`SESIONES (${data.sessions.length} en total; últimas ${ss.length}):`);
-  ss.forEach(x=>{L.push(`- ${fmtDate(x.date)} · ${sessName(x.tipo)}${isGym(x.tipo)||ROUTINE_TABS.includes(x.tipo)?` · ${x.count} ejercicios`:''}${durTxt(x)?' · '+durTxt(x).replace('⏱️ ',''):''}`);
+  ss.forEach(x=>{L.push(`- ${fmtDate(x.date)} · ${sessName(x.tipo)}${isGym(x.tipo)||ROUTINE_TABS.includes(x.tipo)?` · ${x.count} ejercicios`:''}${durTxt(x)?' · '+durTxt(x).replace('⏱️ ',''):''} · ~${nfmt(kcalOf(x))} kcal`);
     (x.logs||[]).forEach(l=>L.push(`    ${l.n}: ${l.v}`));});
   const M=[...data.medidas].sort((a,b)=>a.date.localeCompare(b.date));
   if(M.length){L.push("","MEDIDAS:");M.forEach(m=>L.push(`- ${m.date} · peso ${m.peso??'—'} kg · cintura ${m.cintura??'—'} · cadera ${m.cadera??'—'} · cuello ${m.cuello??'—'}${navyBF(m)!=null?` · grasa ≈ ${navyBF(m)}%`:''}`));}
@@ -1948,7 +2147,7 @@ function renderHist(){
     html+=`<div class="hitem">
       <div class="hitem-h"><span class="hitem-t">${esc(sessName(sess.tipo))}</span>
         <span class="hbtns">${ROUTINE_TABS.includes(sess.tipo)?`<button class="hlink" data-reopen="${sess.id}">✏️ Reabrir</button>`:''}${data.sessions.some(x=>x!==sess&&sameDay(x,sess))&&ROUTINE_TABS.includes(sess.tipo)?`<button class="hlink" data-merge="${sess.id}">🔗 Unir</button>`:''}<button class="del" data-del="${sess.id}">Borrar</button></span></div>
-      <div class="hitem-d">${fmtDate(sess.date)}${isGym(sess.tipo)||ROUTINE_TABS.includes(sess.tipo)?` · ${sess.count} ejercicios`:''}${durTxt(sess)?` · ${durTxt(sess)}`:''}</div>
+      <div class="hitem-d">${fmtDate(sess.date)}${isGym(sess.tipo)||ROUTINE_TABS.includes(sess.tipo)?` · ${sess.count} ejercicios`:''}${durTxt(sess)?` · ${durTxt(sess)}`:''} · 🔥 ~${nfmt(kcalOf(sess))} kcal</div>
       ${logs?`<div class="hitem-logs">${logs}</div>`:''}
     </div>`;
   });
