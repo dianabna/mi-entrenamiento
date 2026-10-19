@@ -112,6 +112,10 @@
   .form label{min-width:0}
   .form input[type=date],.form input[type=time]{-webkit-appearance:none;appearance:none;min-width:0;max-width:100%;min-height:40px;text-align:left}
   .form input::-webkit-date-and-time-value{text-align:left}
+  .tedit{display:flex;gap:8px;align-items:flex-end;margin-top:8px;flex-wrap:wrap}
+  .tedit label{flex:1 1 90px;min-width:0;font-size:11px;color:var(--muted);font-weight:600}
+  .tedit input{display:block;width:100%;min-width:0;-webkit-appearance:none;appearance:none;margin-top:3px;border:1px solid var(--line);border-radius:9px;padding:8px;font-size:14px;font-family:inherit;background:var(--cream);color:var(--ink);min-height:38px}
+  .hsave{border:none;border-radius:9px;background:var(--terra);color:#fff;font-weight:700;padding:10px 14px;cursor:pointer}
   nav::-webkit-scrollbar{display:none}
   nav button{
     flex:0 0 auto;border:none;background:var(--sand);color:var(--ink);
@@ -417,7 +421,7 @@ const DEFAULT_ROUTINES = {
     CAL(),
     {t:"🤸 Skill (5 min) + tríceps", ex:[
       {n:"Fondos en paralelas", skill:true, log:true},
-      {n:"Extensión de tríceps en polea", d:"3 × 12", log:true, rest:60},
+      {n:"Extensión de tríceps sobre cabeza con mancuernas", d:"3 × 10-12", log:true, tipo:"peso", rest:60},
     ]},
     {t:"🦵 Piernas (prioridad)", ex:[
       APROX,
@@ -641,6 +645,13 @@ const LIB_BASE={
     pasos:["Polea a la altura de la cara o un poco más arriba, con cuerda.","Toma las puntas con las palmas hacia abajo y da 2 pasos atrás.","Tira hacia tu frente separando las manos, con los codos altos.","Termina con las manos a los lados de la cabeza y vuelve lento."],
     fij:["Peso liviano: es para postura, contractura de espalda alta y salud del hombro."],
     err:["Usar mucho peso y tirar con el cuerpo.","Bajar los codos."],q:"face pull con cuerda en polea técnica"},
+  "Extensión de tríceps sobre cabeza con mancuernas":{v:"fQ-KB40W3d8",cat:"Calistenia",musc:"Tríceps (sobre todo la cabeza larga)",rec:{tipo:"peso",sets:3,val:"10-12",rest:60},
+    pasos:["Siéntate en un banco con respaldo recto (o de pie con el abdomen firme).","Toma UNA mancuerna con las dos manos por el disco de arriba, con los pulgares rodeando el mango.","Súbela sobre la cabeza con los brazos estirados.","Baja la mancuerna detrás de la cabeza doblando solo los codos, lento, hasta que los antebrazos pasen un poco de la horizontal.","Sube estirando los codos sin trancarlos de golpe."],
+    fij:["Codos apuntando al frente y cerca de la cabeza: que no se abran hacia los lados.","Solo se mueven los antebrazos; los brazos (del codo al hombro) quedan quietos.","Costillas abajo y abdomen firme: que la espalda baja no se arquee.","Baja en 2-3 segundos; el estiramiento abajo es lo que más trabaja el tríceps."],
+    err:["Abrir los codos hacia los lados.","Arquear la espalda baja para subir el peso.","Bajar muy rápido o rebotar abajo.","Usar tanto peso que la mancuerna se acerque a la nuca sin control."],
+    alt:"Reemplaza a la extensión en polea (en tu gym hay una sola polea y siempre está ocupada). Si no hay banco con respaldo, hazla de pie.",
+    codo:"Si sientes chasquido o dolor en el codo, baja el peso y no bajes tanto la mancuerna. Debe sentirse en el músculo de atrás del brazo, no en la articulación.",
+    q:"extensión de tríceps sobre la cabeza con mancuerna técnica"},
   "Extensión de tríceps en polea":{v:"HAS8uy73HqM",cat:"Calistenia",musc:"Tríceps",
     pasos:["Polea alta con barra recta o cuerda.","Codos pegados a los costados, tronco apenas inclinado adelante.","Estira los brazos hacia abajo hasta extender los codos (con cuerda: separa las puntas abajo).","Sube controlado hasta que los antebrazos queden paralelos al suelo."],
     fij:["Solo se mueven los antebrazos.","Peso liviano y lento: carga el tendón del tríceps de forma dosificada y ayuda a los fondos."],
@@ -845,7 +856,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 17 oct (5)";
+const APP_VERSION="versión 19 oct";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -899,6 +910,11 @@ function checkRoutinesUpdate(){
     if(R&&!exInRoutine(R,"Sit-up con disco"))R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Abdominal en banco declinado"){ex.n="Sit-up con disco";ex.d="3 × 10 · superserie con la siguiente";ex.tipo="peso";delete ex.rest;
       if(/banco/.test(bl.t))bl.t="🔥 Abdomen · superserie de 3";}}));
     data.migSitA=true;save();}
+  // 19 oct: una sola polea en el gym (siempre ocupada) → tríceps sobre la cabeza con mancuerna, con ficha completa
+  if(!data.migTri){const T="Extensión de tríceps sobre cabeza con mancuernas";
+    Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Extensión de tríceps en polea"&&!exInRoutine(R,T)){ex.n=T;ex.d="3 × 10-12";ex.tipo="peso";ex.log=true;ex.rest=60;}})));
+    if(data.libEdits&&data.libEdits[T])delete data.libEdits[T];buildLib();
+    data.migTri=true;save();}
   ESC.forEach(t=>{if(!data.routines[t]){data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));save();}});
   if(!data.migYoga){YOGA.forEach(t=>{data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));});data.migYoga=true;save();}
   // 11 oct: escalada sin bloque "A escalar"; en roca sin presas, sin chequeo y sin progresión
@@ -915,7 +931,16 @@ function checkRoutinesUpdate(){
     toast("🆕 Rutinas nuevas: piernas + abdomen · tu historial está intacto");
   }
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){toast("⚠️ No se pudo guardar");}}
+// Sesión en curso: lo marcado en cada rutina se guarda en el teléfono (data.drafts) para no perderlo al ir atrás o cerrar la app
+function stash(){
+  if(typeof draft==="undefined"||!ROUTINE_TABS.includes(currentTab)||editMode)return;
+  data.drafts=data.drafts||{};
+  if(Object.values(draft).some(v=>v.done||(v.sets&&v.sets.length)))
+    data.drafts[currentTab]={draft,date:sessionDate,editingId,activeEx,start:data.curStart&&data.curStart.tab===currentTab?data.curStart.t:null,ts:Date.now()};
+  else delete data.drafts[currentTab];
+}
+function hasDraft(t){return !!(data.drafts&&data.drafts[t]);}
+function save(){stash();try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){toast("⚠️ No se pudo guardar");}}
 
 const main=document.getElementById("main");
 const saveBtn=document.getElementById("saveBtn");
@@ -1028,7 +1053,8 @@ function renderRoutine(){
   if(editMode){
     html+=`<button class="addblock" id="addBlock">+ Agregar bloque nuevo</button>`;
     html+=`<button class="restore" id="restore">↺ Restaurar esta rutina original</button>`;
-  }else html+=`<button class="edlink" id="editToggle" style="display:block;margin:0 auto 10px">✏️ Editar bloques de la rutina</button>`;
+  }else html+=`<button class="edlink" id="editToggle" style="display:block;margin:0 auto 10px">✏️ Editar bloques de la rutina</button>
+    ${Object.values(draft).some(v=>v.done||(v.sets&&v.sets.length))?`<button class="edlink danger" id="discard" style="display:block;margin:0 auto 10px">🗑️ Descartar lo marcado sin guardar</button>`:''}`;
   main.innerHTML=html;
   bindRoutine();
 }
@@ -1134,7 +1160,7 @@ function setsHtml(ex,id,isAct){
 const REST={
   "Fondos en paralelas":120,"Dominadas":120,"Pull-over":120,"Peso muerto con barra hexagonal":120,"Peso muerto con mancuernas":120,
   "Flexiones":90,"Jalón al pecho o dominada asistida":90,"Prensa de piernas":90,"Hip thrust":90,"Peso muerto rumano con mancuernas":90,
-  "Flexiones inclinadas":60,"L-sit":60,"Handstand pecho a la pared":60,"Extensión de tríceps en polea":60,"Face pull":60,
+  "Flexiones inclinadas":60,"L-sit":60,"Handstand pecho a la pared":60,"Extensión de tríceps en polea":60,"Extensión de tríceps sobre cabeza con mancuernas":60,"Face pull":60,
   "Extensión de cuádriceps":60,"Abductores en máquina":60,"Curl femoral":60,"Step-up a cajón con mancuernas":60,
   "Crunch en polea":60,"Abdominal en banco declinado":60,"Elevación de piernas colgada":60,"Oblicuos colgada":60,
   "Plancha":45,"Pallof press":45,"Elevaciones en compresión":45,"Hollow hold":30,
@@ -1159,7 +1185,6 @@ const SUG={since:"2026-10-17",kg:{
   "Peso muerto con mancuernas":[30,"anota el TOTAL: 2 mancuernas de 15 kg · meta 3×8-12 · magnesio si el agarre falla"],
   "Hip thrust":[50,"meta 3×15 completas; después 55 kg"],
   "Curl femoral":[5,"placa 5 · meta 3×12 sin calambre"],
-  "Extensión de tríceps en polea":[4,"placa 4 · 3×12"],
 }};
 function sugOf(n){const g=SUG.kg[n];if(!g)return null;const L=lastLog(n);if(L&&dstr(new Date(L.date))>=SUG.since)return null;return g;}
 function canLog(ex){if(ex.tipo==="marcar")return false;return !!ex.log||!!target(effD(ex));}
@@ -1214,7 +1239,7 @@ function logSet(n,cont){
   const ex=exByName(n);if(!ex)return;
   const c=curVals(ex),m=exMeta(ex);
   draft[n]=draft[n]||{};draft[n].sets=draft[n].sets||[];
-  draft[n].sets.push({kg:m.byTime?0:c.kg,reps:c.reps});draft[n].done=true;
+  draft[n].sets.push({kg:m.byTime?0:c.kg,reps:c.reps});draft[n].done=true;save();
   const nxt=ssFirst(ex)?neighbor(n,1):null;
   // Cadena de superserie: los ejercicios anteriores marcados "superserie con la siguiente"
   const chain=[];let pv=neighbor(n,-1);while(pv&&ssFirst(pv)){chain.unshift(pv);pv=neighbor(pv.n,-1);}
@@ -1255,6 +1280,7 @@ function click0(attr,fn){main.querySelectorAll(`[data-${attr}]`).forEach(el=>{el
 function bindRoutine(){
   const et=document.getElementById("editToggle");
   if(et)et.onclick=()=>{if(!editMode&&Object.values(draft).some(v=>v.done)&&!confirm("Al editar los bloques se borran las series marcadas sin guardar. ¿Seguir?"))return;
+    if(!editMode&&data.drafts){delete data.drafts[currentTab];save();}
     editMode=!editMode;exEd=null;draft={};cur={};activeEx=null;edOpen={};addOpen=null;render();window.scrollTo(0,0);};
   const sd=document.getElementById("sessDate");
   if(sd)sd.onchange=()=>{sessionDate=sd.value||todayStr();};
@@ -1265,7 +1291,7 @@ function bindRoutine(){
     if(grp){data[grp===ESC?"escModo":"yogaModo"]=currentTab;if(st&&grp.includes(st.tab))data.curStart={tab:currentTab,t:st.t};save();render();}};});
   if(!editMode){
     main.querySelectorAll("[data-cb]").forEach(el=>{
-      el.onclick=()=>{markStart();const n=idMap[el.dataset.cb];draft[n]=draft[n]||{};draft[n].done=!draft[n].done;el.classList.toggle("on",draft[n].done);};
+      el.onclick=()=>{markStart();const n=idMap[el.dataset.cb];draft[n]=draft[n]||{};draft[n].done=!draft[n].done;el.classList.toggle("on",draft[n].done);save();};
     });
     const on=(attr,fn)=>main.querySelectorAll(`[data-${attr}]`).forEach(el=>{el.onclick=()=>{const v=el.dataset[attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase())];fn(v,el);};});
     on("act",id=>{activeEx=idMap[id];render();});
@@ -1286,11 +1312,14 @@ function bindRoutine(){
     on("logset",id=>logSet(idMap[id]));
     on("rmset",v=>{
       const p=v.lastIndexOf("_"),n=idMap[v.slice(0,p)],i=+v.slice(p+1);
-      if(confirm("¿Borrar esta serie?")){draft[n].sets.splice(i,1);if(!draft[n].sets.length)draft[n].done=false;delete cur[n];activeEx=n;render();}
+      if(confirm("¿Borrar esta serie?")){draft[n].sets.splice(i,1);if(!draft[n].sets.length)draft[n].done=false;delete cur[n];activeEx=n;save();render();}
     });
   }
   bindTop();
   click0("exdone",()=>{exEd=null;render();});
+  const dc=document.getElementById("discard");
+  if(dc)dc.onclick=()=>{if(!confirm("¿Borrar todo lo marcado en esta sesión? No se puede deshacer."))return;
+    draft={};cur={};activeEx=null;editingId=null;if(data.curStart&&data.curStart.tab===currentTab)delete data.curStart;save();render();toast("Sesión descartada");};
   const R=data.routines[currentTab];
   const at=k=>{const p=k.split("_").map(Number);return [R.blocks[p[0]],p[1],p[0]];};
   const click=(attr,fn)=>main.querySelectorAll(`[data-${attr}]`).forEach(el=>{el.onclick=()=>fn(el.dataset[attr.replace(/-(\w)/g,(_,c)=>c.toUpperCase())],el);});
@@ -1361,7 +1390,7 @@ saveBtn.onclick=()=>{
   }
   sess.kcal=null;sess.kcal=kcalOf(sess);
   delete data.curStart;editingId=null;
-  save();draft={};cur={};activeEx=null;sessionDate=todayStr();updateStats();
+  draft={};cur={};activeEx=null;save();sessionDate=todayStr();updateStats();
   toast(sess.start?`¡Sesión guardada! 🎉 ${Math.round((sess.end-sess.start)/60000)} min`:"¡Sesión guardada! 🎉");
   currentTab="entreno";render();window.scrollTo(0,0);kcalSheet(sess);
 };
@@ -1470,7 +1499,8 @@ function renderCiclo(){
 }
 
 /* ---------- REABRIR Y UNIR SESIONES ---------- */
-let editingId=null;   // id de la sesión reabierta desde el historial
+let editingId=null;
+let histEd=null;      // sesión del historial con la hora abierta para editar   // id de la sesión reabierta desde el historial
 function reopenSession(id){
   const sess=data.sessions.find(x=>x.id==id);if(!sess)return;
   if(!ROUTINE_TABS.includes(sess.tipo)||!data.routines[sess.tipo]){toast("Esa sesión no tiene rutina para reabrir");return;}
@@ -1504,16 +1534,17 @@ function mergeSessions(id){
 
 /* ---------- RESUMEN ---------- */
 function goTab(t){
-  if(!editMode && ROUTINE_TABS.includes(currentTab) && Object.values(draft).some(v=>v.done)){
-    if(!confirm("Tienes ejercicios marcados sin guardar. ¿Cambiar de todos modos?")) return;
-    delete data.curStart;save();
-  }
-  if(editingId!=null){editingId=null;delete data.curStart;save();}
-  draft={};cur={};activeEx=null;editMode=false;edOpen={};addOpen=null;libForm=null;
+  save();   // guarda la sesión en curso (si hay algo marcado) antes de salir
+  draft={};cur={};activeEx=null;editMode=false;edOpen={};addOpen=null;libForm=null;editingId=null;
   // El día elegido en Entrenamiento se mantiene al abrir una sesión
   if(!["entreno",...CARD_TABS,...ROUTINE_TABS].includes(t))sessionDate=todayStr();
-  exEd=null;yogaOff=0;
+  exEd=null;yogaOff=0;histEd=null;
+  // Vuelve a abrir la sesión en curso de esa rutina, con sus series, fecha y hora de inicio
+  const d=ROUTINE_TABS.includes(t)&&data.drafts&&data.drafts[t];
+  if(d){draft=JSON.parse(JSON.stringify(d.draft));sessionDate=d.date||todayStr();editingId=d.editingId??null;activeEx=d.activeEx||null;
+    if(d.start)data.curStart={tab:t,t:d.start};}
   currentTab=t;render();window.scrollTo(0,0);
+  if(d)toast("⏳ Sesión en curso: sigue donde quedaste");
 }
 // Registra de inmediato con la fecha elegida (antes preguntaba una nota y "Cancelar" no guardaba nada)
 function quickLog(tipo){
@@ -1713,9 +1744,9 @@ function renderEntreno(){
   main.innerHTML=`${cicloTop(false)}
   <div class="hoycard" data-go="${h.go}"><div class="ht">${ico("bulb")}<span>${esc(h.t)}</span></div><div class="hs">${esc(h.s)}</div><button class="hb">${esc(h.b)}</button></div>
   <div class="menu">
-    ${GYM_ORDER.map(t=>mrow(t,"barbell",t==="gymA"?"ic-purple":"ic-coral",nm(t),FOCUS[t])).join("")}
+    ${GYM_ORDER.map(t=>mrow(t,"barbell",t==="gymA"?"ic-purple":"ic-coral",nm(t),hasDraft(t)?"⏳ En curso, sin guardar":FOCUS[t])).join("")}
     ${mrow("clase","hand-stop","ic-amber","Clase de handstand","lun 11:00 · vie 17:00")}
-    ${mrow("casa","stretching","ic-teal","Handstand casa","Hombros, muñecas y L-sit · ~20 min")}
+    ${mrow("casa","stretching","ic-teal","Handstand casa",hasDraft("casa")?"⏳ En curso, sin guardar":"Hombros, muñecas y L-sit · ~20 min")}
     ${mrow("esc","mountain","ic-gray","Escalada","Muro o roca · duración")}
     ${mrow("yogaC","yoga","ic-green","Yoga","Video AM despertar · PM dormir")}
     ${mrow("caminata","trekking","ic-amber","Caminata / terreno","Altura, desnivel, mochila")}
@@ -2230,7 +2261,9 @@ function renderHist(){
     html+=`<div class="hitem">
       <div class="hitem-h"><span class="hitem-t">${esc(sessName(sess.tipo))}</span>
         <span class="hbtns">${ROUTINE_TABS.includes(sess.tipo)?`<button class="hlink" data-reopen="${sess.id}">✏️ Reabrir</button>`:''}${data.sessions.some(x=>x!==sess&&sameDay(x,sess))&&ROUTINE_TABS.includes(sess.tipo)?`<button class="hlink" data-merge="${sess.id}">🔗 Unir</button>`:''}<button class="del" data-del="${sess.id}">Borrar</button></span></div>
-      <div class="hitem-d">${fmtDate(sess.date)}${isGym(sess.tipo)||ROUTINE_TABS.includes(sess.tipo)?` · ${sess.count} ejercicios`:''}${durTxt(sess)?` · ${durTxt(sess)}`:''} · 🔥 ~${nfmt(kcalOf(sess))} kcal</div>
+      <div class="hitem-d">${fmtDate(sess.date)}${isGym(sess.tipo)||ROUTINE_TABS.includes(sess.tipo)?` · ${sess.count} ejercicios`:''}${durTxt(sess)?` · ${durTxt(sess)}`:''} · 🔥 ~${nfmt(kcalOf(sess))} kcal
+        <button class="hlink" data-hora="${sess.id}">🕐 ${sess.start?'cambiar hora':'agregar hora'}</button></div>
+      ${histEd==sess.id?`<div class="tedit"><label>Inicio<input type="time" id="hIni" value="${sess.start?hhmm(sess.start):''}"></label><label>Fin<input type="time" id="hFin" value="${sess.end?hhmm(sess.end):''}"></label><button class="hsave" data-hsave="${sess.id}">Guardar</button></div>`:''}
       ${logs?`<div class="hitem-logs">${logs}</div>`:''}
     </div>`;
   });
@@ -2239,6 +2272,15 @@ function renderHist(){
   document.getElementById("bkDown").onclick=downloadBackup;
   document.getElementById("bkUp").onchange=e=>restoreBackup(e.target.files[0]);
   main.querySelectorAll("[data-reopen]").forEach(el=>{el.onclick=()=>reopenSession(el.dataset.reopen);});
+  main.querySelectorAll("[data-hora]").forEach(el=>{el.onclick=()=>{histEd=histEd==el.dataset.hora?null:el.dataset.hora;renderHist();};});
+  main.querySelectorAll("[data-hsave]").forEach(el=>{el.onclick=()=>{
+    const sess=data.sessions.find(x=>x.id==el.dataset.hsave);if(!sess)return;
+    const a=document.getElementById("hIni").value,b=document.getElementById("hFin").value;
+    if(!a||!b){toast("Anota la hora de inicio y de fin 🕐");return;}
+    const day=dstr(new Date(sess.date)),st=new Date(day+"T"+a).getTime(),en=new Date(day+"T"+b).getTime();
+    if(en<=st){toast("La hora de fin debe ser después del inicio");return;}
+    sess.start=st;sess.end=en;if(sess.dur!=null)sess.dur=Math.round((en-st)/60000);
+    sess.kcal=null;sess.kcal=kcalOf(sess);histEd=null;save();renderHist();toast("Hora actualizada 🕐");};});
   main.querySelectorAll("[data-merge]").forEach(el=>{el.onclick=()=>mergeSessions(el.dataset.merge);});
   main.querySelectorAll("[data-del]").forEach(el=>{
     el.onclick=()=>{if(confirm("¿Borrar esta sesión?")){data.sessions=data.sessions.filter(x=>x.id!=el.dataset.del);save();updateStats();renderHist();}};
