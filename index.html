@@ -116,6 +116,11 @@
   .tedit label{flex:1 1 90px;min-width:0;font-size:11px;color:var(--muted);font-weight:600}
   .tedit input{display:block;width:100%;min-width:0;-webkit-appearance:none;appearance:none;margin-top:3px;border:1px solid var(--line);border-radius:9px;padding:8px;font-size:14px;font-family:inherit;background:var(--cream);color:var(--ink);min-height:38px}
   .hsave{border:none;border-radius:9px;background:var(--terra);color:#fff;font-weight:700;padding:10px 14px;cursor:pointer}
+  .fsum{margin-top:10px}
+  .flegend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:4px}
+  .flegend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+  .flegend i.lm{width:14px;height:0;border-top:2.5px solid #2c2723;border-radius:0;vertical-align:middle}
+  .flegend i.lg{width:14px;height:0;border-top:2px dashed #2f7d78;border-radius:0;vertical-align:middle}
   nav::-webkit-scrollbar{display:none}
   nav button{
     flex:0 0 auto;border:none;background:var(--sand);color:var(--ink);
@@ -856,7 +861,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;
-const APP_VERSION="versión 19 oct";
+const APP_VERSION="versión 20 oct";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1558,14 +1563,23 @@ function mondayOf(d){return dstr(weekStart(d));}
 function weekLabel(mon){const a=new Date(mon+'T12:00:00'),b=new Date(a);b.setDate(a.getDate()+6);
   return `lun ${a.getDate()}${a.getMonth()!==b.getMonth()?' '+MES[a.getMonth()]:''} – dom ${b.getDate()} ${MES[b.getMonth()]}`;}
 let fitiaWeek=null, fitiaHist=false;
-function evalWeek(v){
+// Meta y gasto promedio de una semana (lun-dom), según los entrenamientos registrados. Solo cuenta días hasta hoy.
+function semanaKcal(mon){
+  let m=0,g=0,n=0;
+  for(let k=0;k<7;k++){const d=new Date(mon+'T12:00:00');d.setDate(d.getDate()+k);const ds=dstr(d);if(ds>todayStr())break;
+    const x=diaKcal(ds);m+=x.meta;g+=x.gasto;n++;}
+  return n?{meta:r10(m/n),gasto:r10(g/n)}:null;
+}
+// 🟢 en la meta · 🟠 sobre la meta pero bajo el gasto · 🔴 sobre el gasto · "bajo": muy bajo la meta
+function estadoKcal(kcal,s){if(!s||!kcal)return null;if(kcal<s.meta-250)return "bajo";if(kcal<=s.meta+50)return "ok";if(kcal<=s.gasto)return "medio";return "alto";}
+function evalWeek(v,mon){
   const out=[], n=x=>Math.round(x).toLocaleString('es-CL');
-  if(v.kcal){
-    if(v.kcal<1400)out.push(["wa",`🔥 Muy bajo (${n(v.kcal)} kcal): cuidado con tu Vata (ansiedad, mal dormir). Sube a 1.550.`]);
-    else if(v.kcal<META.kcal[0])out.push(["wa","🔥 Un poco bajo la meta: está bien, pero no bajes más."]);
-    else if(v.kcal<=META.kcal[1])out.push(["ok","🔥 Calorías en rango ✅"]);
-    else out.push(["wa",`🔥 Sobre la meta (+${n(v.kcal-META.kcal[1])} kcal al día).`]);
-  }
+  const s=semanaKcal(mon),e=estadoKcal(v.kcal,s);
+  if(v.kcal&&v.kcal<1400)out.push(["wa",`🔥 Muy bajo (${n(v.kcal)} kcal): cuidado con tu Vata (ansiedad, mal dormir). Come lo que te pide el entrenamiento.`]);
+  else if(e==="bajo")out.push(["wa",`🔥 Comiste ~${n(r10(s.meta-v.kcal))} kcal menos que tu meta: no bajes más, tu entrenamiento necesita energía.`]);
+  else if(e==="ok")out.push(["ok","🟢 Calorías en tu meta ✅"]);
+  else if(e==="medio")out.push(["wa",`🟠 Te pasaste ~${n(r10(v.kcal-s.meta))} kcal de la meta, pero igual comiste ~${n(r10(s.gasto-v.kcal))} menos de lo que gastaste: estás bajando, más lento.`]);
+  else if(e==="alto")out.push(["wa",`🔴 Comiste ~${n(r10(v.kcal-s.gasto))} kcal más de lo que gastaste: esa semana no bajaste.`]);
   if(v.p){
     if(v.p>=META.p[0])out.push(["ok","🥚 Proteína cumplida ✅"]);
     else out.push(["wa",`🥚 Te faltan ~${n(META.p[0]-v.p)} g de proteína al día: suma 2 huevos (12 g) o ½ lata de atún (13 g).`]);
@@ -1583,22 +1597,25 @@ function evalWeek(v){
   }
   return out;
 }
-// Gráfico: barras = kcal promedio de la semana; línea = cintura de esa semana (último registro en Progreso)
+// Gráfico: barras = kcal promedio de Fitia (color según la meta de esa semana); raya negra = meta; raya punteada = gasto real
+const KCOL={ok:"#C0DD97",medio:"#FAC775",alto:"#F09595",bajo:"#B5D4F4"};
 function fitiaChart(weeks){
   if(!weeks.length)return "";
-  const W=320,H=150,pl=8,pr=8,pt=14,pb=22,n=weeks.length,slot=(W-pl-pr)/n,bw=Math.min(34,slot*.6);
-  const kmax=Math.max(META.kcal[1]*1.15,...weeks.map(w=>w.v.kcal||0));
-  const Yk=v=>pt+(1-v/kmax)*(H-pt-pb);
-  const cin=weeks.map(w=>{const ms=data.medidas.filter(m=>m.cintura&&mondayOf(new Date(m.date+'T12:00:00'))===w.mon).sort((a,b)=>a.date.localeCompare(b.date));return ms.length?ms[ms.length-1].cintura:null;});
-  const cv=cin.filter(x=>x!=null);let cmin=Math.min(...cv),cmax=Math.max(...cv);if(cmax-cmin<2){cmin-=1;cmax+=1;}
-  const Yc=v=>pt+10+(1-(v-cmin)/(cmax-cmin))*(H-pt-pb-20);
-  let g=`<line x1="${pl}" x2="${W-pr}" y1="${Yk(META.kcal[1])}" y2="${Yk(META.kcal[1])}" stroke="#8a7f74" stroke-dasharray="3 3"/><text x="${W-pr}" y="${Yk(META.kcal[1])-3}" font-size="9" fill="#8a7f74" text-anchor="end">meta 1.750</text>`;
-  weeks.forEach((w,i)=>{const x=pl+slot*i+slot/2;if(w.v.kcal)g+=`<rect x="${x-bw/2}" y="${Yk(w.v.kcal)}" width="${bw}" height="${H-pb-Yk(w.v.kcal)}" rx="3" fill="#F0997B"/>`;
+  const W=320,H=150,pl=8,pr=8,pt=12,pb=22,n=weeks.length,slot=(W-pl-pr)/n,bw=Math.min(34,slot*.55);
+  const S=weeks.map(w=>semanaKcal(w.mon));
+  const kmax=Math.max(1800,...weeks.map(w=>w.v.kcal||0),...S.map(s=>s?s.gasto:0))*1.08;
+  const Y=v=>pt+(1-v/kmax)*(H-pt-pb);
+  let g=`<line x1="${pl}" x2="${W-pr}" y1="${H-pb}" y2="${H-pb}" stroke="#e6dccf"/>`;
+  weeks.forEach((w,i)=>{const x=pl+slot*i+slot/2,s=S[i],e=estadoKcal(w.v.kcal,s);
+    if(w.v.kcal)g+=`<rect x="${x-bw/2}" y="${Y(w.v.kcal)}" width="${bw}" height="${H-pb-Y(w.v.kcal)}" rx="3" fill="${KCOL[e]||'#D3D1C7'}"/>`;
+    if(s){g+=`<line x1="${x-bw/2-4}" x2="${x+bw/2+4}" y1="${Y(s.meta)}" y2="${Y(s.meta)}" stroke="#2c2723" stroke-width="2.5"/>`;
+      g+=`<line x1="${x-bw/2-4}" x2="${x+bw/2+4}" y1="${Y(s.gasto)}" y2="${Y(s.gasto)}" stroke="#2f7d78" stroke-width="2" stroke-dasharray="3 3"/>`;}
     const d=new Date(w.mon+'T12:00:00');g+=`<text x="${x}" y="${H-7}" font-size="9" fill="#8a7f74" text-anchor="middle">${d.getDate()} ${MES[d.getMonth()]}</text>`;});
-  const pts=cin.map((c,i)=>c==null?null:[pl+slot*i+slot/2,Yc(c),c]).filter(Boolean);
-  if(pts.length>1)g+=`<polyline points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" stroke="#2f7d78" stroke-width="2"/>`;
-  pts.forEach(p=>{g+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#2f7d78"/><text x="${p[0]}" y="${p[1]-6}" font-size="9" fill="#2f7d78" text-anchor="middle">${String(p[2]).replace('.',',')}</text>`;});
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}">${g}</svg><p class="small">Barras: kcal promedio · Línea: cintura en cm (de 📈 Progreso)${pts.length<2?' · registra tu cintura cada semana para ver la línea':''}</p>`;
+  const cin=data.medidas.filter(m=>m.cintura).sort((a,b)=>a.date.localeCompare(b.date)).map(m=>({x:m.date,y:m.cintura}));
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}">${g}</svg>
+    <div class="flegend"><span><i style="background:#FAC775"></i>comiste</span><span><i class="lm"></i>meta de esa semana</span><span><i class="lg"></i>gasto real</span></div>
+    <p class="small">🟢 en la meta · 🟠 sobre la meta pero bajo tu gasto (bajas más lento) · 🔴 sobre tu gasto (no bajas) · 🔵 muy bajo la meta</p>
+    <p class="small" style="margin-top:10px"><b>📐 Cintura</b> (de 📈 Progreso)</p>${cin.length>1?lineChart(cin,"cm","#2f7d78"):'<p class="small">Registra tu cintura cada semana para ver la línea.</p>'}`;
 }
 
 /* ---------- ÍCONOS DEL MENÚ (Tabler Icons, licencia MIT) ---------- */
@@ -1906,7 +1923,8 @@ function renderComida(){
   const thisMon=mondayOf(new Date());if(!fitiaWeek)fitiaWeek=thisMon;
   const mons=[];for(let i=0;i<12;i++){const x=new Date(thisMon+'T12:00:00');x.setDate(x.getDate()-7*i);mons.push(dstr(x));}
   const fv=data.fitia[fitiaWeek]||{};
-  const fb=data.fitia[fitiaWeek]?evalWeek(fv):[];
+  const fb=data.fitia[fitiaWeek]?evalWeek(fv,fitiaWeek):[];
+  const sk=semanaKcal(fitiaWeek);
   const hist=Object.keys(data.fitia).sort().map(mon=>({mon,v:data.fitia[mon]}));
   main.innerHTML=`${cicloTop(false)}
   <div class="card">
@@ -1930,6 +1948,9 @@ function renderComida(){
       <label>🥑 Grasa (g)<input type="text" inputmode="numeric" id="fG" value="${fv.g??''}"></label>
     </div>
     <div class="tile th-am" id="fSave" style="margin-top:10px">Guardar semana</div>
+    ${sk?`<div class="fsum"><div class="wk"><span>Comiste (Fitia)</span><b>${fv.kcal?nfmt(fv.kcal)+' kcal':'—'}</b></div>
+      <div class="wk"><span>Tu meta según lo que entrenaste</span><span>~${nfmt(sk.meta)} kcal</span></div>
+      <div class="wk"><span>Tu gasto real</span><span>~${nfmt(sk.gasto)} kcal</span></div></div>`:''}
     ${fb.length?`<div class="fb">${fb.map(([c,t])=>`<div class="${c}">${esc(t)}</div>`).join("")}</div>`:''}
     <button class="ulink" id="fHist">Historial ${fitiaHist?'▴':'▾'}</button>
     ${fitiaHist?(hist.length?`<div style="margin-top:8px">${fitiaChart(hist)}<div class="mlist">${[...hist].reverse().map(h=>`<div><span>${weekLabel(h.mon)}</span><span>${h.v.kcal??'—'} kcal · ${h.v.p??'—'} P · ${h.v.c??'—'} C · ${h.v.g??'—'} G</span></div>`).join("")}</div></div>`:'<p class="small">Aún no guardas semanas.</p>'):''}
