@@ -121,6 +121,16 @@
   .flegend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
   .flegend i.lm{width:14px;height:0;border-top:2.5px solid #2c2723;border-radius:0;vertical-align:middle}
   .flegend i.lg{width:14px;height:0;border-top:2px dashed #2f7d78;border-radius:0;vertical-align:middle}
+  .seg.sel{flex-wrap:wrap}
+  .seg.sel button{flex:1 1 40%;font-size:12px}
+  .toca{background:#EAF3DE;color:#27500A;border:1px solid #97C459;border-radius:12px;padding:8px 12px;font-size:12.5px;margin:-6px 0 12px}
+  .toca.otra{background:#fff;color:var(--ink);border-color:var(--line)}
+  .tag{font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px;vertical-align:2px}
+  .tag.prioridad{background:#EEEDFE;color:#3C3489}
+  .tag.juego{background:#E1F5EE;color:#085041}
+  .altlink{display:block;margin-top:6px;border:1px dashed #EF9F27;background:#fffaf4;color:#633806;border-radius:9px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer}
+  .pbar{height:6px;background:#f1ebe2;border-radius:4px;margin:0 0 6px}
+  .pbar div{height:6px;border-radius:4px}
   nav::-webkit-scrollbar{display:none}
   nav button{
     flex:0 0 auto;border:none;background:var(--sand);color:var(--ink);
@@ -395,22 +405,35 @@ function CAL(){return {t:"🔥 Calentamiento (~5 min)", ex:[
   {n:"Flexiones de escápula", d:"1 × 10"},
   {n:"Movilidad de hombros y caderas", d:"2 min"},
 ]};}
-function FIN(){return {t:"🚶‍♀️ Cardio (clave para bajar grasa)", ex:[
-  {n:"Bicicleta estática", d:"12 min · resistencia moderada", log:true},
+function FIN(){return {t:"🚴‍♀️ Cardio (opcional)", ex:[
+  {n:"Bicicleta estática", d:"8-10 min · opcional · resistencia moderada", log:true},
 ]};}
+// Casa (plan v8): calentamiento de ~10 min, handstand en intentos cortos y circuito opcional sin saltos
+function CALCASA(){return {t:"🔥 Calentamiento (~10 min)", ex:[
+  {n:"Gato-vaca y círculos de hombros", d:"1 min"},
+  {n:"Calentamiento de muñecas", d:"3 min"},
+  {n:"Perro boca abajo con empuje de hombros", d:"1 × 10"},
+  {n:"Flexiones de escápula", d:"1 × 10"},
+  {n:"Movilidad de cadera y pike", d:"1 min"},
+  {n:"Hollow de activación", d:"20 seg", tipo:"marcar"},
+  {n:"Entradas suaves al handstand", d:"2 entradas", tipo:"marcar"},
+]};}
+function HS_CORTO(){return {n:"Handstand pecho a la pared", d:"6 × 10-20 seg · intentos cortos, descansa entre cada uno", log:true, tipo:"seg", rest:45, tag:"prioridad"};}
+function CIRC(){return {t:"⚡ Circuito opcional (40 s / 20 s · 2 vueltas)", ex:["Escaladores lentos","Step jacks","Sentadilla con peso corporal","Plancha con toques de hombro","Puente de glúteo"].map(n=>({n, d:"40 seg × 2 vueltas", tipo:"marcar"}))};}
 const APROX={n:"Serie de aproximación", d:"1 serie liviana del primer ejercicio de piernas"};
 
 const DEFAULT_ROUTINES = {
   gymA:{nombre:"Gym A · Cuádriceps + abdomen", emoji:"🟪", yoga:false, blocks:[
     CAL(),
-    {t:"🤸 Skill (5 min)", ex:[
-      {n:"Dominadas", skill:true, log:true},
-    ]},
     {t:"🦵 Piernas (prioridad)", ex:[
       APROX,
       {n:"Prensa de piernas", d:"3 × 8-15", log:true, rest:120},
+      {n:"Pantorrillas en la prensa", d:"3 × 15 · al terminar la prensa, sin bajarte", log:true, tipo:"peso", rest:45},
       {n:"Extensión de cuádriceps", d:"3 × 10-15 · baja en 3 seg", log:true, rest:75},
       {n:"Abducción acostada con mancuerna", d:"3 × 15 c/pierna", log:true, rest:60},
+    ]},
+    {t:"🤸 Skill (después de las máquinas)", ex:[
+      {n:"Dominadas", skill:true, log:true, tag:"prioridad"},
     ]},
     {t:"🔥 Abdomen · superserie de 3", ex:[
       {n:"Sit-up con disco", d:"3 × 10 · superserie con la siguiente", log:true, tipo:"peso"},
@@ -418,21 +441,22 @@ const DEFAULT_ROUTINES = {
       {n:"Tijeras", d:"3 × 20", log:true, tipo:"reps", rest:60},
     ]},
     {t:"➕ Opcional (si hay tiempo)", ex:[
-      {n:"Elevación de piernas colgada", d:"2 × 10", log:true, rest:60},
+      {n:"Skin the cat", skill:true, log:true, tag:"juego", rest:90},
     ]},
     FIN(),
   ]},
   gymB:{nombre:"Gym B · Glúteos y femorales + abdomen", emoji:"🟧", yoga:false, blocks:[
     CAL(),
-    {t:"🤸 Skill (5 min) + tríceps", ex:[
-      {n:"Fondos en paralelas", skill:true, log:true},
-      {n:"Extensión de tríceps sobre cabeza con mancuernas", d:"3 × 10-12", log:true, tipo:"peso", rest:60},
-    ]},
     {t:"🦵 Piernas (prioridad)", ex:[
       APROX,
       {n:"Peso muerto con mancuernas", d:"3 × 8-12", log:true, rest:120},
       {n:"Hip thrust", d:"3 × 8-15", log:true, rest:120},
+      {n:"Sentadilla búlgara", d:"3 × 8 c/pierna", log:true, tipo:"peso", rest:90, alt:"Step-up a cajón con mancuernas"},
       {n:"Curl femoral", d:"3 × 12", log:true, rest:60},
+    ]},
+    {t:"🤸 Skill + tríceps (después de las máquinas)", ex:[
+      {n:"Fondos en paralelas", skill:true, log:true},
+      {n:"Extensión de tríceps sobre cabeza con mancuernas", d:"3 × 10-12", log:true, tipo:"peso", rest:60},
     ]},
     {t:"🔥 Abdomen · banco + superserie de 2", ex:[
       {n:"Abdominal en banco declinado", d:"3 × 10-12", log:true, tipo:"peso", rest:60},
@@ -440,9 +464,56 @@ const DEFAULT_ROUTINES = {
       {n:"Plancha", skill:true, log:true, rest:60},
     ]},
     {t:"➕ Opcional (si hay tiempo)", ex:[
-      {n:"Oblicuos colgada", d:"2 × 8 c/lado", log:true, rest:60},
+      {n:"Skin the cat", skill:true, log:true, tag:"juego", rest:90},
+      {n:"Back lever", skill:true, log:true, tag:"juego", rest:90},
     ]},
     FIN(),
+  ]},
+  casa1:{nombre:"Casa 1 · Línea", emoji:"🏠", yoga:false, blocks:[
+    CALCASA(),
+    {t:"🤸 Handstand (10 min)", ex:[HS_CORTO(), {n:"L en la pared", skill:true, log:true, rest:60}]},
+    {t:"💪 Pike push-up", ex:[{n:"Pike push-up", skill:true, log:true, tag:"prioridad", rest:90}]},
+    {t:"🪑 Figura", ex:[{n:"L-sit", skill:true, log:true, tag:"juego"}]},
+    {t:"🔥 Abdomen (5 min)", ex:[
+      {n:"Elevación de piernas en barra", d:"3 × 8-10", log:true, tipo:"reps", rest:60},
+      {n:"Hollow hold", d:"2 × 20-30 seg", log:true, rest:30},
+    ]},
+    {t:"➕ Extra", ex:[{n:"Flexiones", skill:true, log:true}]},
+    CIRC(),
+  ]},
+  casa2:{nombre:"Casa 2 · Figuras", emoji:"🏠", yoga:false, blocks:[
+    CALCASA(),
+    {t:"🤸 Handstand (10 min)", ex:[HS_CORTO(), {n:"Handstand de espalda a la pared", skill:true, log:true, rest:60}]},
+    {t:"💪 Pike push-up", ex:[{n:"Pike push-up", skill:true, log:true, tag:"prioridad", rest:90}]},
+    {t:"🦅 Figuras", ex:[
+      {n:"Cuervo", skill:true, log:true, tag:"juego", rest:60},
+      {n:"Koundinyasana II", skill:true, log:true, tag:"juego", rest:60},
+    ]},
+    {t:"🔥 Abdomen (5 min)", ex:[
+      {n:"Elevaciones en compresión", d:"2 × 8", log:true, rest:45},
+      {n:"Plancha lateral", d:"2 × 20-30 seg c/lado", log:true, tipo:"seg", rest:30},
+    ]},
+    {t:"➕ Extra", ex:[{n:"Flexiones", skill:true, log:true}]},
+    CIRC(),
+  ]},
+  casa3:{nombre:"Casa 3 · Equilibrio", emoji:"🏠", yoga:false, blocks:[
+    CALCASA(),
+    {t:"🤸 Handstand (10 min)", ex:[HS_CORTO(), {n:"Pateos al centro con salida en rueda", d:"5-8 intentos", tipo:"marcar"}]},
+    {t:"💪 Pike push-up", ex:[{n:"Pike push-up", skill:true, log:true, tag:"prioridad", rest:90}]},
+    {t:"🪑 Figura", ex:[{n:"Elbow lever", skill:true, log:true, tag:"juego", rest:60}]},
+    {t:"🔥 Abdomen (5 min)", ex:[
+      {n:"Rodillas al pecho en paralelas", d:"3 × 8", log:true, tipo:"reps", rest:45},
+      {n:"Hollow rocks", d:"2 × 15", log:true, tipo:"reps", rest:45},
+    ]},
+    {t:"➕ Extra", ex:[{n:"Flexiones", skill:true, log:true}]},
+    CIRC(),
+  ]},
+  casaMini:{nombre:"Mini práctica · 10 min", emoji:"⏱️", yoga:false, blocks:[
+    {t:"✋ Muñecas (2 min)", ex:[{n:"Calentamiento de muñecas", d:"2 min"}]},
+    {t:"🤸 Práctica (8 min)", ex:[
+      {n:"Handstand pecho a la pared", d:"5 × 10-15 seg · intentos cortos", log:true, tipo:"seg", rest:45},
+      {n:"Cuervo", d:"3 intentos · o L en la pared", tipo:"marcar"},
+    ]},
   ]},
   casa:{nombre:"Handstand en casa · ~20 min", emoji:"🏠", yoga:false, blocks:[
     {t:"✋ Muñecas (3 min)", ex:[
@@ -534,19 +605,26 @@ const DEFAULT_ROUTINES = {
   ]},
 };
 const GYM_ORDER=["gymA","gymB"];
-const THEME={gymA:"th-a",gymB:"th-b",gymC:"th-c",casa:"th-casa",yoga:"th-yoga",yogaAM:"th-yoga",escalada:"th-esc",escaladaR:"th-esc"};
-const FOCUS={gymA:"Cuádriceps + abdomen",gymB:"Glúteos + abdomen"};
+const THEME={gymA:"th-a",gymB:"th-b",gymC:"th-c",casa:"th-casa",casa1:"th-casa",casa2:"th-casa",casa3:"th-casa",casaMini:"th-casa",yoga:"th-yoga",yogaAM:"th-yoga",escalada:"th-esc",escaladaR:"th-esc"};
+const FOCUS={gymA:"Cuádriceps + abdomen · dominadas",gymB:"Glúteos y femorales · fondos"};
 const MUSC={
   gymA:["🦵 Cuádriceps · glúteos · glúteo medio","🔥 Abdomen (recto y bajo)","🤸 Dorsales y bíceps (dominadas)"],
   gymB:["🦵 Glúteos · femorales · cuádriceps","🔥 Abdomen y core profundo","🤸 Tríceps y pecho (fondos)"],
   casa:["💪 Hombros · muñecas · tríceps · pecho","🔥 Abdomen · flexores de cadera"],
+  casa1:["💪 Hombros · tríceps · pecho (pike push-up, L en la pared)","🔥 Abdomen · flexores de cadera"],
+  casa2:["⚖️ Equilibrio sobre las manos · hombros · muñecas","🔥 Abdomen · oblicuos"],
+  casa3:["⚖️ Equilibrio (pateos) · hombros · tríceps","🔥 Abdomen · flexores de cadera"],
+  casaMini:["⏱️ 10 min de práctica · no cuenta como casa"],
   escalada:["🧗 Dorsales · antebrazos · dedos · core","⚠️ Sin regletas chicas los primeros 15 min"],
   escaladaR:["🧗 Dorsales · antebrazos · dedos · core","⚠️ Sin regletas chicas los primeros 15 min"],
   yoga:["🌙 Soltar tensión, calmar el sistema nervioso y preparar el sueño"],
   yogaAM:["☀️ Despertar el cuerpo: columna, caderas y hombros"],
 };
 // Rutinas con ejercicios y series. Escalada y yoga son tarjetas (duración/video); sus rutinas quedan como calentamiento o rutina escrita opcional.
-const ROUTINE_TABS=["gymA","gymB","casa"];
+const ROUTINE_TABS=["gymA","gymB","casa1","casa2","casa3","casaMini","casa"];   // "casa" = rutina antigua (solo para reabrir sesiones viejas)
+const CASA_ORDER=["casa1","casa2","casa3"];
+const CASA=[...CASA_ORDER,"casa"];   // cuentan como "casa" en la meta semanal (la mini no)
+const SEL_LBL={gymA:"🟪 Gym A",gymB:"🟧 Gym B",casa1:"Casa 1 · Línea",casa2:"Casa 2 · Figuras",casa3:"Casa 3 · Equilibrio",casaMini:"Mini"};
 const ESC=["escalada","escaladaR"];
 const YOGA=["yogaAM","yoga"];
 const LEGACY={
@@ -662,6 +740,130 @@ const LIB_BASE={
     fij:["Solo se mueven los antebrazos.","Peso liviano y lento: carga el tendón del tríceps de forma dosificada y ayuda a los fondos."],
     err:["Abrir o adelantar los codos.","Empujar con el peso del cuerpo."],
     codo:"Si molesta, baja el peso; debe sentirse en el músculo, no en la articulación.",q:"extensión de tríceps en polea con cuerda técnica"},
+
+  /* Plan v8 (oct 2026): gym = tren inferior; casa = tren superior, handstand y figuras */
+  "Pantorrillas en la prensa":{v:"6tqRg_tsi3o",cat:"Piernas",musc:"Pantorrillas (gemelos y sóleo)",rec:{tipo:"peso",sets:3,val:"15",rest:45},
+    pasos:["Al terminar tus series de prensa, sin bajarte, baja un poco el peso.","Deja solo la punta de los pies en el borde inferior de la plataforma, piernas estiradas pero sin trancar las rodillas.","Baja los talones lento (estira la pantorrilla) y empuja con la punta de los pies lo más arriba que puedas.","Pausa 1 seg arriba."],
+    fij:["Rango completo y lento: abajo estira, arriba aprieta.","No muevas las rodillas: el movimiento es solo del tobillo."],
+    err:["Rebotar abajo.","Doblar las rodillas para ayudarte."],q:"elevación de talones en prensa técnica"},
+  "Sentadilla búlgara":{v:"x_k90ghjPPw",cat:"Piernas",musc:"Glúteos y cuádriceps (una pierna a la vez)",rec:{tipo:"peso",sets:3,val:"8 c/pierna",rest:90},
+    pasos:["Párate a un paso largo delante de un banco y apoya el empeine del pie de atrás en el banco.","Una mancuerna en cada mano (o sin peso al principio).","Baja recto, con el tronco un poco inclinado hacia adelante, hasta donde la rodilla se sienta cómoda.","Sube empujando con el talón de la pierna de adelante. Termina todas las reps de un lado y cambia."],
+    fij:["Tronco un poco inclinado = más glúteo y menos carga en la rodilla.","La rodilla de adelante sigue la dirección del pie (no se va hacia adentro).","El peso va en la pierna de adelante; la de atrás solo apoya."],
+    err:["Pie de adelante muy cerca del banco (la rodilla se adelanta mucho).","Bajar de golpe.","Empujar con la pierna de atrás."],
+    rod:"Baja solo hasta donde no moleste. Si un día la rodilla está sensible, usa el botón para cambiar a step-up.",
+    alt:"Step-up a cajón con mancuernas (más suave para la rodilla).",q:"sentadilla búlgara técnica glúteo"},
+  "Skin the cat":{v:"OXSubjx8pEI",cat:"Calistenia",musc:"Hombros (movilidad y fuerza), dorsales, abdomen",skill:true,lvlDefault:0,
+    niveles:[
+      {n:"Colgada con rodillas al pecho",d:"3 × 5"},
+      {n:"Media vuelta (cadera arriba, pies hacia atrás y vuelve)",d:"3 × 3"},
+      {n:"Vuelta completa hasta colgada alemana corta y vuelve",d:"2-3 × 2"},
+    ],
+    pasos:["Cuélgate de las anillas o la barra con los brazos estirados.","Sube las rodillas al pecho y sigue girando hacia atrás, pasando las piernas entre los brazos.","Baja los pies hacia el suelo detrás de ti solo hasta donde tus hombros lo permitan cómodos.","Vuelve por el mismo camino, lento y controlado."],
+    fij:["Movimiento lento: es movilidad de hombro, no velocidad.","Brazos estirados todo el tiempo.","Es el primer paso del back lever."],
+    err:["Bajar muy rápido al final (tira el hombro).","Ir más allá de lo cómodo."],
+    codo:"Si sientes tirón en el codo o el bíceps, quédate en la media vuelta.",q:"skin the cat tutorial progresiones"},
+  "Back lever":{v:"_COSTGc-qf8",cat:"Calistenia",musc:"Dorsales, hombros, bíceps, abdomen y glúteos",skill:true,lvlDefault:0,
+    niveles:[
+      {n:"Colgada alemana corta (desde el 2 nov si el codo está bien)",d:"3 × 5-10 seg"},
+      {n:"Tuck back lever (rodillas al pecho, espalda horizontal)",d:"3 × 5-10 seg"},
+      {n:"Tuck avanzado (espalda plana, cadera abierta)",d:"3 × 5-10 seg"},
+      {n:"Una pierna estirada",d:"3 × 5-8 seg"},
+      {n:"Piernas abiertas (straddle)",d:"3 × 5 seg"},
+      {n:"Back lever completo",d:"3 × 3-5 seg"},
+    ],
+    pasos:["Desde el skin the cat, baja hasta quedar boca abajo con la espalda mirando al techo.","Aprieta abdomen y glúteos y empuja las anillas o la barra hacia abajo con los brazos estirados.","Mantén la posición del nivel que estás trabajando.","Sal volviendo por el skin the cat."],
+    fij:["Primero domina el skin the cat lento.","Mantenciones cortas: la calidad importa más que el tiempo.","Empieza desde la semana del 2 nov, si el codo estuvo bien las semanas anteriores."],
+    err:["Doblar los brazos.","Arquear la espalda baja.","Mantener mucho tiempo al principio."],
+    codo:"Este ejercicio estira el tendón del bíceps en el codo. Si sientes tirón o chasquido, vuelve al nivel anterior o al skin the cat.",q:"back lever progresión tutorial"},
+  "Gato-vaca y círculos de hombros":{v:"NVNoJph0fw0",cat:"Calentamiento",musc:"Columna y hombros",
+    pasos:["En cuatro apoyos: al inhalar hunde la espalda y mira adelante (vaca).","Al exhalar redondea la espalda y mira al ombligo (gato).","Luego de pie, círculos grandes de hombros hacia adelante y atrás."],fij:["Lento, siguiendo la respiración."],err:["Forzar el cuello."],q:"gato vaca yoga"},
+  "Movilidad de cadera y pike":{v:"",cat:"Calentamiento",musc:"Caderas e isquiotibiales",
+    pasos:["Sentada con piernas estiradas (pike), inclínate adelante con la espalda larga 30 seg.","Piernas abiertas (pancake), inclínate adelante 30 seg.","Termina con círculos de cadera de pie."],fij:["Prepara la compresión, el L-sit y las figuras."],err:["Rebotar para llegar más lejos."],q:"movilidad pike pancake calistenia"},
+  "L en la pared":{v:"nsJwFasDayE",cat:"Handstand",musc:"Hombros, tríceps, core y línea del cuerpo",skill:true,lvlDefault:0,
+    niveles:[
+      {n:"Pies en la pared, cuerpo en L",d:"3 × 15-20 seg"},
+      {n:"Una pierna arriba (alternando)",d:"3 × 10 seg c/pierna"},
+      {n:"Despegar los dos pies 1-2 seg",d:"5 intentos"},
+    ],
+    pasos:["Siéntate con la espalda a la pared y marca dónde quedan tus pies: ahí van las manos.","Ponte en cuatro apoyos mirando hacia afuera, con las manos en esa marca.","Sube los pies por la pared hasta la altura de la cadera: el cuerpo queda en L.","Lleva los hombros justo sobre las manos y empuja el suelo. Desde ahí levanta una pierna hasta arriba."],
+    fij:["Hombros sobre las manos: todo el peso en las manos.","Un pie siempre puede volver a la pared: ideal para perderle el miedo a la vertical.","Prepara el pike push-up en L y el handstand libre."],
+    err:["Manos muy lejos de la pared (los hombros quedan atrás).","Espalda redonda o hundida."],q:"handstand L pared drill"},
+  "Handstand de espalda a la pared":{v:"f863Cv5eoxk",cat:"Handstand",musc:"Equilibrio, hombros y core",skill:true,lvlDefault:0,
+    niveles:[
+      {n:"Subir con patada y quedarse con los talones apoyados",d:"5 × 10-20 seg"},
+      {n:"Despegar un talón por momentos",d:"5 intentos"},
+      {n:"Despegar los dos talones y buscar el equilibrio",d:"5-8 intentos"},
+    ],
+    pasos:["Manos a un palmo de la pared, mirando hacia ella.","Sube con una patada suave y apoya los talones en la pared.","Empuja el suelo, junta las piernas y mete las costillas.","Despega los talones con los dedos de las manos haciendo fuerza (como frenando) y vuelve a apoyar."],
+    fij:["Los dedos de las manos corrigen el equilibrio: si te vas hacia la pared, presiona con los dedos.","Practica la salida en rueda antes."],
+    err:["Manos muy lejos (el cuerpo queda en banana).","Patear muy fuerte."],q:"handstand espalda a la pared despegar talones"},
+  "Pateos al centro con salida en rueda":{v:"EIun1feCQrc",cat:"Handstand",musc:"Equilibrio y técnica de entrada",
+    pasos:["En un lugar con espacio (o sobre pasto o colchoneta).","Manos al suelo, una pierna adelante: patea suave con la de atrás hasta casi vertical.","Busca el equilibrio un instante.","Si te pasas, suelta una mano y sal en rueda hacia el lado."],
+    fij:["Patadas suaves: es mejor quedarse corta que pasarse.","La salida en rueda te da seguridad: practícala hacia ambos lados."],
+    err:["Patear con la pierna doblada.","Mirar hacia los pies."],q:"patada a handstand kick up técnica"},
+  "Pike push-up":{v:"66x0qQiJ-MA",cat:"Calistenia",musc:"Hombros y tríceps (camino al handstand push-up)",skill:true,lvlDefault:0,
+    niveles:[
+      {n:"V invertida: mantener con los hombros sobre las manos",d:"3 × 20-30 seg"},
+      {n:"Pike push-up desde rodillas",d:"3 × 6-8"},
+      {n:"Rango corto (bajar hasta un cojín alto)",d:"3 × 5-8"},
+      {n:"Negativas (bajar en 3-5 seg, subir con las rodillas)",d:"3 × 4-6"},
+      {n:"Pike push-up completo",d:"3 × 5-8"},
+      {n:"Pies elevados o en L en la pared",d:"3 × 4-6"},
+    ],
+    pasos:["Cadera alta como una V invertida, manos al ancho de hombros, dedos abiertos.","Camina los pies hacia las manos hasta que los hombros queden lo más arriba posible.","Dobla los codos y baja la cabeza hacia el suelo, un poco delante de las manos (la cabeza y las manos forman un triángulo).","Empuja de vuelta hasta estirar los brazos."],
+    fij:["Codos hacia atrás (en diagonal), no abiertos hacia los lados.","Cadera alta todo el tiempo.","Es la fuerza que necesitas para el handstand."],
+    err:["Bajar la cadera y convertirlo en una flexión normal.","Codos abiertos hacia los lados."],
+    codo:"Lento y sin llegar al fallo. Si sientes chasquido o dolor, vuelve al nivel anterior.",q:"pike push up progresiones principiantes"},
+  "Cuervo":{v:"Vu03oh_kXKQ",cat:"Handstand",musc:"Equilibrio sobre las manos, hombros, muñecas y abdomen",skill:true,lvlDefault:1,
+    niveles:[
+      {n:"Cuervo con los pies sobre un bloque",d:"5 × 5-10 seg"},
+      {n:"Cuervo",d:"5 × 10-20 seg"},
+      {n:"Cuervo con un pie arriba",d:"4 × 5 seg c/lado"},
+      {n:"Cuervo → cabeza apoyada (trípode) y volver",d:"3-5 intentos"},
+    ],
+    pasos:["En cuclillas, manos al ancho de hombros con los dedos abiertos.","Dobla un poco los codos y apoya las rodillas en la parte de atrás de los brazos, lo más arriba posible.","Mira un poco adelante e inclínate hasta que los pies se despeguen.","Para ir a cabeza apoyada: baja la frente adelante formando un triángulo con las manos y sube las caderas; vuelve al cuervo."],
+    fij:["Pon un cojín delante de la cara para perder el miedo.","Aprieta las rodillas contra los brazos y mete el ombligo."],
+    err:["Mirar hacia abajo (te vas de cara).","Codos muy abiertos."],q:"bakasana cuervo tutorial"},
+  "Koundinyasana II":{v:"NT2CvAV1CUQ",cat:"Handstand",musc:"Equilibrio, hombros, abdomen y oblicuos",skill:true,lvlDefault:0,
+    niveles:[
+      {n:"Cuervo lateral (piernas recogidas)",d:"4 × 5-10 seg c/lado"},
+      {n:"Pierna de adelante estirada sobre el brazo",d:"4 × 5 seg c/lado"},
+      {n:"Las dos piernas estiradas (Eka Pada Koundinyasana II)",d:"3 × 3-5 seg c/lado"},
+    ],
+    pasos:["Desde una estocada baja, pasa el brazo por dentro de la pierna de adelante y apoya la mano en el suelo.","Apoya el muslo de adelante sobre la parte de atrás del brazo, bien arriba.","Inclínate adelante con los codos doblados (como en el cuervo) hasta que el peso pase a las manos.","Estira la pierna de adelante sobre el brazo y luego la de atrás."],
+    fij:["Primero domina el cuervo lateral.","Mira adelante, no abajo.","Un bloque bajo el pie de atrás ayuda al principio."],
+    err:["Muslo apoyado muy abajo del brazo.","Hundir el hombro."],
+    codo:"Codos en 90° y alineados con las muñecas.",q:"eka pada koundinyasana 2 tutorial"},
+  "Elbow lever":{v:"NxjcbJZnoGQ",cat:"Calistenia",musc:"Abdomen, hombros, muñecas y equilibrio",skill:true,lvlDefault:0,
+    niveles:[
+      {n:"Inclinarse con los pies en el suelo",d:"3 × 10-15 seg"},
+      {n:"Un pie arriba",d:"3 × 5-10 seg"},
+      {n:"Piernas recogidas",d:"3 × 5-10 seg"},
+      {n:"Elbow lever completo",d:"3 × 5-10 seg"},
+    ],
+    pasos:["En tus paralelas de piso (más fácil que en el suelo), manos con los dedos hacia los pies.","Apoya los codos en la cadera, a los lados del ombligo.","Inclínate hacia adelante hasta que el peso pase a las manos y los pies se despeguen.","Cuerpo recto y apretado; mira al frente."],
+    fij:["En yoga se parece al pavo real (Mayurasana).","Avanza de a poco: carga bastante las muñecas."],
+    err:["Codos separados del cuerpo.","Doblar la cadera."],
+    codo:"Si molesta el codo o la muñeca, vuelve al nivel anterior.",q:"elbow lever tutorial principiantes"},
+  "Elevación de piernas en barra":{v:"naR7Qldgxrg",cat:"Abdomen",musc:"Recto abdominal bajo y flexores de cadera",rec:{tipo:"reps",sets:3,val:"8-10",rest:60},
+    pasos:["Cuélgate de tu barra de casa con las rodillas dobladas (como la barra es baja, los pies quedan atrás o despegados del suelo).","Sube las rodillas hacia el pecho enrollando la pelvis.","Baja lento sin balancearte."],
+    fij:["El movimiento es de la pelvis: enrolla, no solo levantes las piernas.","Sin balanceo."],err:["Impulsarse.","Bajar de golpe."],q:"elevación de rodillas colgado barra"},
+  "Plancha lateral":{v:"zfiOU4yxLKo",cat:"Abdomen",musc:"Oblicuos y glúteo medio",rec:{tipo:"seg",sets:2,val:"20-30",rest:30},
+    pasos:["De lado, apoyada en el antebrazo (codo bajo el hombro).","Sube la cadera hasta que el cuerpo quede recto de cabeza a pies.","Mantén y cambia de lado."],fij:["Cadera arriba y adelante, no hacia atrás."],err:["Dejar caer la cadera."],q:"plancha lateral técnica"},
+  "Rodillas al pecho en paralelas":{v:"uxQRhxeXSHI",cat:"Abdomen",musc:"Abdomen, flexores de cadera y hombros (camino al L-sit)",rec:{tipo:"reps",sets:3,val:"8",rest:45},
+    pasos:["En tus paralelas de piso, brazos estirados y hombros empujando hacia abajo.","Despega los pies y sube las rodillas al pecho.","Baja lento hasta casi tocar el suelo y repite."],fij:["Hombros lejos de las orejas."],err:["Hundir los hombros."],q:"tuck raises paralelas L-sit"},
+  "Hollow rocks":{v:"tWZBamV2tjc",cat:"Abdomen",musc:"Abdomen completo",rec:{tipo:"reps",sets:2,val:"15",rest:45},
+    pasos:["En posición de hollow (espalda baja pegada al suelo, brazos y piernas estirados y despegados).","Mécete adelante y atrás como un balancín sin perder la forma."],fij:["Si se despega la espalda baja, dobla un poco las rodillas."],err:["Arquear la espalda."],q:"hollow rocks tutorial"},
+  "Escaladores lentos":{v:"FPLXxBxYcmE",cat:"Circuito",musc:"Abdomen, hombros y pulso",
+    pasos:["En plancha alta, lleva una rodilla al pecho y vuelve.","Alterna con la otra, a ritmo constante y sin saltar."],fij:["Cadera baja y hombros sobre las manos."],err:["Levantar mucho la cadera."],q:"mountain climbers técnica"},
+  "Step jacks":{v:"jI_1-O4L2dQ",cat:"Circuito",musc:"Cuerpo completo (sube el pulso sin impacto)",
+    pasos:["De pie: abre un pie hacia el lado mientras subes los brazos.","Vuelve al centro y abre el otro pie.","Rápido pero sin saltar."],fij:["Cuida la rodilla: sin saltos."],err:["Saltar."],q:"jumping jack sin salto"},
+  "Sentadilla con peso corporal":{v:"qsAkuNORgmk",cat:"Circuito",musc:"Piernas y glúteos",
+    pasos:["Pies al ancho de hombros, un poco abiertos.","Baja como si te sentaras atrás, con el pecho arriba.","Sube empujando el suelo."],fij:["Baja solo hasta donde la rodilla esté cómoda."],err:["Rodillas hacia adentro."],q:"sentadilla técnica correcta"},
+  "Plancha con toques de hombro":{v:"7o-EHYhFcl8",cat:"Circuito",musc:"Abdomen, hombros y estabilidad",
+    pasos:["En plancha alta con los pies algo separados.","Toca el hombro contrario con una mano, sin mover la cadera.","Alterna."],fij:["Cadera quieta: que no se balancee."],err:["Girar la cadera."],q:"plancha con toques de hombro"},
+  "Puente de glúteo":{v:"oDXM-a-gBt8",cat:"Circuito",musc:"Glúteos y femorales",
+    pasos:["Boca arriba, rodillas dobladas y pies apoyados.","Sube la cadera apretando los glúteos hasta formar una línea recta.","Baja lento."],fij:["Empuja con los talones."],err:["Arquear la espalda baja."],q:"puente de glúteo técnica"},
 
   /* Piernas */
   "Prensa de piernas":{v:"xvCynwyNoP4",cat:"Piernas",musc:"Cuádriceps y glúteos",
@@ -860,8 +1062,8 @@ function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits|
 const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
-const ROUTINES_VERSION=7;
-const APP_VERSION="versión 20 oct";
+const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
+const APP_VERSION="versión 21 oct · plan v8";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -915,6 +1117,25 @@ function checkRoutinesUpdate(){
     if(R&&!exInRoutine(R,"Sit-up con disco"))R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Abdominal en banco declinado"){ex.n="Sit-up con disco";ex.d="3 × 10 · superserie con la siguiente";ex.tipo="peso";delete ex.rest;
       if(/banco/.test(bl.t))bl.t="🔥 Abdomen · superserie de 3";}}));
     data.migSitA=true;save();}
+  // 26 oct: plan v8 (gym = tren inferior + skill después de las máquinas; casa = tren superior en 3 versiones).
+  // Cambios puntuales sobre sus rutinas guardadas (sin borrar sus ediciones); copia en data.routinesBackup2.
+  if(!data.migV8){
+    data.routinesBackup2=JSON.parse(JSON.stringify(data.routines));
+    const fb=(R,re)=>R.blocks.findIndex(b=>re.test(b.t));
+    const skillAfterLegs=R=>{const s=fb(R,/skill/i),p=fb(R,/piernas/i);if(s>=0&&p>=0&&s<p){const [bl]=R.blocks.splice(s,1);R.blocks.splice(fb(R,/piernas/i)+1,0,bl);}
+      const s2=fb(R,/skill/i);if(s2>=0&&!/después/.test(R.blocks[s2].t))R.blocks[s2].t=R.blocks[s2].t.replace(/\s*\(5 min\)/,"")+" (después de las máquinas)";};
+    const insertAfter=(R,after,ex)=>{if(exInRoutine(R,ex.n))return;for(const bl of R.blocks){const i=bl.ex.findIndex(e=>e.n===after);if(i>=0){bl.ex.splice(i+1,0,ex);return;}}};
+    const optional=(R,remove,add)=>{let o=fb(R,/opcional/i);if(o<0){const c=fb(R,/cardio/i);R.blocks.splice(c>=0?c:R.blocks.length,0,{t:"➕ Opcional (si hay tiempo)",ex:[]});o=fb(R,/opcional/i);}
+      const bl=R.blocks[o];bl.ex=bl.ex.filter(e=>e.n!==remove);add.forEach(x=>{if(!exInRoutine(R,x.n))bl.ex.push(x);});};
+    const cardio=R=>{const c=fb(R,/cardio/i);if(c<0)return;R.blocks[c].t="🚴‍♀️ Cardio (opcional)";R.blocks[c].ex.forEach(e=>{if(e.n==="Bicicleta estática")e.d="8-10 min · opcional · resistencia moderada";});};
+    const A=data.routines.gymA,B=data.routines.gymB;
+    if(A){insertAfter(A,"Prensa de piernas",{n:"Pantorrillas en la prensa",d:"3 × 15 · al terminar la prensa, sin bajarte",log:true,tipo:"peso",rest:45});
+      skillAfterLegs(A);optional(A,"Elevación de piernas colgada",[{n:"Skin the cat",skill:true,log:true,tag:"juego",rest:90}]);cardio(A);
+      A.blocks.forEach(bl=>bl.ex.forEach(e=>{if(e.n==="Dominadas")e.tag="prioridad";}));}
+    if(B){insertAfter(B,"Hip thrust",{n:"Sentadilla búlgara",d:"3 × 8 c/pierna",log:true,tipo:"peso",rest:90,alt:"Step-up a cajón con mancuernas"});
+      skillAfterLegs(B);optional(B,"Oblicuos colgada",[{n:"Skin the cat",skill:true,log:true,tag:"juego",rest:90},{n:"Back lever",skill:true,log:true,tag:"juego",rest:90}]);cardio(B);}
+    ["casa1","casa2","casa3","casaMini"].forEach(t=>{if(!data.routines[t])data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));});
+    data.migV8=true;save();}
   // 19 oct: una sola polea en el gym (siempre ocupada) → tríceps sobre la cabeza con mancuerna, con ficha completa
   if(!data.migTri){const T="Extensión de tríceps sobre cabeza con mancuernas";
     Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Extensión de tríceps en polea"&&!exInRoutine(R,T)){ex.n=T;ex.d="3 × 10-12";ex.tipo="peso";ex.log=true;ex.rest=60;}})));
@@ -967,6 +1188,11 @@ function target(d){const m=String(d||"").match(/(\d+)\s*[×x]\s*(\d+)(?:\s*-\s*(
 function lastLog(n){const s=sorted();for(let i=s.length-1;i>=0;i--){const l=(s[i].logs||[]).find(x=>x.n===n);if(l)return {...l,date:s[i].date};}return null;}
 function nums(s){return (String(s||"").match(/\d+(?:[.,]\d+)?/g)||[]).map(x=>parseFloat(x.replace(',','.')));}
 // Rotación A → B → C sin importar el día de la semana
+function nextCasa(){const g=sorted().filter(s=>CASA_ORDER.includes(s.tipo));if(!g.length)return CASA_ORDER[0];return CASA_ORDER[(CASA_ORDER.indexOf(g[g.length-1].tipo)+1)%CASA_ORDER.length];}
+// Metas de la semana: 3 gym; casa 1 si hubo clase de handstand, 2 si no
+function metas(){const wk=thisWeek();return {gym:wk.filter(s=>isGym(s.tipo)).length,casa:wk.filter(s=>CASA.includes(s.tipo)).length,
+  casaMeta:wk.some(s=>s.tipo==="handstand")?1:2};}
+function isUpper(t){return CASA.includes(t)||t==="handstand"||ESC.includes(t);}
 function nextGym(){const g=sorted().filter(s=>isGym(s.tipo));if(!g.length)return GYM_ORDER[0];const i=GYM_ORDER.indexOf(g[g.length-1].tipo);return GYM_ORDER[(i+1)%GYM_ORDER.length];}
 // Búsqueda en Google Videos: funciona en cualquier navegador (el link de búsqueda de YouTube se abría vacío en el teléfono)
 function videoLink(q){return "https://www.google.com/search?tbm=vid&q="+encodeURIComponent(q);}
@@ -997,6 +1223,18 @@ function render(){
   renderRoutine();
 }
 
+// Botones para elegir Gym A/B o Casa 1/2/3/Mini + cuadro verde con lo que toca
+function selHtml(){
+  const grp=GYM_ORDER.includes(currentTab)?GYM_ORDER:(CASA_ORDER.includes(currentTab)||currentTab==="casaMini")?[...CASA_ORDER,"casaMini"]:null;
+  if(!grp)return "";
+  const due=grp===GYM_ORDER?nextGym():nextCasa(),nm=t=>(SEL_LBL[t]||t).replace(/^\S+ (?=Gym)/,"");
+  const last=sorted().filter(s=>grp.includes(s.tipo)&&s.tipo!=="casaMini").pop();
+  const toca=currentTab==="casaMini"?`⏱️ Mini práctica: opcional, no cuenta como casa en la semana.`
+    :currentTab===due?`✅ <b>Te toca hoy</b>${last?` · la última fue ${esc(nm(last.tipo))} ${relDay(last.date)}`:''}`
+    :`👉 Te toca <b>${esc(nm(due))}</b>${last?` (la última fue ${esc(nm(last.tipo))})`:''}. Puedes hacer esta igual.`;
+  return `<div class="seg sel">${grp.map(t=>`<button data-sel="${t}" class="${t===currentTab?'active':''}">${esc(SEL_LBL[t])}${hasDraft(t)&&t!==currentTab?' ⏳':''}</button>`).join("")}</div>
+    <div class="toca ${currentTab===due?'':'otra'}">${toca}</div>`;
+}
 function renderRoutine(){
   const r=data.routines[currentTab];
   if(!editMode&&(!activeEx||!exByName(activeEx)))activeEx=firstActive();
@@ -1004,10 +1242,11 @@ function renderRoutine(){
   saveBtn.className="save";
 
   let html=editMode?`<div class="introbar"><div class="intro">Edita bloques, ejercicios y su orden</div><button class="editbtn on" id="editToggle">✓ Listo</button></div>`
-    :`${cicloTop(true)}${editingId!=null?`<div class="tip">✏️ <b>Sesión reabierta.</b> Sigue registrando; al guardar se actualiza la misma sesión y se conserva tu hora de inicio.</div>`:''}`;
+    :`${cicloTop(true)}${selHtml()}${editingId!=null?`<div class="tip">✏️ <b>Sesión reabierta.</b> Sigue registrando; al guardar se actualiza la misma sesión y se conserva tu hora de inicio.</div>`:''}`;
   html+=`<div class="rhead ${THEME[currentTab]||'th-am'}"><div class="rt">${r.emoji} ${esc(r.nombre)}</div>
     ${(MUSC[currentTab]||[]).length?`<div class="rm">${MUSC[currentTab].map(esc).join("<br>")}</div>`:''}</div>`;
-  if(!editMode) html+=`<div class="ptip">💡 <b>Peso correcto:</b> termina cada serie sintiendo que te quedaban solo 1-3 reps. Cuando completes todas las series en el tope del rango, <b>sube 1-2 kg</b>. Al marcar una serie se abre el descanso recomendado (⏱️).</div>`;
+  if(!editMode&&CASA_ORDER.concat("casaMini").includes(currentTab)) html+=`<div class="ptip">💡 <b>Prioridades del bloque:</b> handstand y pike push-up. Lo marcado <span class="tag juego">juego</span> es sin presión: disfrútalo.</div>`;
+  else if(!editMode) html+=`<div class="ptip">💡 <b>Peso correcto:</b> termina cada serie sintiendo que te quedaban solo 1-3 reps. Cuando completes todas las series en el tope del rango, <b>sube 1-2 kg</b>. Al marcar una serie se abre el descanso recomendado (⏱️).</div>`;
 
   r.blocks.forEach((bl,bi)=>{
     html+=`<div class="block"><div class="block-h">`;
@@ -1042,9 +1281,10 @@ function renderRoutine(){
         html+=`<div class="ex ${isAct?'active':''}">
           <div class="cbx ${st.done?'on':''}" data-cb="${id}"></div>
           <div class="ex-body">
-            <div class="ex-top"><div class="ex-name">${nm}</div><span class="exbtns">${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}<button class="edsm" data-exed="${key}" aria-label="Editar ejercicio">✏️</button></span></div>
+            <div class="ex-top"><div class="ex-name">${nm}${ex.tag?` <span class="tag ${ex.tag}">${ex.tag}</span>`:''}</div><span class="exbtns">${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}<button class="edsm" data-exed="${key}" aria-label="Editar ejercicio">✏️</button></span></div>
             ${ex.skill&&LIB[ex.n]&&LIB[ex.n].niveles?`<label class="lvlwrap">🪜 Tu nivel · toca para cambiarlo<select class="lvl" data-lvl="${id}">${LIB[ex.n].niveles.map((l,i)=>`<option value="${i}" ${i===skillLv(ex.n)?'selected':''}>Nivel ${i+1}: ${esc(l.n)} · ${esc(l.d)}</option>`).join("")}</select></label>`:''}
             ${effD(ex)?`<div class="ex-dose">${esc(effD(ex))}${canLog(ex)&&!exMeta(ex).byTime&&exMeta(ex).nSets>1?(ssFirst(ex)?' · sin descanso, pasa a la siguiente':` · descanso ${fmtDur(restOf(ex.n))}`):''}</div>`:''}
+            ${ex.alt?`<button class="altlink" data-alt="${key}">↔ Cambiar a ${esc(ex.alt)}</button>`:''}
             ${lastHtml}
             ${canLog(ex)&&sugOf(ex.n)?`<div class="up">🎯 Peso sugerido hoy: ${fmtKg(sugOf(ex.n)[0])} · ${esc(sugOf(ex.n)[1])}</div>`:''}
             ${canLog(ex)?setsHtml(ex,id,isAct):(parseDur(ex.d)?`<button class="playsm" data-tmr="${parseDur(ex.d)}|${esc(ex.n)}">▶ Temporizador ${fmtDur(parseDur(ex.d))}</button>`:'')}
@@ -1168,7 +1408,7 @@ const REST={
   "Flexiones inclinadas":60,"L-sit":60,"Handstand pecho a la pared":60,"Extensión de tríceps en polea":60,"Extensión de tríceps sobre cabeza con mancuernas":60,"Face pull":60,
   "Extensión de cuádriceps":60,"Abductores en máquina":60,"Curl femoral":60,"Step-up a cajón con mancuernas":60,
   "Crunch en polea":60,"Abdominal en banco declinado":60,"Elevación de piernas colgada":60,"Oblicuos colgada":60,
-  "Plancha":45,"Pallof press":45,"Elevaciones en compresión":45,"Hollow hold":30,
+  "Plancha":45,"Pallof press":45,"Sentadilla búlgara":90,"Step-up a cajón con mancuernas":90,"Pike push-up":90,"Back lever":90,"Skin the cat":90,"Elbow lever":60,"Cuervo":60,"Koundinyasana II":60,"L en la pared":60,"Handstand de espalda a la pared":60,"Pantorrillas en la prensa":45,"Elevaciones en compresión":45,"Hollow hold":30,
 };
 // Ejercicios de peso corporal: nunca llevan casilla de kg
 const BODYWEIGHT=new Set(["Flexiones inclinadas","Elevación de piernas colgada","Oblicuos colgada","Salida en rueda","Elevaciones en compresión","Hollow hold","Retracción escapular colgada","Flexiones de escápula","Encogimientos de hombros en handstand"]);
@@ -1322,6 +1562,7 @@ function bindRoutine(){
   }
   bindTop();
   click0("exdone",()=>{exEd=null;render();});
+  click0("sel",t=>{if(t!==currentTab)goTab(t);});
   const dc=document.getElementById("discard");
   if(dc)dc.onclick=()=>{if(!confirm("¿Borrar todo lo marcado en esta sesión? No se puede deshacer."))return;
     draft={};cur={};activeEx=null;editingId=null;if(data.curStart&&data.curStart.tab===currentTab)delete data.curStart;save();render();toast("Sesión descartada");};
@@ -1337,6 +1578,10 @@ function bindRoutine(){
   click("dn",k=>{const [bl,i,b]=at(k);if(i<bl.ex.length-1&&exEd===k)exEd=b+"_"+(i+1);swap(bl.ex,i,i+1);});
   click("del",k=>{const [bl,i]=at(k);if(confirm("¿Quitar este ejercicio de la rutina?")){bl.ex.splice(i,1);edOpen={};exEd=null;save();render();}});
   click("tog",k=>{edOpen[k]=!edOpen[k];render();});
+  // Ejercicio con alternativa (búlgara ↔ step-up): se cambia y queda así hasta que lo vuelvas a cambiar
+  click("alt",k=>{const [bl,i]=at(k),ex=bl.ex[i],old=ex.n;if(!ex.alt)return;
+    ex.n=ex.alt;ex.alt=old;if(draft[old]){draft[ex.n]=draft[old];delete draft[old];}delete cur[old];if(activeEx===old)activeEx=ex.n;
+    save();render();toast("↔ Cambiado a "+ex.n);});
   click("settype",v=>{const [k,t]=v.split("|"),[bl,i]=at(k);setType(bl.ex[i],t);save();render();});
   main.querySelectorAll("[data-f]").forEach(el=>{
     const handler=()=>{const [k,fld]=el.dataset.f.split("|"),[bl,i]=at(k);applyField(bl.ex[i],fld,el.type==="checkbox"?el.checked:el.value);save();};
@@ -1629,8 +1874,8 @@ function mrow(go,icon,cls,title,sub,id){
    Sesión: MET × peso × horas. Caminata: 3,5 MET × (peso + mochila) × h + ~0,6 kcal por metro de desnivel (con 65 kg), +10% sobre 3.000 m.
    Día: mantención = Mifflin-St Jeor (mujer, 28 años, 160 cm) × 1,4 (+100 kcal en fase lútea).
    Meta para comer = mantención + 0,8 × ejercicio neto − 350 (déficit), nunca menos de 1.400. */
-const MET={gymA:5,gymB:5,gymC:5,casa:3.8,escalada:5.8,escaladaR:5.8,yogaAM:2.8,yoga:2,handstand:4};
-const DUR_DEF={gymA:60,gymB:60,gymC:60,casa:30,escalada:90,escaladaR:90,yogaAM:12,yoga:20,handstand:60};
+const MET={gymA:5,gymB:5,gymC:5,casa:3.8,casa1:4,casa2:4,casa3:4,casaMini:3,escalada:5.8,escaladaR:5.8,yogaAM:2.8,yoga:2,handstand:4};
+const DUR_DEF={gymA:60,gymB:60,gymC:60,casa:30,casa1:50,casa2:50,casa3:50,casaMini:10,escalada:90,escaladaR:90,yogaAM:12,yoga:20,handstand:60};
 const NAT_MET={suave:5.8,moderada:7,fuerte:9.8};
 const NAT_TXT={suave:"🙂 Suave",moderada:"😤 Moderada",fuerte:"🔥 Fuerte"};
 function pesoActual(){const M=data.medidas.filter(m=>m.peso).sort((a,b)=>a.date.localeCompare(b.date));return M.length?M[M.length-1].peso:65;}
@@ -1715,25 +1960,29 @@ function relDay(iso){const a=new Date(todayStr()+'T12:00:00'),b=new Date(dstr(ne
 // Sesión "fuerte": gym, escalada o una caminata/terreno larga o con desnivel
 function fuerte(s){return isGym(s.tipo)||ESC.includes(s.tipo)||(s.tipo==="caminata"&&(sessMin(s)>=120||(s.desn||0)>=300))||(s.tipo==="natacion"&&s.int==="fuerte");}
 function sinEmoji(t){return sessName(t).replace(/^\S+\s/,"");}
-// Sugerencia del día con un motivo corto
+// Sugerencia del día con un motivo corto, según las metas de la semana (sin días fijos)
 function hoyToca(){
   const now=new Date(),dow=now.getDay();
   const ay=new Date();ay.setDate(ay.getDate()-1);const ayer=dstr(ay);
   const del=d=>data.sessions.filter(s=>dstr(new Date(s.date))===d);
-  const hechas=del(todayStr());
+  const hechas=del(todayStr()).filter(s=>s.tipo!=="casaMini"),ys=del(ayer);
   if(hechas.length){const hecho=`Hiciste ${hechas.map(s=>sinEmoji(s.tipo)).join(" y ")}.`;
     return hechas.some(s=>YOGA.includes(s.tipo))?{t:"Hoy ya entrenaste ✅",s:hecho+" Ahora a descansar.",go:"hist",b:"Ver historial"}
       :{t:"Hoy ya entrenaste ✅",s:hecho+" Si te quedan ganas, yoga PM.",go:"yogaC",b:"Abrir yoga"};}
   if((dow===1&&now.getHours()<12)||(dow===5&&now.getHours()<18))
     return {t:"Hoy te toca: clase de handstand",s:`Hoy hay clase a las ${dow===1?'11:00':'17:00'}.`,go:"clase",b:"Registrar clase"};
-  const fa=del(ayer).filter(fuerte);
-  if(fa.length)return {t:"Hoy te toca: yoga PM o descanso",s:`Ayer hiciste ${sinEmoji(fa[0].tipo)}: toca recuperar.`,go:"yogaC",b:"Abrir yoga"};
-  const gw=thisWeek().filter(s=>isGym(s.tipo)).length;
-  if(gw<3){const g=nextGym(),gs=sorted().filter(s=>isGym(s.tipo)),lg=gs[gs.length-1];
-    let why=`Llevas ${gw} de 3 gym esta semana`;
-    if(!del(ayer).length)why+=" y ayer descansaste";else if(lg)why+=`; el último fue ${sinEmoji(lg.tipo)} ${relDay(lg.date)}`;
-    return {t:`Hoy te toca: ${sinEmoji(g)}`,s:why+".",go:g,b:`Abrir ${sinEmoji(g)}`};}
-  return {t:"Hoy te toca: handstand en casa o descanso",s:"Ya cumpliste tus 3 gym de la semana.",go:"casa",b:"Abrir handstand casa"};
+  const terreno=ys.find(s=>s.tipo==="caminata"&&(sessMin(s)>=120||(s.desn||0)>=300));
+  if(terreno)return {t:"Hoy te toca: yoga PM o descanso",s:"Ayer hiciste un terreno fuerte: toca recuperar.",go:"yogaC",b:"Abrir yoga"};
+  const m=metas(),faltaGym=m.gym<3,faltaCasa=m.casa<m.casaMeta,arriba=ys.find(s=>isUpper(s.tipo)),ayerGym=ys.find(s=>isGym(s.tipo));
+  const g=nextGym(),c=nextCasa(),nG=sinEmoji(g),nC=sinEmoji(c);
+  const resto=(x,n)=>`te ${n===1?'falta':'faltan'} ${n} ${x}`;
+  if(faltaCasa&&!arriba&&(ayerGym||!faltaGym))
+    return {t:`Hoy te toca: ${nC}`,s:`${ayerGym?`Ayer hiciste ${sinEmoji(ayerGym.tipo)} y `:''}${resto(m.casaMeta-m.casa===1?'casa':'casas',m.casaMeta-m.casa)} esta semana.`.replace(/^t/,"T"),go:c,b:`Abrir ${nC}`};
+  if(faltaGym)
+    return {t:`Hoy te toca: ${nG}`,s:`Llevas ${m.gym} de 3 gym esta semana${arriba?`; ayer hiciste tren superior (${sinEmoji(arriba.tipo)})`:ys.length?'':' y ayer descansaste'}.`,go:g,b:`Abrir ${nG}`};
+  if(faltaCasa)
+    return {t:"Hoy te toca: yoga o descanso",s:`Ayer hiciste tren superior (${sinEmoji(arriba.tipo)}); mañana puedes hacer ${nC}.`,go:"yogaC",b:"Abrir yoga"};
+  return {t:"¡Cumpliste tus metas de la semana! ✅",s:"Hoy: yoga, escalada, mini práctica o descanso.",go:"casaMini",b:"Abrir mini práctica"};
 }
 function renderHoy(){
   const ci=cicloInfo(),d=diaKcal(),wkN=thisWeek().length;
@@ -1757,13 +2006,14 @@ function renderEntreno(){
   if(ss.length){const lastD=dstr(new Date(ss[ss.length-1].date));
     const that=ss.filter(x=>dstr(new Date(x.date))===lastD);
     lastHtml=`<div class="lastday">${fmtDate(ss[ss.length-1].date)}</div>`+that.filter((x,i,a)=>!ROUTINE_TABS.includes(x.tipo)||a.findIndex(y=>y.tipo===x.tipo)===i).map(x=>`<div class="wk"><span>${esc(sessName(x.tipo))}</span><span class="small">${durTxt(x)||(x.dur?x.dur+' min':'')}</span></div>`).join("");}
-  const R=data.routines,nm=t=>esc(R[t].nombre.split(' · ')[0]);
+  const m=metas(),gD=GYM_ORDER.find(hasDraft),cD=[...CASA_ORDER,"casaMini"].find(hasDraft),gT=gD||nextGym(),cT=cD||nextCasa();
+  const bar=(v,max,col)=>`<div class="pbar"><div style="width:${Math.min(100,Math.round(v/max*100))}%;background:${col}"></div></div>`;
   main.innerHTML=`${cicloTop(false)}
   <div class="hoycard" data-go="${h.go}"><div class="ht">${ico("bulb")}<span>${esc(h.t)}</span></div><div class="hs">${esc(h.s)}</div><button class="hb">${esc(h.b)}</button></div>
   <div class="menu">
-    ${GYM_ORDER.map(t=>mrow(t,"barbell",t==="gymA"?"ic-purple":"ic-coral",nm(t),hasDraft(t)?"⏳ En curso, sin guardar":FOCUS[t])).join("")}
+    ${mrow(gT,"barbell","ic-purple","Gimnasio",gD?`⏳ ${esc(sinEmoji(gD))} en curso, sin guardar`:`Te toca ${esc(sinEmoji(gT))} · piernas + abdomen`)}
+    ${mrow(cT,"stretching","ic-teal","Entrenamiento en casa",cD?`⏳ ${esc(sinEmoji(cD))} en curso, sin guardar`:`Te toca ${esc(SEL_LBL[cT])} · tren superior`)}
     ${mrow("clase","hand-stop","ic-amber","Clase de handstand","lun 11:00 · vie 17:00")}
-    ${mrow("casa","stretching","ic-teal","Handstand casa",hasDraft("casa")?"⏳ En curso, sin guardar":"Hombros, muñecas y L-sit · ~20 min")}
     ${mrow("esc","mountain","ic-gray","Escalada","Muro o roca · duración")}
     ${mrow("yogaC","yoga","ic-green","Yoga","Video AM despertar · PM dormir")}
     ${mrow("caminata","trekking","ic-amber","Caminata / terreno","Altura, desnivel, mochila")}
@@ -1772,13 +2022,15 @@ function renderEntreno(){
   <div class="card"><h3>⏮️ Último entrenamiento</h3>${lastHtml}<button class="ulink" data-go="hist">📊 Ver historial</button></div>
   <div class="card">
     <h3>📆 Esta semana</h3>
-    <div class="wk"><span>${wi("barbell","ic-coral")}Gym</span><b>${n(s=>isGym(s.tipo))}</b></div>
+    <div class="wk"><span>${wi("barbell","ic-purple")}Gym</span><b>${m.gym} de 3</b></div>${bar(m.gym,3,"#c1663f")}
+    <div class="wk"><span>${wi("stretching","ic-teal")}Entrenamiento en casa</span><b>${m.casa} de ${m.casaMeta}</b></div>${bar(m.casa,m.casaMeta,"#2f7d78")}
     <div class="wk"><span>${wi("hand-stop","ic-amber")}Clase de handstand</span><b>${n(s=>s.tipo==="handstand")}</b></div>
-    <div class="wk"><span>${wi("stretching","ic-teal")}Handstand en casa</span><b>${n(s=>s.tipo==="casa")}</b></div>
     <div class="wk"><span>${wi("mountain","ic-gray")}Escalada</span><b>${n(s=>ESC.includes(s.tipo))}</b></div>
     <div class="wk"><span>${wi("yoga","ic-green")}Yoga</span><b>${n(s=>YOGA.includes(s.tipo))}</b></div>
     <div class="wk"><span>${wi("trekking","ic-amber")}Caminata / terreno</span><b>${n(s=>s.tipo==="caminata")}</b></div>
     <div class="wk"><span>${wi("swimming","ic-blue")}Natación</span><b>${n(s=>s.tipo==="natacion")}</b></div>
+    ${n(s=>s.tipo==="casaMini")?`<div class="wk"><span>${wi("stretching","ic-gray")}Mini práctica</span><b>${n(s=>s.tipo==="casaMini")}</b></div>`:''}
+    <p class="small" style="margin-top:6px">Metas: 3 gym · casa ${m.casaMeta===1?'1 (hubo clase de handstand)':'2 (1 si vas a la clase)'}. Nada de tren superior dos días seguidos.</p>
   </div>`;
   main.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
   bindTop();
@@ -2315,7 +2567,7 @@ function updateStats(){
   const pct=Math.min(100,Math.round(total/GOAL*100));
   const wkN=Math.floor((new Date(todayStr())-new Date(ps))/(7*86400000))+1;
   document.getElementById("progfill").style.width=pct+"%";
-  document.getElementById("progtxt").textContent=wkN>BLOCK.weeks?`✅ Terminaste las ${BLOCK.weeks} semanas · ${total} / ${GOAL} gym · toca actualizar la rutina`:`Semana ${wkN} de ${BLOCK.weeks} · ${total} / ${GOAL} sesiones de gym (${pct}%)`;
+  document.getElementById("progtxt").textContent=wkN>BLOCK.weeks?`✅ Terminaste las ${BLOCK.weeks} semanas · ${total} / ${GOAL} gym · toca actualizar la rutina`:`Semana ${wkN} de ${BLOCK.weeks}${wkN===7?' · semana liviana: mitad de series':''} · ${total} / ${GOAL} gym (${pct}%)`;
 }
 
 let toastT;
