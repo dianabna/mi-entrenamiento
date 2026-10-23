@@ -1063,7 +1063,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 21 oct · plan v8";
+const APP_VERSION="versión 23 oct · plan v8";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1872,7 +1872,8 @@ function mrow(go,icon,cls,title,sub,id){
 
 /* ---------- CALORÍAS ----------
    Sesión: MET × peso × horas. Caminata: 3,5 MET × (peso + mochila) × h + ~0,6 kcal por metro de desnivel (con 65 kg), +10% sobre 3.000 m.
-   Día: mantención = Mifflin-St Jeor (mujer, 28 años, 160 cm) × 1,4 (+100 kcal en fase lútea).
+   Día: mantención = Mifflin-St Jeor (mujer, 28 años, 160 cm) × 1,3 (+100 kcal en fase lútea).
+   El 1,3 = trabajo sentada + bici al trabajo (2,1 km, ~7 min por tramo) + vuelta después de almuerzo. Entrenamientos y terrenos se suman aparte.
    Meta para comer = mantención + 0,8 × ejercicio neto − 350 (déficit), nunca menos de 1.400. */
 const MET={gymA:5,gymB:5,gymC:5,casa:3.8,casa1:4,casa2:4,casa3:4,casaMini:3,escalada:5.8,escaladaR:5.8,yogaAM:2.8,yoga:2,handstand:4};
 const DUR_DEF={gymA:60,gymB:60,gymC:60,casa:30,casa1:50,casa2:50,casa3:50,casaMini:10,escalada:90,escaladaR:90,yogaAM:12,yoga:20,handstand:60};
@@ -1902,7 +1903,7 @@ function netOf(s,kg){kg=kg||pesoActual();return Math.max(0,kcalOf(s,kg)-kg*sessM
 function baseDia(ds){
   const kg=pesoActual(),bmr=10*kg+6.25*160-5*28-161;
   const c=cicloInfo(ds),lut=c&&!c.late&&(c.f==="lut1"||c.f==="lut2");
-  return {base:Math.round(bmr*1.4)+(lut?100:0),lut};
+  return {base:Math.round(bmr*1.3)+(lut?100:0),lut};
 }
 function r10(x){return Math.round(x/10)*10;}
 function nfmt(x){return Math.round(x).toLocaleString('es-CL');}
@@ -1920,7 +1921,7 @@ function kcalSheet(sess){
     <div class="ksum">
       <div class="kbig">~${nfmt(kcalOf(sess))} kcal</div><div class="small">en esta sesión · ${sessMin(sess)} min${sess.start||sess.dur?'':' (duración estimada)'}</div>
       <div class="wk"><span>Gasto total del día</span><b>~${nfmt(d.gasto)} kcal</b></div>
-      <div class="wk"><span>Mantención sin ejercicio</span><span>~${nfmt(d.base)} kcal</span></div>
+      <div class="wk"><span>Mantención sin entrenar (con bici)</span><span>~${nfmt(d.base)} kcal</span></div>
       <div class="wk"><span>🎯 Te conviene comer hoy</span><b>~${nfmt(d.meta)} kcal</b></div>
     </div>
     ${d.lut?`<div class="knee">🌕 Estás en fase lútea: tu gasto sube ~100 kcal y el hambre también. Suma proteína y carbohidratos de verdad (avena, fruta, legumbres).</div>`:''}
@@ -2182,7 +2183,7 @@ function renderComida(){
   <div class="card">
     <h3>🔥 Gasto de hoy</h3>
     ${d.ss.length?d.ss.map(s=>`<div class="wk"><span>${esc(sessName(s.tipo))} <span class="small">${sessMin(s)} min</span></span><span>~${nfmt(kcalOf(s))} kcal</span></div>`).join(""):'<p class="small">Hoy aún no registras entrenamientos.</p>'}
-    <div class="wk"><span>Mantención sin ejercicio${d.lut?' (+100 lútea)':''}</span><span>~${nfmt(d.base)} kcal</span></div>
+    <div class="wk"><span>Mantención sin entrenar (incluye bici y caminata de almuerzo)${d.lut?' (+100 lútea)':''}</span><span>~${nfmt(d.base)} kcal</span></div>
     <div class="wk"><span>Gasto total del día</span><b>~${nfmt(d.gasto)} kcal</b></div>
     <div class="kmeta">🎯 Te conviene comer hoy: <b>~${nfmt(d.meta)} kcal</b></div>
     ${d.lut?`<p class="small" style="margin-top:6px">🌕 Fase lútea: el gasto y el hambre suben un poco. Es normal.</p>`:''}
