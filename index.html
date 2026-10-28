@@ -128,6 +128,8 @@
   .tag{font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px;vertical-align:2px}
   .tag.prioridad{background:#EEEDFE;color:#3C3489}
   .tag.juego{background:#E1F5EE;color:#085041}
+  .edbtns{display:flex;align-items:center;gap:12px}
+  .edbtns .tile{flex:1;margin:0}
   .altlink{display:block;margin-top:6px;border:1px dashed #EF9F27;background:#fffaf4;color:#633806;border-radius:9px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer}
   .pbar{height:6px;background:#f1ebe2;border-radius:4px;margin:0 0 6px}
   .pbar div{height:6px;border-radius:4px}
@@ -802,6 +804,10 @@ const LIB_BASE={
     pasos:["Acostada boca arriba, piernas estiradas y abiertas (en V), brazos estirados sobre la cabeza.","Sube al mismo tiempo el tronco y las piernas estiradas, llevando las manos hacia el suelo entre las piernas.","Arriba quedas sentada sobre los isquiones, como un barco abierto.","Baja lento, primero la espalda y las piernas a la vez, sin que la espalda baja se arquee."],
     fij:["Piernas estiradas y abiertas, puntas activas.","Bajar lento es la mitad del ejercicio.","Si la espalda baja se arquea al bajar, vuelve al nivel anterior."],
     err:["Impulsarse con los brazos.","Doblar mucho las rodillas en los niveles con piernas estiradas.","Dejarse caer al bajar."],q:"straddle v up tutorial"},
+  "Plancha lateral con rotación":{v:"SZY76zCAMG0",cat:"Abdomen",musc:"Oblicuos, hombro y control del tronco (rotación)",rec:{tipo:"seg",sets:2,val:"30",nota:"c/lado",rest:30},
+    pasos:["Plancha lateral sobre el antebrazo (codo bajo el hombro), cuerpo recto.","Sube el brazo de arriba hacia el techo.","Gira el tronco y pasa ese brazo por debajo del cuerpo, como enhebrando una aguja.","Vuelve a abrir el brazo hacia el techo. Repite lento durante el tiempo y cambia de lado."],
+    fij:["La cadera no baja durante el giro.","El giro sale del tronco; los ojos siguen la mano."],
+    err:["Dejar caer la cadera.","Girar rápido sin control."],q:"plancha lateral con rotación enhebrar la aguja"},
   "Russian twist":{v:"cJ1ZSWlkKXs",cat:"Abdomen",musc:"Oblicuos y control del tronco (rotación)",rec:{tipo:"reps",sets:3,val:"20 (10 c/lado)",rest:45},
     pasos:["Sentada, rodillas dobladas, inclínate un poco atrás con la espalda larga (como el barco).","Junta las manos (o toma un disco) frente al pecho.","Gira el tronco hacia un lado llevando las manos junto a la cadera, y luego al otro. El giro sale de las costillas, no solo de los brazos.","Primero con los talones apoyados; cuando sea fácil, con los pies despegados o con un disco."],
     fij:["Gira lento y controlado: cuenta 1 por cada lado.","Pecho abierto y espalda larga."],
@@ -1115,7 +1121,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 27 oct (3) · plan v9";
+const APP_VERSION="versión 27 oct (4) · plan v9";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1329,11 +1335,13 @@ function renderRoutine(){
       if(editMode||exEd===key){
         const t=editTipo(ex),p=parseDose(ex.d);
         const f={sets:p.sets,val:p.val,nota:t==="marcar"?(ex.d||""):p.nota,ss:p.ss,rest:restOf(ex.n)};
-        html+=`<div class="edcard">
-          <div class="edtop"><b>${esc(ex.n)}</b><span class="mv"><button data-up="${key}">↑</button><button data-dn="${key}">↓</button><button data-del="${key}">🗑️</button></span></div>
+        html+=`<div class="edcard ${editMode?'':'addcard'}">
+          <div class="edtop"><b>${editMode?esc(ex.n):'✏️ Editar ejercicio'}</b><span class="mv"><button data-up="${key}">↑</button><button data-dn="${key}">↓</button><button data-del="${key}">🗑️</button></span></div>
+          <label class="edfull">📚 Ejercicio · elige otro para cambiarlo<select data-exswap="${key}">${libOptions(ex.n)}</select></label>
           ${typeRow(t,!!edOpen[key],`data-tog="${key}"`,`data-settype="${key}|`,LIB[ex.n]&&LIB[ex.n].niveles)}
           ${fieldsHtml(t,f,!!edOpen[key],`data-f="${key}|`,ex.n)}
-          ${editMode?'':`<button class="edsm done" data-exdone="1">✓ Listo</button>`}
+          ${editMode?'':`<p class="small">Al cambiar de ejercicio se cargan sus valores recomendados: ajústalos si quieres.</p>
+          <div class="edbtns"><button class="tile th-am addgo" data-exdone="1">✓ Guardar cambios</button><button class="edlink" data-excancel="${key}">cancelar</button></div>`}
         </div>`;
       }else{
         const id=exId(ex.n);
@@ -1356,7 +1364,6 @@ function renderRoutine(){
             <div class="ex-top"><div class="ex-name">${nm}${ex.tag?` <span class="tag ${ex.tag}">${ex.tag}</span>`:''}</div><span class="exbtns">${LIB[ex.n]?`<button class="info" data-info="${esc(ex.n)}">ℹ️ cómo</button>`:''}<button class="edsm" data-exed="${key}" aria-label="Editar ejercicio">✏️</button></span></div>
             ${ex.skill&&LIB[ex.n]&&LIB[ex.n].niveles?`<label class="lvlwrap">🪜 Tu nivel · toca para cambiarlo<select class="lvl" data-lvl="${id}">${LIB[ex.n].niveles.map((l,i)=>`<option value="${i}" ${i===skillLv(ex.n)?'selected':''}>Nivel ${i+1}: ${esc(l.n)} · ${esc(l.d)}</option>`).join("")}</select></label>`:''}
             ${effD(ex)?`<div class="ex-dose">${esc(effD(ex))}${canLog(ex)&&!exMeta(ex).byTime&&exMeta(ex).nSets>1?(ssFirst(ex)?' · sin descanso, pasa a la siguiente':` · descanso ${fmtDur(restOf(ex.n))}`):''}</div>`:''}
-            ${ex.alt?`<button class="altlink" data-alt="${key}">↔ Cambiar a ${esc(ex.alt)}</button>`:''}
             ${lastHtml}
             ${canLog(ex)&&sugOf(ex.n)?`<div class="up">🎯 Peso sugerido hoy: ${fmtKg(sugOf(ex.n)[0])} · ${esc(sugOf(ex.n)[1])}</div>`:''}
             ${canLog(ex)?setsHtml(ex,id,isAct):(parseDur(ex.d)?`<button class="playsm" data-tmr="${parseDur(ex.d)}|${esc(ex.n)}">▶ Temporizador ${fmtDur(parseDur(ex.d))}</button>`:'')}
@@ -1377,7 +1384,7 @@ function renderRoutine(){
 }
 
 /* ---------- EDICIÓN (compacta, vinculada a la biblioteca) ---------- */
-let exEd=null;   // ejercicio abierto para editar (✏️ en la tarjeta)
+let exEd=null, edSnap=null;   // ejercicio abierto para editar (✏️ en la tarjeta)
 let edOpen={}, addOpen=null, addPick=null, addF=null, addTypeOpen=false;
 function typeRow(t,open,togAttr,setAttrPrefix,hasLevels){
   const opts=Object.keys(TIPOS).filter(k=>k!=="skill"||hasLevels);
@@ -1398,6 +1405,23 @@ function fieldsHtml(t,f,open,attr,n){
   if(open)h+=`<label class="edfull">📝 Nota<input type="text" ${attr}nota" value="${esc(f.nota)}" placeholder="baja en 3 seg · liviano"></label>`;
   if(t!=="min")h+=`<label class="edcheck"><input type="checkbox" ${attr}ss" ${f.ss?'checked':''}> 🔗 Superserie con el siguiente</label>`;
   return h;
+}
+// Lista de la biblioteca por categoría (para agregar o cambiar un ejercicio)
+function libOptions(sel){
+  const cats={};Object.entries(LIB).forEach(([n,e])=>{(cats[e.cat||"Otros"]=cats[e.cat||"Otros"]||[]).push(n);});
+  return `${sel&&!LIB[sel]?`<option selected>${esc(sel)}</option>`:''}${Object.entries(cats).map(([c,ns])=>`<optgroup label="${esc(c)}">${ns.map(n=>`<option ${n===sel?'selected':''}>${esc(n)}</option>`).join("")}</optgroup>`).join("")}`;
+}
+// Cambia un ejercicio de la rutina por otro de la biblioteca, en el mismo lugar (con sus valores recomendados)
+function moveDraft(a,b){if(draft[a]){draft[b]=draft[a];delete draft[a];}delete cur[a];if(activeEx===a)activeEx=b;}
+function swapEx(ex,nn){
+  if(!nn||nn===ex.n)return;
+  if(exByName(nn)){toast("Ese ejercicio ya está en esta rutina");render();return;}
+  const old=ex.n,ss=parseDose(ex.d).ss,r=libRec(nn);
+  ex.n=nn;delete ex.alt;delete ex.tag;
+  if(r.tipo==="skill"){ex.skill=true;ex.log=true;delete ex.tipo;delete ex.d;}
+  else{delete ex.skill;ex.tipo=r.tipo;ex.log=r.tipo!=="marcar";ex.d=buildDose(r.tipo,Object.assign({},r,{ss}));}
+  if(r.rest!=null&&!isNaN(r.rest))ex.rest=r.rest;else delete ex.rest;
+  moveDraft(old,nn);save();render();toast("↔ Cambiado a "+nn);
 }
 function addFormHtml(bi){
   const cats={};Object.entries(LIB).forEach(([n,e])=>{(cats[e.cat]=cats[e.cat]||[]).push(n);});
@@ -1493,17 +1517,18 @@ function exType(ex){
   if(!canLog(ex))return "marcar";
   return ex.skill||BODYWEIGHT.has(ex.n)||!ex.log?"reps":"peso";
 }
-const SUG={since:"2026-10-25",kg:{
-  "Prensa de piernas":[60,"mismo peso · meta 3×15, después 65 kg"],
-  "Extensión de cuádriceps":[50,"mismo peso · baja en 3 seg (cuida la rodilla)"],
+const SUG={since:"2026-10-28",kg:{
+  "Prensa de piernas":[75,"completaste 3×15 con 70 · meta 3×12-15"],
+  "Pantorrillas en la prensa":[45,"completaste 3×15 con 40 · meta 3×15"],
+  "Extensión de cuádriceps":[70,"mismo peso, bajando en 3 seg · si la rodilla está 'en el límite', vuelve a 60"],
   "Abducción acostada con mancuerna":[15,"pausa de 2 seg arriba · si hay de 17,5, súbela"],
-  "Sit-up con disco":[7.5,"meta 3×12, después 10 kg"],
+  "Sit-up con disco":[10,"completaste 3×12 con 7,5 · meta 3×10-12"],
   "Abdominal en banco declinado":[7.5,"disco de 7,5 kg · meta 3×12"],
-  "Peso muerto con mancuernas":[35,"TOTAL (2 × 17,5) · mismo peso · meta 3×12"],
-  "Hip thrust":[60,"mismo peso · meta 3×15, después 65 kg"],
-  "Sentadilla búlgara":[10,"mismo peso · meta 3×10 c/pierna, después sube"],
+  "Peso muerto con mancuernas":[35,"TOTAL (2 × 17,5) · meta 3×12 · si no están, usa las más cercanas"],
+  "Hip thrust":[70,"mismo peso · meta 3×15, después 75 kg"],
+  "Sentadilla búlgara":[12.5,"mismo peso · meta 3×10 c/pierna"],
   "Curl femoral":[5,"placa 5 · meta 3×12 seguidas"],
-  "Extensión de tríceps sobre cabeza con mancuernas":[10,"mismo peso · meta 3×12, después 12 kg"],
+  "Extensión de tríceps sobre cabeza con mancuernas":[10,"mismo peso · meta 3×12, después 12 kg · si aparece hormigueo, baja menos"],
 }};
 function sugOf(n){const g=SUG.kg[n];if(!g)return null;const L=lastLog(n);if(L&&dstr(new Date(L.date))>=SUG.since)return null;return g;}
 function canLog(ex){if(ex.tipo==="marcar")return false;return !!ex.log||!!target(effD(ex));}
@@ -1628,7 +1653,8 @@ function bindRoutine(){
         if(timed&&/c\/(lado|pierna)/.test(effD(ex)))TIMER.countdown(sec*1000,lbl+" · lado 1",()=>TIMER.countdown(sec*1000,lbl+" · lado 2",()=>logSet(n)));
         else TIMER.countdown(sec*1000,lbl,timed?()=>logSet(n):null);};
       run();});
-    on("exed",k=>{exEd=k;edOpen={};addOpen=null;render();});
+    on("exed",k=>{const [b,i]=k.split("_").map(Number);edSnap=JSON.parse(JSON.stringify(data.routines[currentTab].blocks[b].ex[i]));
+      exEd=k;edOpen={};addOpen=null;render();});
     on("tmr",v=>{markStart();const [sec,...rest]=v.split("|");TIMER.countdown(+sec*1000,rest.join("|"));});
     on("logset",id=>logSet(idMap[id]));
     on("rmset",v=>{
@@ -1637,7 +1663,7 @@ function bindRoutine(){
     });
   }
   bindTop();
-  click0("exdone",()=>{exEd=null;render();});
+  click0("exdone",()=>{exEd=null;edSnap=null;render();});
   click0("sel",t=>{if(t!==currentTab)goTab(t);});
   const dc=document.getElementById("discard");
   if(dc)dc.onclick=()=>{if(!confirm("¿Borrar todo lo marcado en esta sesión? No se puede deshacer."))return;
@@ -1654,6 +1680,9 @@ function bindRoutine(){
   click("dn",k=>{const [bl,i,b]=at(k);if(i<bl.ex.length-1&&exEd===k)exEd=b+"_"+(i+1);swap(bl.ex,i,i+1);});
   click("del",k=>{const [bl,i]=at(k);if(confirm("¿Quitar este ejercicio de la rutina?")){bl.ex.splice(i,1);edOpen={};exEd=null;save();render();}});
   click("tog",k=>{edOpen[k]=!edOpen[k];render();});
+  main.querySelectorAll("[data-exswap]").forEach(el=>{el.onchange=()=>{const [bl,i]=at(el.dataset.exswap);swapEx(bl.ex[i],el.value);};});
+  // cancelar: deja el ejercicio como estaba al abrir el lápiz
+  click("excancel",k=>{const [bl,i]=at(k);if(edSnap){if(bl.ex[i].n!==edSnap.n)moveDraft(bl.ex[i].n,edSnap.n);bl.ex[i]=edSnap;}exEd=null;edSnap=null;save();render();});
   // Ejercicio con alternativa (búlgara ↔ step-up): se cambia y queda así hasta que lo vuelvas a cambiar
   click("alt",k=>{const [bl,i]=at(k),ex=bl.ex[i],old=ex.n;if(!ex.alt)return;
     ex.n=ex.alt;ex.alt=old;if(draft[old]){draft[ex.n]=draft[old];delete draft[old];}delete cur[old];if(activeEx===old)activeEx=ex.n;
