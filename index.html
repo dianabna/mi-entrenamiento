@@ -406,6 +406,7 @@ function CAL(){return {t:"🔥 Calentamiento (~5 min)", ex:[
   {n:"Retracción escapular colgada", d:"1 × 8"},
   {n:"Flexiones de escápula", d:"1 × 10"},
   {n:"Movilidad de hombros y caderas", d:"2 min"},
+  {n:"Puente de glúteo", d:"1 × 15 · pausa de 2 seg arriba (activa el glúteo)", log:true, tipo:"reps", rest:30},
 ]};}
 function FIN(){return {t:"🚴‍♀️ Cardio (opcional)", ex:[
   {n:"Bicicleta estática", d:"8-10 min · opcional · resistencia moderada", log:true},
@@ -453,8 +454,8 @@ const DEFAULT_ROUTINES = {
     CAL(),
     {t:"🦵 Piernas (prioridad)", ex:[
       APROX,
-      {n:"Peso muerto con mancuernas", d:"3 × 8-12", log:true, rest:120},
       {n:"Hip thrust", d:"3 × 8-15", log:true, rest:120},
+      {n:"Peso muerto con mancuernas", d:"3 × 8-12", log:true, rest:120},
       {n:"Sentadilla búlgara", d:"3 × 8 c/pierna", log:true, tipo:"peso", rest:90, alt:"Step-up a cajón con mancuernas"},
       {n:"Curl femoral", d:"3 × 12", log:true, rest:60},
     ]},
@@ -1121,7 +1122,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 27 oct (4) · plan v9";
+const APP_VERSION="versión 28 oct · plan v9";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1214,6 +1215,13 @@ function checkRoutinesUpdate(){
     data.skillLv=data.skillLv||{};data.libEdits=data.libEdits||{};
     Object.entries(REN).forEach(([a,b])=>{if(data.skillLv[a]!=null&&data.skillLv[b]==null)data.skillLv[b]=data.skillLv[a];delete data.skillLv[a];delete data.libEdits[a];delete data.libEdits[b];});
     buildLib();data.migNames1=true;save();}
+  // 28 oct: puente de glúteo en el calentamiento del gym y, en el Gym B, hip thrust antes del peso muerto (así lo hace por la máquina)
+  if(!data.migGlute){
+    ["gymA","gymB"].forEach(t=>{const R=data.routines[t];if(!R||exInRoutine(R,"Puente de glúteo"))return;
+      const c=R.blocks.find(b=>/calentamiento/i.test(b.t))||R.blocks[0];c.ex.push({n:"Puente de glúteo",d:"1 × 15 · pausa de 2 seg arriba (activa el glúteo)",log:true,tipo:"reps",rest:30});});
+    const B=data.routines.gymB;if(B)B.blocks.forEach(bl=>{const p=bl.ex.findIndex(e=>e.n==="Peso muerto con mancuernas"),hh=bl.ex.findIndex(e=>e.n==="Hip thrust");
+      if(p>=0&&hh>p){const [x]=bl.ex.splice(hh,1);bl.ex.splice(p,0,x);}});
+    data.migGlute=true;save();}
   // 19 oct: una sola polea en el gym (siempre ocupada) → tríceps sobre la cabeza con mancuerna, con ficha completa
   if(!data.migTri){const T="Extensión de tríceps sobre cabeza con mancuernas";
     Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Extensión de tríceps en polea"&&!exInRoutine(R,T)){ex.n=T;ex.d="3 × 10-12";ex.tipo="peso";ex.log=true;ex.rest=60;}})));
@@ -1518,14 +1526,14 @@ function exType(ex){
   return ex.skill||BODYWEIGHT.has(ex.n)||!ex.log?"reps":"peso";
 }
 const SUG={since:"2026-10-28",kg:{
-  "Prensa de piernas":[75,"completaste 3×15 con 70 · meta 3×12-15"],
+  "Prensa de piernas":[75,"completaste 3×15 con 70 · si 75 se siente fácil, prueba 80 · meta 3×12-15"],
   "Pantorrillas en la prensa":[45,"completaste 3×15 con 40 · meta 3×15"],
   "Extensión de cuádriceps":[70,"mismo peso, bajando en 3 seg · si la rodilla está 'en el límite', vuelve a 60"],
   "Abducción acostada con mancuerna":[15,"pausa de 2 seg arriba · si hay de 17,5, súbela"],
   "Sit-up con disco":[10,"completaste 3×12 con 7,5 · meta 3×10-12"],
   "Abdominal en banco declinado":[7.5,"disco de 7,5 kg · meta 3×12"],
   "Peso muerto con mancuernas":[35,"TOTAL (2 × 17,5) · meta 3×12 · si no están, usa las más cercanas"],
-  "Hip thrust":[70,"mismo peso · meta 3×15, después 75 kg"],
+  "Hip thrust":[70,"mismo peso · canillas verticales arriba y pausa de 1-2 seg · meta 3×15"],
   "Sentadilla búlgara":[12.5,"mismo peso · meta 3×10 c/pierna"],
   "Curl femoral":[5,"placa 5 · meta 3×12 seguidas"],
   "Extensión de tríceps sobre cabeza con mancuernas":[10,"mismo peso · meta 3×12, después 12 kg · si aparece hormigueo, baja menos"],
