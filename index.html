@@ -1098,7 +1098,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 25 oct · plan v9";
+const APP_VERSION="versión 27 oct · plan v9";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -2557,10 +2557,24 @@ function restoreBackup(file){
   if(!file)return;
   const r=new FileReader();
   r.onload=()=>{let d;try{d=JSON.parse(r.result);}catch(e){toast("⚠️ Ese archivo no es un respaldo válido");return;}
-    if(!d||!Array.isArray(d.sessions)||!d.routines){toast("⚠️ Ese archivo no es un respaldo de esta app");return;}
-    if(!confirm(`Restaurar este respaldo (${d.sessions.length} sesiones, ${(d.medidas||[]).length} medidas)?\n\nReemplaza los datos que tienes ahora en este teléfono.`))return;
+    if(!d||!Array.isArray(d.sessions)){toast("⚠️ Ese archivo no es un respaldo de esta app");return;}
+    // Combinar (recomendado): suma sesiones, medidas, Fitia, ciclo y niveles sin tocar tus rutinas ni lo que registraste después
+    if(!d.routines||confirm(`Respaldo con ${d.sessions.length} sesiones y ${(d.medidas||[]).length} medidas.\n\nAceptar = COMBINAR con lo que tienes ahora (recomendado: no borra nada).\nCancelar = ver la opción de reemplazar todo.`)){
+      const n=mergeBackup(d);save();buildLib();updateStats();toast(`✅ Recuperado: ${n} sesiones agregadas`);goTab("hist");return;}
+    if(!confirm("¿REEMPLAZAR todos los datos de este teléfono por el respaldo? Se pierde lo que no esté en el archivo."))return;
     data=d;if(!data.medidas)data.medidas=[];save();buildLib();checkRoutinesUpdate();updateStats();toast("✅ Respaldo restaurado");goTab("hoy");};
   r.readAsText(file);
+}
+function mergeBackup(d){
+  const key=s=>dstr(new Date(s.date))+"|"+s.tipo,ids=new Set(data.sessions.map(s=>s.id)),keys=new Set(data.sessions.map(key));
+  let n=0;(d.sessions||[]).forEach(s=>{if(ids.has(s.id)||keys.has(key(s)))return;data.sessions.push(s);n++;});
+  const md=new Set(data.medidas.map(m=>m.date));(d.medidas||[]).forEach(m=>{if(!md.has(m.date))data.medidas.push(m);});
+  data.fitia=data.fitia||{};Object.entries(d.fitia||{}).forEach(([k,v])=>{if(!data.fitia[k])data.fitia[k]=v;});
+  if(d.ciclo&&d.ciclo.starts){data.ciclo=data.ciclo||{starts:[]};data.ciclo.starts=[...new Set([...(data.ciclo.starts||[]),...d.ciclo.starts])].sort();}
+  data.skillLv=data.skillLv||{};Object.entries(d.skillLv||{}).forEach(([k,v])=>{if(data.skillLv[k]==null)data.skillLv[k]=v;});
+  data.libEdits=data.libEdits||{};Object.entries(d.libEdits||{}).forEach(([k,v])=>{if(!(k in data.libEdits))data.libEdits[k]=v;});
+  ["escModo","yogaModo"].forEach(k=>{if(d[k]&&!data[k])data[k]=d[k];});
+  return n;
 }
 function exportProgress(){
   const txt=progressText();
@@ -2747,6 +2761,7 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
 })();
 
 document.getElementById("appver").textContent=APP_VERSION;
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 checkRoutinesUpdate();
 updateStats();
 render();
