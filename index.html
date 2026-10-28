@@ -651,11 +651,12 @@ const LIB_BASE={
     niveles:[
       {n:"Apoyo arriba de las paralelas",d:"3 × 20-30 seg"},
       {n:"Negativas (bajar en 5 seg hasta 90°)",d:"3 × 3-5"},
+      {n:"Mixtos: los completos que salgan + negativas hasta llegar a 5",d:"3 × 5 (completos + negativas)"},
       {n:"Fondos completos",d:"3 × 5-8"},
       {n:"Fondos con peso",d:"3 × 5-8"},
     ],
     pasos:["Toma las paralelas y súbete con los brazos estirados; hombros abajo, lejos de las orejas.","Inclina el tronco un poco hacia adelante; codos apuntando hacia atrás (no hacia afuera).","Baja doblando los codos solo hasta unos 90° (hombro a la altura del codo).","Empuja hasta estirar los brazos."],
-    fij:["Nivel 1: solo sostenerte arriba, brazos estirados y cuerpo quieto.","Nivel 2: desde arriba, baja en 5 seg hasta 90°; vuelve arriba con un salto o apoyando los pies.","El ardor en el dorsal durante el apoyo es normal: el dorsal trabaja para bajar los hombros.","Sube de nivel cuando completes todas las series con buena técnica y sin molestia en el codo."],
+    fij:["Nivel 1: solo sostenerte arriba, brazos estirados y cuerpo quieto.","Nivel 2: desde arriba, baja en 5 seg hasta 90°; vuelve arriba con un salto o apoyando los pies.","El ardor en el dorsal durante el apoyo es normal: el dorsal trabaja para bajar los hombros.","Nivel 3 (mixtos): cada semana intenta 1 completo más y 1 negativa menos (3+2 → 4+1 → 5 completos). Con 3 × 5 completos pasas al nivel 4.","Profundidad: hasta 90° o justo antes de que aparezca el hormigueo hacia el meñique, lo que llegue primero.","Sube de nivel cuando completes todas las series con buena técnica y sin molestia en el codo."],
     err:["Bajar más allá de 90°.","Encoger los hombros.","Usar banda: ayuda justo donde más cuesta y no se puede medir."],
     alt:"Si el gimnasio tiene máquina de fondos asistidos: 3 × 6-8, y cada vez que completes todo baja 2-5 kg de ayuda (el contrapeso).",
     codo:"Si la molestia pasa de 3/10 o dura al día siguiente, vuelve al nivel anterior. Si persiste 2-3 semanas, consulta a un kinesiólogo.",q:"progresión fondos en paralelas principiante"},
@@ -1114,7 +1115,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 27 oct (2) · plan v9";
+const APP_VERSION="versión 27 oct (3) · plan v9";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1623,7 +1624,9 @@ function bindRoutine(){
         const sec=m.byTime?Math.round(c.reps*60):(m.secs?c.reps:parseDur(effD(ex)));if(!(sec>0))return;
         const k=(((draft[n]||{}).sets)||[]).length+1, name=n.replace('★','').trim();
         const timed=m.byTime||m.secs;
-        TIMER.countdown(sec*1000,timed&&m.nSets>1?`${name} · serie ${k} de ${m.nSets}`:name,timed?()=>logSet(n):null);};
+        const lbl=timed&&m.nSets>1?`${name} · serie ${k} de ${m.nSets}`:name;
+        if(timed&&/c\/(lado|pierna)/.test(effD(ex)))TIMER.countdown(sec*1000,lbl+" · lado 1",()=>TIMER.countdown(sec*1000,lbl+" · lado 2",()=>logSet(n)));
+        else TIMER.countdown(sec*1000,lbl,timed?()=>logSet(n):null);};
       run();});
     on("exed",k=>{exEd=k;edOpen={};addOpen=null;render();});
     on("tmr",v=>{markStart();const [sec,...rest]=v.split("|");TIMER.countdown(+sec*1000,rest.join("|"));});
@@ -2719,7 +2722,7 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
     disp.textContent=phase==="prep"?String(Math.max(1,Math.ceil(cdRemain/1000))):fmt(cdRemain,true);
     disp.classList.toggle("prep",phase==="prep");
     disp.classList.toggle("warn",phase==="work"&&cdRemain<=5000&&cdRemain>0);
-    phaseEl.textContent=phase==="prep"?"Prepárate…":(running&&label.startsWith("Descanso")?"Descanso":(running&&label!=="Temporizador"?"¡Vamos!":""));
+    phaseEl.textContent=phase==="prep"?(/lado 2$/.test(label)?"🔄 Cambia de lado":"Prepárate…"):(running&&label.startsWith("Descanso")?"Descanso":(running&&label!=="Temporizador"?"¡Vamos!":""));
   }
   function tick(){
     if(mode==="sw"){swElapsed=Date.now()-swStart;draw();return;}
