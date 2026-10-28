@@ -801,6 +801,22 @@ const LIB_BASE={
     pasos:["Acostada boca arriba, piernas estiradas y abiertas (en V), brazos estirados sobre la cabeza.","Sube al mismo tiempo el tronco y las piernas estiradas, llevando las manos hacia el suelo entre las piernas.","Arriba quedas sentada sobre los isquiones, como un barco abierto.","Baja lento, primero la espalda y las piernas a la vez, sin que la espalda baja se arquee."],
     fij:["Piernas estiradas y abiertas, puntas activas.","Bajar lento es la mitad del ejercicio.","Si la espalda baja se arquea al bajar, vuelve al nivel anterior."],
     err:["Impulsarse con los brazos.","Doblar mucho las rodillas en los niveles con piernas estiradas.","Dejarse caer al bajar."],q:"straddle v up tutorial"},
+  "Russian twist":{v:"cJ1ZSWlkKXs",cat:"Abdomen",musc:"Oblicuos y control del tronco (rotación)",rec:{tipo:"reps",sets:3,val:"20 (10 c/lado)",rest:45},
+    pasos:["Sentada, rodillas dobladas, inclínate un poco atrás con la espalda larga (como el barco).","Junta las manos (o toma un disco) frente al pecho.","Gira el tronco hacia un lado llevando las manos junto a la cadera, y luego al otro. El giro sale de las costillas, no solo de los brazos.","Primero con los talones apoyados; cuando sea fácil, con los pies despegados o con un disco."],
+    fij:["Gira lento y controlado: cuenta 1 por cada lado.","Pecho abierto y espalda larga."],
+    err:["Mover solo los brazos sin girar el tronco.","Redondear la espalda.","Hacerlo rápido y con impulso."],
+    rod:"Si molesta la espalda baja, apoya los talones y reduce el giro.",q:"russian twist técnica correcta"},
+  "Elevación de piernas en silla romana":{v:"DLy3kDFJxes",cat:"Abdomen",musc:"Recto abdominal bajo y flexores de cadera (paso previo a la colgada)",skill:true,lvlDefault:0,
+    niveles:[
+      {n:"Rodillas al pecho",d:"3 × 10-12"},
+      {n:"Rodillas con pausa arriba, enrollando la pelvis",d:"3 × 10"},
+      {n:"Una pierna estirada (alternando)",d:"3 × 8 c/lado"},
+      {n:"Piernas estiradas hasta 90°",d:"3 × 8-10"},
+      {n:"Piernas estiradas sobre la horizontal",d:"3 × 6-8"},
+    ],
+    pasos:["En la máquina de fondos con apoyo de antebrazos (silla romana): espalda apoyada en el respaldo y antebrazos en los apoyos.","Hombros abajo, lejos de las orejas; piernas colgando.","Sube las rodillas hacia el pecho y enrolla la pelvis (la cola va hacia adelante).","Baja lento sin balancearte."],
+    fij:["La espalda queda pegada al respaldo: es más fácil que colgarse de la barra y permite más repeticiones.","Enrollar la pelvis es lo que trabaja el abdomen."],
+    err:["Balancear las piernas.","Hundir los hombros."],q:"elevación de piernas silla romana técnica"},
   "Barco (Navasana)":{v:"1x82fvw3A4M",cat:"Abdomen",musc:"Abdomen y flexores de cadera",rec:{tipo:"seg",sets:2,val:"20-30",rest:30},
     pasos:["Sentada, rodillas dobladas, inclínate un poco atrás con la espalda larga.","Despega los pies del suelo: canillas paralelas al suelo (barco medio).","Si puedes, estira las piernas en V (barco completo). Brazos estirados adelante."],
     fij:["Pecho abierto y espalda larga: que no se redondee."],err:["Hundir el pecho.","Aguantar la respiración."],q:"navasana postura del barco"},
@@ -1098,7 +1114,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 27 oct · plan v9";
+const APP_VERSION="versión 27 oct (2) · plan v9";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1183,6 +1199,14 @@ function checkRoutinesUpdate(){
       if(a>=0)R.blocks[a]=nb;else{const c=fb(R,/cardio/i);R.blocks.splice(c>=0?c:R.blocks.length,0,nb);}});
     ["casa1","casa2","casaMini"].forEach(t=>{data.routines[t]=JSON.parse(JSON.stringify(DEFAULT_ROUTINES[t]));});
     data.migV9=true;save();}
+  // 27 oct: nombres corregidos de los ejercicios que agregó Diana (rutinas, historial y niveles); se usa la ficha completa de la biblioteca
+  if(!data.migNames1){
+    const REN={"Russian twisr":"Russian twist","Elevación de piernas en máquina con apoyo de brazos":"Elevación de piernas en silla romana"};
+    Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(e=>{if(REN[e.n])e.n=REN[e.n];if(REN[e.alt])e.alt=REN[e.alt];})));
+    data.sessions.forEach(s=>{(s.logs||[]).forEach(l=>{if(REN[l.n])l.n=REN[l.n];});if(s.done)s.done=s.done.map(n=>REN[n]||n);});
+    data.skillLv=data.skillLv||{};data.libEdits=data.libEdits||{};
+    Object.entries(REN).forEach(([a,b])=>{if(data.skillLv[a]!=null&&data.skillLv[b]==null)data.skillLv[b]=data.skillLv[a];delete data.skillLv[a];delete data.libEdits[a];delete data.libEdits[b];});
+    buildLib();data.migNames1=true;save();}
   // 19 oct: una sola polea en el gym (siempre ocupada) → tríceps sobre la cabeza con mancuerna, con ficha completa
   if(!data.migTri){const T="Extensión de tríceps sobre cabeza con mancuernas";
     Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Extensión de tríceps en polea"&&!exInRoutine(R,T)){ex.n=T;ex.d="3 × 10-12";ex.tipo="peso";ex.log=true;ex.rest=60;}})));
