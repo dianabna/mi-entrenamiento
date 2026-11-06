@@ -128,6 +128,8 @@
   .tag{font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px;vertical-align:2px}
   .tag.prioridad{background:#EEEDFE;color:#3C3489}
   .tag.juego{background:#E1F5EE;color:#085041}
+  .circ{padding:10px 14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+  .circbtn{width:100%;font-size:14px}
   .edbtns{display:flex;align-items:center;gap:12px}
   .edbtns .tile{flex:1;margin:0}
   .altlink{display:block;margin-top:6px;border:1px dashed #EF9F27;background:#fffaf4;color:#633806;border-radius:9px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer}
@@ -389,6 +391,7 @@
   <div class="timer-ctrls">
     <button class="tc-main" id="tmStart">Iniciar</button>
     <button class="tc-sec" id="tmReset">Reiniciar</button>
+    <button class="tc-sec" id="tmSkip" title="Saltar">⏭</button>
   </div>
 </div>
 <div class="sheet" id="infoSheet">
@@ -461,7 +464,7 @@ const DEFAULT_ROUTINES = {
     ]},
     {t:"🤸 Skill + tríceps (después de las máquinas)", ex:[
       {n:"Fondos en paralelas", skill:true, log:true},
-      {n:"Extensión de tríceps sobre cabeza con mancuernas", d:"3 × 10-12", log:true, tipo:"peso", rest:60},
+      {n:"Patada de tríceps con mancuerna", d:"3 × 12 c/brazo", log:true, tipo:"peso", rest:60},
     ]},
     ABS_B(),
     FIN(),
@@ -476,28 +479,24 @@ const DEFAULT_ROUTINES = {
       {n:"Hollow de activación", d:"2 × 15 seg · suave", log:true, tipo:"seg", rest:15},
       {n:"Bicho muerto", d:"1 × 6 c/lado · suave", log:true, tipo:"reps", rest:15},
     ]},
-    {t:"🤸 Skills (~18 min)", ex:[
+    {t:"🤸 Skills (~20 min)", ex:[
       {n:"Entradas suaves al handstand", d:"3 × 20-30 seg", log:true, tipo:"seg", rest:45},
       {n:"Salida en rueda", d:"2 × 3 · una serie por lado, desde pecho a la pared", log:true, tipo:"reps", rest:30},
       {n:"L en la pared", skill:true, log:true, rest:60},
-      {n:"Rana (frog stand)", d:"5 × 10-15 seg", log:true, tipo:"seg", rest:45, tag:"prioridad"},
+      {n:"Rana (frog stand)", d:"3 × 20 seg", log:true, tipo:"seg", rest:45, tag:"prioridad"},
+      {n:"L-sit", skill:true, log:true, rest:45},
     ]},
     {t:"💪 Fuerza (~10 min)", ex:[
       {n:"Pike push-up", d:"3 × 5 · rango corto, con un bloque bajo la cabeza", log:true, tipo:"reps", rest:90, tag:"prioridad"},
       {n:"Flexiones", d:"3 × 8", log:true, tipo:"reps", rest:90},
     ]},
-    {t:"🔥 Abdomen · bloque 1 (3 vueltas)", ex:[
-      {n:"Tuck-up", d:"3 × 10 · superserie con la siguiente", log:true, tipo:"reps"},
-      {n:"Hollow hold", d:"3 × 20 seg", log:true, tipo:"seg", rest:60},
-    ]},
-    {t:"🔥 Abdomen · bloque 2 (3 vueltas)", ex:[
-      {n:"L-sit", skill:true, log:true, rest:15},
-      {n:"Elevaciones en compresión", d:"3 × 8", log:true, tipo:"reps", rest:60},
-    ]},
-    {t:"🔥 Abdomen · bloque 3 (2 vueltas, con un bloque o cojín)", ex:[
-      {n:"Barco: pasar piernas sobre el bloque", d:"2 × 10 pasadas · superserie con la siguiente", log:true, tipo:"reps"},
-      {n:"Barco: abrir y cerrar piernas", d:"2 × 10 · superserie con la siguiente", log:true, tipo:"reps"},
-      {n:"Plancha con toques de hombro", d:"2 × 20", log:true, tipo:"reps", rest:60},
+    {t:"🔥 Abdomen · circuito (3 vueltas · 20 s c/u · 2 min de descanso)", circuit:{rounds:3,work:20,prep:5,rest:120}, ex:[
+      {n:"Tuck-up", d:"20 seg", tipo:"marcar"},
+      {n:"Hollow hold", d:"20 seg", tipo:"marcar"},
+      {n:"Elevaciones en compresión", d:"20 seg", tipo:"marcar"},
+      {n:"Barco: pasar piernas sobre el bloque", d:"20 seg", tipo:"marcar"},
+      {n:"Barco: abrir y cerrar piernas", d:"20 seg", tipo:"marcar"},
+      {n:"Plancha con toques de hombro", d:"20 seg", tipo:"marcar"},
     ]},
   ]},
   casa2:{nombre:"Casa B · Figuras", emoji:"🏠", yoga:false, blocks:[
@@ -848,6 +847,19 @@ const LIB_BASE={
   "Crunch tocando las rodillas":{v:"OsUz898onTE",cat:"Abdomen",musc:"Recto abdominal",rec:{tipo:"reps",sets:3,val:"15",rest:45},
     pasos:["Boca arriba, rodillas dobladas y pies apoyados en el suelo.","Manos sobre los muslos.","Enrolla la columna levantando cabeza y hombros hasta que las manos toquen las rodillas.","Baja lento. Más adelante: con un disco abrazado al pecho."],
     fij:["Es un mini abdominal: la espalda baja no se despega.","Exhala al subir."],err:["Tirar del cuello.","Subir con impulso."],q:"crunch abdominal técnica"},
+  "Patada de tríceps con mancuerna":{v:"i_38xEoC5wA",cat:"Calistenia",musc:"Tríceps",rec:{tipo:"peso",sets:3,val:"12 c/brazo",rest:60},
+    pasos:["Apoya una mano y la rodilla del mismo lado en un banco; tronco casi paralelo al suelo y espalda recta.","Con la otra mano toma la mancuerna: el brazo (hombro-codo) pegado al costado, paralelo al suelo, y el codo doblado en 90°.","Estira el codo hacia atrás hasta que el brazo quede recto y aprieta 1 seg.","Vuelve lento a 90°. Termina las repeticiones de un brazo y cambia."],
+    fij:["Solo se mueve el antebrazo: el brazo queda quieto.","Peso liviano: es mucho más débil que el tríceps sobre la cabeza (empieza con 3-4 kg por mano).","Cuando domines la técnica puedes hacerlo con los dos brazos a la vez (inclinada, de pie) para ahorrar tiempo."],
+    err:["Balancear el brazo o usar impulso.","Bajar el codo mientras estiras."],
+    codo:"Dobla el codo menos que el tríceps sobre la cabeza: más amable con el codo. Si aparece el hormigueo, baja el peso.",q:"patada de tríceps con mancuerna técnica"},
+  "Pantorrillas sentada":{v:"l5XRbpQwKF0",cat:"Piernas",musc:"Pantorrillas (sobre todo el sóleo)",rec:{tipo:"peso",sets:3,val:"15-20",rest:45},
+    pasos:["Sentada en un banco, la punta de los pies sobre un disco o escalón y los talones en el aire.","Apoya el peso sobre las rodillas (mancuernas o un disco), rodillas en 90°.","Baja los talones lento y sube lo más alto que puedas.","Pausa 1 seg arriba."],
+    fij:["Con las rodillas dobladas trabaja más el sóleo (el de abajo). La de la prensa trabaja más el gemelo.","No es el mismo peso que en la prensa: empieza con ~15-20 kg sobre las rodillas.","Úsala como reemplazo cuando la prensa esté ocupada."],
+    err:["Rebotar abajo.","Rango corto."],q:"elevación de talones sentado con mancuernas"},
+  "Puente de femoral con talones en el banco":{v:"AuGuvKaHaMA",cat:"Piernas",musc:"Femorales y glúteos",rec:{tipo:"reps",sets:3,val:"12",rest:60},
+    pasos:["Acostada boca arriba, los talones sobre un banco y las rodillas apenas dobladas.","Brazos a los lados en el suelo.","Sube la cadera empujando con los talones hasta formar una línea recta.","Baja lento. Más difícil: con una pierna."],
+    fij:["Reemplazo del curl femoral cuando la máquina está ocupada.","Mientras más estiradas las rodillas, más trabaja el femoral."],
+    err:["Arquear la espalda baja.","Subir empujando con los hombros."],q:"puente de isquios en banco"},
   "Russian twist":{v:"cJ1ZSWlkKXs",cat:"Abdomen",musc:"Oblicuos y control del tronco (rotación)",rec:{tipo:"reps",sets:3,val:"20 (10 c/lado)",rest:45},
     pasos:["Sentada, rodillas dobladas, inclínate un poco atrás con la espalda larga (como el barco).","Junta las manos (o toma un disco) frente al pecho.","Gira el tronco hacia un lado llevando las manos junto a la cadera, y luego al otro. El giro sale de las costillas, no solo de los brazos.","Primero con los talones apoyados; cuando sea fácil, con los pies despegados o con un disco."],
     fij:["Gira lento y controlado: cuenta 1 por cada lado.","Pecho abierto y espalda larga."],
@@ -1161,7 +1173,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 6 nov · plan v10";
+const APP_VERSION="versión 6 nov (2) · plan v10";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1269,6 +1281,13 @@ function checkRoutinesUpdate(){
       if(a>=0)R.blocks[a]=abs();else{const c=fb(R,/cardio/i);R.blocks.splice(c>=0?c:R.blocks.length,0,abs());}});
     data.routines.casa1=JSON.parse(JSON.stringify(DEFAULT_ROUTINES.casa1));
     data.migV10=true;save();}
+  // 7 nov: casa con abdomen en circuito y L-sit en skills; Gym B con patada de tríceps (el codo molestaba sobre la cabeza)
+  if(!data.migV10b&&data.migV10){
+    data.routinesBackup5=JSON.parse(JSON.stringify(data.routines));
+    data.routines.casa1=JSON.parse(JSON.stringify(DEFAULT_ROUTINES.casa1));
+    const B=data.routines.gymB;if(B)B.blocks.forEach(bl=>bl.ex.forEach((e,i)=>{if(e.n==="Extensión de tríceps sobre cabeza con mancuernas"&&!exInRoutine(B,"Patada de tríceps con mancuerna"))
+      bl.ex[i]={n:"Patada de tríceps con mancuerna",d:"3 × 12 c/brazo",log:true,tipo:"peso",rest:60};}));
+    data.migV10b=true;save();}
   // 19 oct: una sola polea en el gym (siempre ocupada) → tríceps sobre la cabeza con mancuerna, con ficha completa
   if(!data.migTri){const T="Extensión de tríceps sobre cabeza con mancuernas";
     Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Extensión de tríceps en polea"&&!exInRoutine(R,T)){ex.n=T;ex.d="3 × 10-12";ex.tipo="peso";ex.log=true;ex.rest=60;}})));
@@ -1368,6 +1387,25 @@ function selHtml(){
   return `<div class="seg sel">${grp.map(t=>`<button data-sel="${t}" class="${t===currentTab?'active':''}">${esc(SEL_LBL[t])}${hasDraft(t)&&t!==currentTab?' ⏳':''}</button>`).join("")}</div>
     <div class="toca ${currentTab===due?'':'otra'}">${toca}</div>`;
 }
+// Circuito: cada ejercicio con su tiempo, 5 s para cambiar entre ejercicios y descanso entre vueltas. Al terminar marca el bloque.
+const CIRC_LOG="Circuito de abdomen (seg por ejercicio)";
+function runCircuit(bl){
+  if(!bl||!bl.circuit||!window.TIMER)return;markStart();
+  const c=bl.circuit,names=bl.ex.map(e=>e.n),start=((draft[CIRC_LOG]||{}).sets||[]).length;
+  const total=Math.max(c.rounds,start+1);
+  const step=(r,i)=>{
+    const nx=names[i+1]?` · sigue: ${names[i+1].replace(/ \(.*\)$/,"")}`:"";
+    TIMER.countdown(c.work*1000,`Vuelta ${r+1}/${total} · ${names[i]}${nx}`,()=>{
+      if(i+1<names.length)return step(r,i+1);
+      // fin de la vuelta: se registra y parte el descanso (o termina)
+      draft[CIRC_LOG]=draft[CIRC_LOG]||{};const d=draft[CIRC_LOG];d.sets=d.sets||[];d.sets.push({kg:0,reps:c.work});d.done=true;
+      names.forEach(n=>{draft[n]=draft[n]||{};draft[n].done=true;});save();render();
+      if(r+1<total)TIMER.rest(c.rest,`Descanso · luego vuelta ${r+2}/${total}`,()=>step(r+1,0));
+      else toast("🔥 ¡Circuito terminado!");
+    });
+  };
+  step(start,0);
+}
 function renderRoutine(){
   const r=data.routines[currentTab];
   if(!editMode&&(!activeEx||!exByName(activeEx)))activeEx=firstActive();
@@ -1385,6 +1423,9 @@ function renderRoutine(){
     html+=`<div class="block"><div class="block-h">`;
     html+= editMode ? `<input value="${esc(bl.t)}" data-btitle="${bi}"><span class="mv"><button data-bup="${bi}">↑</button><button data-bdn="${bi}">↓</button><button data-bdel="${bi}">🗑️</button></span>` : esc(bl.t);
     html+=`</div>`;
+    if(bl.circuit&&!editMode){const c=bl.circuit,done=((draft[CIRC_LOG]||{}).sets||[]).length;
+      html+=`<div class="circ"><button class="play circbtn" data-circ="${bi}">▶ ${done?'Otra vuelta':'Iniciar circuito'} · ${c.rounds} vueltas</button>
+        <div class="small">${c.work} s por ejercicio · ${c.prep} s para cambiar · ${Math.round(c.rest/60*10)/10} min de descanso${done?` · llevas <b>${done}</b> ${done===1?'vuelta':'vueltas'}`:''}</div></div>`;}
     bl.ex.forEach((ex,ei)=>{
       const key=bi+"_"+ei;
       if(editMode||exEd===key){
@@ -1572,18 +1613,17 @@ function exType(ex){
   if(!canLog(ex))return "marcar";
   return ex.skill||BODYWEIGHT.has(ex.n)||!ex.log?"reps":"peso";
 }
-const SUG={since:"2026-10-28",kg:{
-  "Prensa de piernas":[75,"completaste 3×15 con 70 · si 75 se siente fácil, prueba 80 · meta 3×12-15"],
-  "Pantorrillas en la prensa":[45,"completaste 3×15 con 40 · meta 3×15"],
-  "Extensión de cuádriceps":[70,"mismo peso, bajando en 3 seg · si la rodilla está 'en el límite', vuelve a 60"],
-  "Abducción acostada con mancuerna":[15,"pausa de 2 seg arriba · si hay de 17,5, súbela"],
-  "Crunch con disco en el suelo":[5,"disco abrazado al pecho (no con los brazos estirados) · meta 3×12, después 7,5"],
-  "Abdominal en banco declinado":[7.5,"disco de 7,5 kg · meta 3×12"],
-  "Peso muerto con mancuernas":[35,"TOTAL (2 × 17,5) · meta 3×12 · si no están, usa las más cercanas"],
-  "Hip thrust":[70,"mismo peso · canillas verticales arriba y pausa de 1-2 seg · meta 3×15"],
+const SUG={since:"2026-11-06",kg:{
+  "Prensa de piernas":[85,"completaste 3×15 con 80 · si 85 se siente fácil, prueba 90"],
+  "Pantorrillas en la prensa":[45,"completaste 3×15 con 40 varias veces"],
+  "Extensión de cuádriceps":[70,"completaste 3×15 · sube a 75 solo si la rodilla está bien"],
+  "Abducción acostada con mancuerna":[15,"estancada en 15 × 15: pausa de 3 seg arriba (o 17,5 si hay)"],
+  "Crunch con disco en el suelo":[5,"disco abrazado al pecho · meta 3×12, después 7,5"],
+  "Peso muerto con mancuernas":[35,"TOTAL · mismo peso, técnica: baja en 3 seg, pausa abajo, sube apretando glúteo"],
+  "Hip thrust":[75,"completaste 3×15 con 70 · pausa de 1-2 seg arriba"],
   "Sentadilla búlgara":[12.5,"mismo peso · meta 3×10 c/pierna"],
-  "Curl femoral":[5,"placa 5 · meta 3×12 seguidas"],
-  "Extensión de tríceps sobre cabeza con mancuernas":[10,"mismo peso · meta 3×12, después 12 kg · si aparece hormigueo, baja menos"],
+  "Curl femoral":[5,"placa 5 · meta 3×12 · si la máquina está ocupada: puente de femoral en el banco"],
+  "Patada de tríceps con mancuerna":[3,"por mano, un brazo a la vez · técnica primero"],
 }};
 function sugOf(n){const g=SUG.kg[n];if(!g)return null;const L=lastLog(n);if(L&&dstr(new Date(L.date))>=SUG.since)return null;return g;}
 function canLog(ex){if(ex.tipo==="marcar")return false;return !!ex.log||!!target(effD(ex));}
@@ -1710,6 +1750,7 @@ function bindRoutine(){
       run();});
     on("exed",k=>{const [b,i]=k.split("_").map(Number);edSnap=JSON.parse(JSON.stringify(data.routines[currentTab].blocks[b].ex[i]));
       exEd=k;edOpen={};addOpen=null;render();});
+    on("circ",b=>runCircuit(data.routines[currentTab].blocks[+b]));
     on("tmr",v=>{markStart();const [sec,...rest]=v.split("|");TIMER.countdown(+sec*1000,rest.join("|"));});
     on("logset",id=>logSet(idMap[id]));
     on("rmset",v=>{
@@ -2851,6 +2892,7 @@ function openInfo(n){const e=LIB[n];if(!e)return;document.getElementById("infoBo
     get state(){return {running,phase,label,mode};}};
   startBtn.onclick=()=>{running?stop():start();};
   resetBtn.onclick=reset;
+  document.getElementById("tmSkip").onclick=()=>{if(running&&mode==="cd"){cdEnd=Date.now();}};
 
   document.querySelectorAll("#timerSheet [data-tm]").forEach(b=>{
     b.onclick=()=>{stop();mode=b.dataset.tm;phase="work";
