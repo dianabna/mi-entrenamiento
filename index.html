@@ -1173,7 +1173,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK={start:"2026-10-05",weeks:8,goal:24};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 6 nov (2) · plan v10";
+const APP_VERSION="versión 8 nov · plan v10";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1389,22 +1389,26 @@ function selHtml(){
 }
 // Circuito: cada ejercicio con su tiempo, 5 s para cambiar entre ejercicios y descanso entre vueltas. Al terminar marca el bloque.
 const CIRC_LOG="Circuito de abdomen (seg por ejercicio)";
+function circState(){const d=draft[CIRC_LOG]||{};const sets=(d.sets||[]).length;return {sets,pos:d.pos||{r:sets,i:0}};}
 function runCircuit(bl){
   if(!bl||!bl.circuit||!window.TIMER)return;markStart();
-  const c=bl.circuit,names=bl.ex.map(e=>e.n),start=((draft[CIRC_LOG]||{}).sets||[]).length;
-  const total=Math.max(c.rounds,start+1);
+  const c=bl.circuit,names=bl.ex.map(e=>e.n),n=names.length;
+  const st=()=>{draft[CIRC_LOG]=draft[CIRC_LOG]||{};const d=draft[CIRC_LOG];d.sets=d.sets||[];return d;};
+  let {pos}=circState();if(pos.i>=n)pos={r:pos.r+1,i:0};
+  const total=Math.max(c.rounds,pos.r+1);
   const step=(r,i)=>{
-    const nx=names[i+1]?` · sigue: ${names[i+1].replace(/ \(.*\)$/,"")}`:"";
-    TIMER.countdown(c.work*1000,`Vuelta ${r+1}/${total} · ${names[i]}${nx}`,()=>{
-      if(i+1<names.length)return step(r,i+1);
-      // fin de la vuelta: se registra y parte el descanso (o termina)
-      draft[CIRC_LOG]=draft[CIRC_LOG]||{};const d=draft[CIRC_LOG];d.sets=d.sets||[];d.sets.push({kg:0,reps:c.work});d.done=true;
-      names.forEach(n=>{draft[n]=draft[n]||{};draft[n].done=true;});save();render();
-      if(r+1<total)TIMER.rest(c.rest,`Descanso · luego vuelta ${r+2}/${total}`,()=>step(r+1,0));
+    st().pos={r,i};save();
+    const nx=names[i+1]?` · sigue: ${names[i+1].replace(/ \(.*\)$/,"")}`:(r+1<total?" · luego descanso":"");
+    TIMER.countdown(c.work*1000,`Vuelta ${r+1}/${total} · ${i+1}/${n} ${names[i]}${nx}`,()=>{
+      if(i+1<n)return step(r,i+1);
+      // fin de la vuelta: se registra, queda guardado dónde vas y parte el descanso (o termina)
+      const d=st();d.sets.push({kg:0,reps:c.work});d.done=true;d.pos={r:r+1,i:0};
+      names.forEach(nm=>{draft[nm]=draft[nm]||{};draft[nm].done=true;});save();render();
+      if(r+1<total)TIMER.rest(c.rest*1000,`Descanso · luego vuelta ${r+2}/${total}`,()=>step(r+1,0));
       else toast("🔥 ¡Circuito terminado!");
     });
   };
-  step(start,0);
+  step(pos.r,pos.i);
 }
 function renderRoutine(){
   const r=data.routines[currentTab];
@@ -1423,9 +1427,10 @@ function renderRoutine(){
     html+=`<div class="block"><div class="block-h">`;
     html+= editMode ? `<input value="${esc(bl.t)}" data-btitle="${bi}"><span class="mv"><button data-bup="${bi}">↑</button><button data-bdn="${bi}">↓</button><button data-bdel="${bi}">🗑️</button></span>` : esc(bl.t);
     html+=`</div>`;
-    if(bl.circuit&&!editMode){const c=bl.circuit,done=((draft[CIRC_LOG]||{}).sets||[]).length;
-      html+=`<div class="circ"><button class="play circbtn" data-circ="${bi}">▶ ${done?'Otra vuelta':'Iniciar circuito'} · ${c.rounds} vueltas</button>
-        <div class="small">${c.work} s por ejercicio · ${c.prep} s para cambiar · ${Math.round(c.rest/60*10)/10} min de descanso${done?` · llevas <b>${done}</b> ${done===1?'vuelta':'vueltas'}`:''}</div></div>`;}
+    if(bl.circuit&&!editMode){const c=bl.circuit,{sets:done,pos}=circState(),nm=(bl.ex[pos.i]||{}).n||"";
+      const lbl=pos.i>0?`Continuar · vuelta ${pos.r+1} · ${esc(nm)}`:done>=c.rounds?'Otra vuelta (extra)':done?`Vuelta ${done+1} de ${c.rounds}`:`Iniciar circuito · ${c.rounds} vueltas`;
+      html+=`<div class="circ"><button class="play circbtn" data-circ="${bi}">▶ ${lbl}</button>
+        <div class="small">${c.work} s por ejercicio · ${c.prep} s para cambiar · ${Math.round(c.rest/60*10)/10} min de descanso${done?` · llevas <b>${done}</b> de ${c.rounds} ${c.rounds===1?'vuelta':'vueltas'}`:''}${done||pos.i?` · <button class="edlink" data-circreset="${bi}">↺ empezar de cero</button>`:''}</div></div>`;}
     bl.ex.forEach((ex,ei)=>{
       const key=bi+"_"+ei;
       if(editMode||exEd===key){
@@ -1751,6 +1756,8 @@ function bindRoutine(){
     on("exed",k=>{const [b,i]=k.split("_").map(Number);edSnap=JSON.parse(JSON.stringify(data.routines[currentTab].blocks[b].ex[i]));
       exEd=k;edOpen={};addOpen=null;render();});
     on("circ",b=>runCircuit(data.routines[currentTab].blocks[+b]));
+    on("circreset",b=>{if(!confirm("¿Empezar el circuito de cero? Se borran las vueltas anotadas hoy."))return;
+      delete draft[CIRC_LOG];(data.routines[currentTab].blocks[+b].ex||[]).forEach(e=>{if(draft[e.n])draft[e.n].done=false;});save();render();});
     on("tmr",v=>{markStart();const [sec,...rest]=v.split("|");TIMER.countdown(+sec*1000,rest.join("|"));});
     on("logset",id=>logSet(idMap[id]));
     on("rmset",v=>{
