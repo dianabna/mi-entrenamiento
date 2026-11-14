@@ -1327,7 +1327,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK=todayStr()>="2026-11-23"?{start:"2026-11-23",weeks:8,goal:32,n:2}:{start:"2026-10-05",weeks:8,goal:24,n:1};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 14 nov · bloque 2";
+const APP_VERSION="versión 14 nov (2) · bloque 2";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -3186,7 +3186,7 @@ function updateStats(){
   const pct=Math.min(100,Math.round(total/GOAL*100));
   const wkN=Math.floor((new Date(todayStr())-new Date(ps))/(7*86400000))+1;
   document.getElementById("progfill").style.width=pct+"%";
-  document.getElementById("progtxt").textContent=wkN>BLOCK.weeks?`✅ Terminaste las ${BLOCK.weeks} semanas · ${total} / ${GOAL} gym · toca actualizar la rutina`:`${BLOCK.n===1&&wkN>=7?'Semana de transición · liviana':`Bloque ${BLOCK.n} · semana ${wkN} de ${BLOCK.weeks}`} · ${total} / ${GOAL} gym (${pct}%)`;
+  document.getElementById("progtxt").textContent=wkN>BLOCK.weeks?`✅ Terminaste las ${BLOCK.weeks} semanas · ${total} / ${GOAL} gym · toca actualizar la rutina`:`${BLOCK.n===1&&wkN>=7?'Semana de transición · liviana':`Bloque ${BLOCK.n} · semana ${wkN} de ${BLOCK.weeks}${BLOCK.n===2&&wkN===5?' · 🎄 descarga: mitad de series':''}`} · ${total} / ${GOAL} gym (${pct}%)`;
 }
 
 let toastT;
