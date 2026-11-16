@@ -1327,7 +1327,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK=todayStr()>="2026-11-23"?{start:"2026-11-23",weeks:8,goal:32,n:2}:{start:"2026-10-05",weeks:8,goal:24,n:1};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 14 nov (2) · bloque 2";
+const APP_VERSION="versión 16 nov · bloque 2";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1500,7 +1500,7 @@ function fmtDate(iso){const d=new Date(iso);const dias=["dom","lun","mar","mié"
   return `${dias[d.getDay()]} ${d.getDate()} ${MES[d.getMonth()]} ${d.getFullYear()}`;}
 function fmtShort(ds){const d=new Date(ds.length===10?ds+'T12:00:00':ds);return d.getDate()+" "+MES[d.getMonth()];}
 function weekStart(dt){const x=new Date(dt);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x;}
-function isGym(t){return /^gym/.test(t||"");}
+function isGym(t){return t!=="gym"&&/^gym/.test(t||"");}
 function sessName(t){const R=data.routines[t]||DEFAULT_ROUTINES[t];if(R)return R.emoji+" "+(R.corto||R.nombre.split(' · ')[0]);return LEGACY[t]||t;}
 function sorted(){return [...data.sessions].sort((a,b)=>new Date(a.date)-new Date(b.date));}
 function thisWeek(){const ws=weekStart(new Date());return data.sessions.filter(s=>new Date(s.date)>=ws);}
