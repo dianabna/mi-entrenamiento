@@ -1336,14 +1336,49 @@ const LIB_BASE={
 
 let LIB={};
 // Biblioteca = base + lo que Diana crea/edita/borra (data.libEdits: {nombre: ficha, o null si la borró})
-function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits||{}).forEach(([n,e])=>{if(e===null)delete LIB[n];else LIB[n]=e;});}
+// Categorías de la biblioteca (17 nov): orden fijo, se eligen tocando. [clave, emoji, título, músculos sugeridos]
+const CATS=[
+  ["Calentamiento","🔥","Calentamiento",["Movilidad","Hombros","Muñecas","Escápulas","Cadera"]],
+  ["Tirón","⬇️","Tirón · espalda y bíceps",["Dorsales","Espalda media","Bíceps","Hombro posterior","Trapecio","Antebrazos"]],
+  ["Empuje","⬆️","Empuje · pecho, hombros y tríceps",["Pecho","Hombros","Tríceps","Serrato"]],
+  ["Piernas","🦵","Piernas",["Cuádriceps","Glúteos","Glúteo medio","Femorales","Aductores","Pantorrillas"]],
+  ["Abdomen","🎯","Abdomen y core",["Recto abdominal","Abdomen bajo","Oblicuos","Core","Flexores de cadera"]],
+  ["Skills","🤸","Handstand y skills",["Hombros","Muñecas","Core","Equilibrio","Flexores de cadera"]],
+  ["Cardio","🚴","Cardio",["Corazón y pulmones","Piernas"]],
+  ["Escalada","🧗‍♀️","Escalada",["Dedos y antebrazos","Espalda","Hombros"]]];
+const CAT_KEYS=CATS.map(c=>c[0]);
+const CAT_BY={};
+[["Tirón",["Dominadas","Negativas de dominada","Jalón al pecho","Remo australiano en anillas","Curl de bíceps con mancuernas","Face pull","Pull-over"]],
+ ["Empuje",["Flexiones","Flexiones inclinadas","Flexiones cerradas (diamante)","Fondos en paralelas","Fondos en anillas","Fondos en sillas","Pike push-up","Press de hombro con mancuernas","Extensión de tríceps en polea","Extensión de tríceps sobre cabeza con mancuernas","Extensión de tríceps en anillas","Patada de tríceps con mancuerna"]],
+ ["Skills",["Back lever","Elbow lever","L-sit","Skin the cat"]],
+ ["Abdomen",["Elevaciones en compresión","Plancha con toques de hombro"]],
+ ["Piernas",["Puente de glúteo","Sentadilla con peso corporal"]],
+ ["Cardio",["Step jacks","Escaladores lentos"]],
+ ["Calentamiento",["Perro boca abajo con empuje de hombros","Estiramiento de muñecas y pike"]]].forEach(([c,ns])=>ns.forEach(n=>{CAT_BY[n]=c;}));
+function catOf(n,c){
+  if(CAT_BY[n])return CAT_BY[n];
+  if(c==="Handstand")return "Skills";
+  if(c==="Calistenia"||c==="Circuito"||!CAT_KEYS.includes(c)){
+    if(/remo|jal[oó]n|domin|curl|b[ií]ceps|tir[oó]n|espalda/i.test(n+" "+c))return "Tirón";
+    if(/flexi|fondo|press|tr[ií]ceps|push|empuje|pecho/i.test(n+" "+c))return "Empuje";
+    if(c==="Calistenia")return "Skills";
+    if(c==="Circuito")return "Abdomen";
+  }
+  return c||"Otros";
+}
+function catLabel(c){const k=CATS.find(x=>x[0]===c);return k?k[1]+" "+k[2]:c;}
+// Ejercicios agrupados por categoría, en el orden de CATS (las que no calcen quedan al final)
+function catGroups(){const g={};Object.entries(LIB).forEach(([n,e])=>{(g[e.cat||"Otros"]=g[e.cat||"Otros"]||[]).push([n,e]);});
+  return [...CAT_KEYS.filter(c=>g[c]),...Object.keys(g).filter(c=>!CAT_KEYS.includes(c))].map(c=>[c,g[c]]);}
+function buildLib(){LIB=Object.assign({},LIB_BASE);Object.entries(data.libEdits||{}).forEach(([n,e])=>{if(e===null)delete LIB[n];else LIB[n]=e;});
+  Object.keys(LIB).forEach(n=>{const c=catOf(n,LIB[n].cat);if(c!==LIB[n].cat)LIB[n]=Object.assign({},LIB[n],{cat:c});});}
 
 /* ---------- ESTADO ---------- */
 const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK=todayStr()>="2026-11-23"?{start:"2026-11-23",weeks:8,goal:32,n:2}:{start:"2026-10-05",weeks:8,goal:24,n:1};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 17 nov · bloque 2";
+const APP_VERSION="versión 17 nov (2) · bloque 2";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1768,8 +1803,7 @@ function structEditHtml(ex,key,bl){
 }
 // Lista de la biblioteca por categoría (para agregar o cambiar un ejercicio)
 function libOptions(sel){
-  const cats={};Object.entries(LIB).forEach(([n,e])=>{(cats[e.cat||"Otros"]=cats[e.cat||"Otros"]||[]).push(n);});
-  return `${sel&&!LIB[sel]?`<option selected>${esc(sel)}</option>`:''}${Object.entries(cats).map(([c,ns])=>`<optgroup label="${esc(c)}">${ns.map(n=>`<option ${n===sel?'selected':''}>${esc(n)}</option>`).join("")}</optgroup>`).join("")}`;
+  return `${sel&&!LIB[sel]?`<option selected>${esc(sel)}</option>`:''}${catGroups().map(([c,ns])=>`<optgroup label="${esc(catLabel(c))}">${ns.map(([n])=>`<option ${n===sel?'selected':''}>${esc(n)}</option>`).join("")}</optgroup>`).join("")}`;
 }
 // Cambia un ejercicio de la rutina por otro de la biblioteca, en el mismo lugar (con sus valores recomendados)
 function moveDraft(a,b){if(draft[a]){draft[b]=draft[a];delete draft[a];}delete cur[a];if(activeEx===a)activeEx=b;}
@@ -1785,8 +1819,7 @@ function swapEx(ex,nn){
 }
 let addKind=null, addSS=null, addC=null, addE=null;
 function libSelect(attr,sel,ph){
-  const cats={};Object.entries(LIB).forEach(([n,e])=>{(cats[e.cat||"Otros"]=cats[e.cat||"Otros"]||[]).push(n);});
-  return `<select ${attr}><option value="" ${sel?'':'selected'} disabled>${ph||'Elige ejercicio ▾'}</option>${Object.entries(cats).map(([c,ns])=>`<optgroup label="${esc(c)}">${ns.map(n=>`<option ${n===sel?'selected':''}>${esc(n)}</option>`).join("")}</optgroup>`).join("")}</select>`;
+  return `<select ${attr}><option value="" ${sel?'':'selected'} disabled>${ph||'Elige ejercicio ▾'}</option>${catGroups().map(([c,ns])=>`<optgroup label="${esc(catLabel(c))}">${ns.map(([n])=>`<option ${n===sel?'selected':''}>${esc(n)}</option>`).join("")}</optgroup>`).join("")}</select>`;
 }
 function addFormHtml(bi){
   const num=(attr,lbl,val)=>`<label>${lbl}<input type="text" inputmode="numeric" ${attr} value="${esc(val??'')}"></label>`;
@@ -2840,7 +2873,7 @@ function renderComida(){
 
 /* ---------- BIBLIOTECA ---------- */
 function libHtml(n,e,withTitle,actions){
-  return `${withTitle?`<h2>${esc(n)}</h2><div class="small">${esc(e.cat)} · ${esc(e.musc)}</div>`:''}
+  return `${withTitle?`<h2>${esc(n)}</h2><div class="small">${esc(catLabel(e.cat))} · ${esc(e.musc)}</div>`:''}
     ${e.niveles?`<h4>Progresión (niveles)</h4><ol>${e.niveles.map((l,i)=>`<li${i===skillLv(n)?' class="curlv"':''}><b>${esc(l.n)}</b> · ${esc(l.d)}${i===skillLv(n)?' ← tu nivel':''}</li>`).join("")}</ol>`:''}
     ${(e.pasos||[]).length?`<h4>Cómo se hace</h4><ol>${e.pasos.map(p=>`<li>${esc(p)}</li>`).join("")}</ol>`:''}
     ${e.fij&&e.fij.length?`<h4>Fíjate en</h4><ul>${e.fij.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`:''}
@@ -2853,6 +2886,8 @@ function libHtml(n,e,withTitle,actions){
     ${actions?`<div class="libact"><button class="edlink" data-ledit="${esc(n)}">✏️ Editar</button><button class="edlink danger" data-ldel="${esc(n)}">🗑️ Borrar</button></div>`:''}`;
 }
 let libForm=null;  // {orig: nombre o null si es nuevo, f: campos del formulario}
+// "Dorsales, espalda media y bíceps" → ["Dorsales","espalda media","bíceps"]
+function musList(t){return String(t||"").split(/\s*,\s*|\s+y\s+/).map(x=>x.trim()).filter(x=>x&&x!=="—");}
 function libFormFrom(n){
   const e=LIB[n]||{},r=libRec(n);
   return {orig:n||null,f:{n:n||"",cat:e.cat||"",musc:e.musc||"",tipo:n?r.tipo:"peso",sets:r.sets||3,val:r.val||"10",rest:r.rest??90,nota:r.nota||"",
@@ -2861,13 +2896,16 @@ function libFormFrom(n){
     niveles:(e.niveles||[]).map(l=>{const p=parseDose(l.d);return {n:l.n,sets:p.sets||3,t:l.mix?"mix":(l.t||(p.unit==="seg"?"seg":"reps")),val:p.val||"",m1:(l.mix||[])[0]||"completas",m2:(l.mix||[])[1]||"asistidas"};})}};
 }
 function libFormHtml(){
-  const f=libForm.f,cats=[...new Set(Object.values(LIB).map(e=>e.cat))];
+  const f=libForm.f,ck=CATS.find(c=>c[0]===f.cat),mine=musList(f.musc);
   const tx=(fld,lbl,ph)=>`<label class="edfull">${lbl}<textarea data-lf="${fld}" rows="3" placeholder="${ph||''}">${esc(f[fld])}</textarea></label>`;
   const ip=(fld,lbl,ph,mode)=>`<label class="edfull">${lbl}<input type="text" ${mode?`inputmode="${mode}"`:''} data-lf="${fld}" value="${esc(f[fld])}" placeholder="${ph||''}"></label>`;
   let h=`<div class="card"><h3>${libForm.orig?'✏️ Editar ejercicio':'➕ Nuevo ejercicio'}</h3>
     ${ip("n","Nombre del ejercicio","Sentadilla goblet")}
-    <label class="edfull">Categoría<input type="text" list="catlist" data-lf="cat" value="${esc(f.cat)}" placeholder="Piernas"></label><datalist id="catlist">${cats.map(c=>`<option value="${esc(c)}">`).join("")}</datalist>
-    ${ip("musc","Músculos","Cuádriceps y glúteos")}
+    <div class="small" style="margin-top:8px">Categoría <span style="opacity:.7">(toca una)</span></div>
+    <div class="chips">${CATS.map(([k,em,t])=>`<button class="chip2 ${k===f.cat?'on':''}" data-lfcat="${esc(k)}">${em} ${esc(k)}</button>`).join("")}</div>
+    ${ck?`<div class="small" style="margin-top:8px">Músculos <span style="opacity:.7">(toca los que trabaja, o escribe abajo)</span></div>
+    <div class="chips">${ck[3].map(m=>`<button class="chip2 ${mine.some(x=>x.toLowerCase()===m.toLowerCase())?'on':''}" data-lfmus="${esc(m)}">${esc(m)}</button>`).join("")}</div>`:''}
+    ${ip("musc",ck?"":"Músculos","Cuádriceps y glúteos")}
     <div class="small" style="margin-top:8px">Tipo</div>
     <div class="chips">${[...TIPOS_OK,"skill"].map(k=>`<button class="chip2 ${k===f.tipo?'on':''}" data-lftype="${k}">${TIPOS[k]}</button>`).join("")}</div>
     <label class="edfull">↔️ Por lado<select data-lf="lado">${[["","no"],["lado","sí, c/lado"],["pierna","sí, c/pierna"],["brazo","sí, c/brazo"]].map(([v,t])=>`<option value="${v}" ${f.lado===v?'selected':''}>${t}</option>`).join("")}</select></label>`;
@@ -2900,10 +2938,11 @@ function libFormHtml(){
 function saveLibForm(){
   const f=libForm.f,n=f.n.trim();
   if(!n){toast("Escribe el nombre del ejercicio ✏️");return;}
+  if(!CAT_KEYS.includes(f.cat)){toast("Elige una categoría 👆");return;}
   if(n!==libForm.orig&&LIB[n]){toast("Ya existe un ejercicio con ese nombre");return;}
   const lines=s=>String(s||"").split("\n").map(x=>x.trim()).filter(Boolean);
   const old=libForm.orig?LIB[libForm.orig]:{};
-  const e={cat:f.cat.trim()||"Otros",musc:f.musc.trim()||"—",pasos:lines(f.pasos),fij:lines(f.fij),err:lines(f.err),
+  const e={cat:f.cat,musc:f.musc.trim()||"—",pasos:lines(f.pasos),fij:lines(f.fij),err:lines(f.err),
     q:old&&old.q&&n===libForm.orig?old.q:n+" técnica"};
   if(old&&old.v)e.v=old.v;
   if(f.alt.trim())e.alt=f.alt.trim();if(f.rod.trim())e.rod=f.rod.trim();if(f.codo.trim())e.codo=f.codo.trim();
@@ -2935,7 +2974,6 @@ function deleteLib(n){
 }
 function renderLib(){
   if(libForm){main.innerHTML=libFormHtml();bindLibForm();return;}
-  const cats={};Object.entries(LIB).forEach(([n,e])=>{(cats[e.cat]=cats[e.cat]||[]).push([n,e]);});
   let html=`<button class="tile th-am" id="libNew" style="width:100%;margin-bottom:12px">➕ Agregar ejercicio</button>
   <input class="search" id="libSearch" placeholder="🔍 Buscar ejercicio o músculo…">
   <div class="card"><h3>📐 Cómo elegir el peso</h3>
@@ -2943,8 +2981,8 @@ function renderLib(){
     <p><b>Doble progresión:</b> si el rango es 3 × 10 y completas 10-10-10 con buena técnica, la próxima vez sube lo mínimo (1-2 kg) y vuelve a construir. La app te avisa con ⬆️.</p>
     <p class="small">Semanas 1-2: técnica primero, pesos cómodos.</p></div>
   <div id="libList">`;
-  Object.entries(cats).forEach(([c,arr])=>{
-    html+=`<div class="cat" data-catname="${esc(c)}">${esc(c)}</div>`;
+  catGroups().forEach(([c,arr])=>{
+    html+=`<div class="cat" data-catname="${esc(c)}">${esc(catLabel(c))}</div>`;
     arr.forEach(([n,e])=>{
       html+=`<details class="item" data-search="${esc((n+" "+e.musc+" "+e.cat).toLowerCase())}"><summary><span>${esc(n)}<small>${esc(e.musc)}</small></span></summary><div class="ibody">${libHtml(n,e,false,true)}</div></details>`;
     });
@@ -2964,6 +3002,9 @@ function renderLib(){
 function bindLibForm(){
   const f=libForm.f;
   main.querySelectorAll("[data-lf]").forEach(el=>{el.oninput=()=>{f[el.dataset.lf]=el.value;};});
+  main.querySelectorAll("[data-lfcat]").forEach(b=>b.onclick=()=>{f.cat=b.dataset.lfcat;renderLib();});
+  main.querySelectorAll("[data-lfmus]").forEach(b=>b.onclick=()=>{const m=b.dataset.lfmus,l=musList(f.musc),i=l.findIndex(x=>x.toLowerCase()===m.toLowerCase());
+    if(i>=0)l.splice(i,1);else l.push(m);f.musc=l.join(", ");renderLib();});
   main.querySelectorAll("[data-lftype]").forEach(b=>b.onclick=()=>{f.tipo=b.dataset.lftype;
     if(f.tipo==="skill"&&!f.niveles.length)f.niveles=[{n:"",sets:3,t:"reps",val:""}];
     if(f.tipo==="seg"&&!/seg/.test(f.val)&&+f.val<15)f.val="20";renderLib();});
