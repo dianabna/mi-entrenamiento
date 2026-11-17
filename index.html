@@ -472,7 +472,7 @@ const DEFAULT_ROUTINES = {
     ]},
     {t:"💪 Fuerza",ex:[
       {n:"Remo australiano en anillas",d:"3 × 8",log:true,tipo:"reps",rest:90},
-      {n:"Jalón al pecho o dominada asistida",d:"3 × 10",log:true,tipo:"peso",rest:90},
+      {n:"Jalón al pecho",d:"3 × 10",log:true,tipo:"peso",rest:90},
       {n:"Curl de bíceps con mancuernas",d:"3 × 10-12 · alterna normal y martillo",log:true,tipo:"peso",rest:60},
     ]},
     {t:"🎯 Abdomen",ssc:{A:{rounds:3,between:0,rest:60}},ex:[
@@ -891,8 +891,8 @@ const LIB_BASE={
   "Elevaciones en compresión":{v:"WR3C2cliSaA",cat:"Calistenia",musc:"Flexores de cadera y abdomen (lo que más ayuda al L-sit)",
     pasos:["Sentada en el suelo con las piernas estiradas y juntas.","Manos en el suelo a los lados de las rodillas (más adelante = más difícil).","Inclina el tronco hacia adelante y levanta ambas piernas estiradas unos centímetros, sin mover el tronco.","Sostén 1-2 seg y baja."],
     fij:["Si las piernas no despegan, hazlo con una pierna a la vez."],err:["Echar el tronco hacia atrás para levantar las piernas."],q:"compression lifts l-sit elevaciones sentado piernas estiradas"},
-  "Jalón al pecho o dominada asistida":{v:"72q0tKij5uU",cat:"Calistenia",musc:"Dorsales, espalda media y bíceps",
-    pasos:["JALÓN: ajusta el apoyo de muslos y toma la barra un poco más ancho que los hombros, palmas hacia adelante.","Pecho arriba, inclínate apenas hacia atrás.","Primero baja los hombros y luego tira la barra hacia la parte alta del pecho, codos hacia abajo y atrás.","Sube controlado hasta estirar los brazos."],
+  "Jalón al pecho":{v:"72q0tKij5uU",cat:"Calistenia",musc:"Dorsales, espalda media y bíceps",
+    pasos:["Ajusta el apoyo de muslos y toma la barra un poco más ancho que los hombros, palmas hacia adelante.","Pecho arriba, inclínate apenas hacia atrás.","Primero baja los hombros y luego tira la barra hacia la parte alta del pecho, codos hacia abajo y atrás.","Sube controlado hasta estirar los brazos."],
     fij:["Si el gimnasio tiene máquina de dominadas asistidas, úsala en su lugar: arrodíllate en la plataforma; más contrapeso = más ayuda. Baja 2-5 kg de ayuda cuando completes todo.","Aquí la fuerza de tirón sube en kilos medibles."],
     err:["Tirar la barra detrás de la nuca.","Balancear el cuerpo hacia atrás."],q:"jalón al pecho técnica correcta"},
   "Face pull":{v:"UaZPhyztYNU",cat:"Calistenia",musc:"Hombro posterior, trapecio medio y manguito rotador",
@@ -1006,6 +1006,22 @@ const LIB_BASE={
     fij:["Solo se mueve el antebrazo: el brazo queda quieto.","Peso liviano: es mucho más débil que el tríceps sobre la cabeza (empieza con 3-4 kg por mano).","Cuando domines la técnica puedes hacerlo con los dos brazos a la vez (inclinada, de pie) para ahorrar tiempo."],
     err:["Balancear el brazo o usar impulso.","Bajar el codo mientras estiras."],
     codo:"Dobla el codo menos que el tríceps sobre la cabeza: más amable con el codo. Si aparece el hormigueo, baja el peso.",q:"patada de tríceps con mancuerna técnica"},
+  "Extensión de tríceps en anillas":{cat:"Calistenia",musc:"Tríceps (y core)",rec:{tipo:"reps",sets:2,val:"10-12",rest:60},
+    pasos:["Anillas a la altura de la cintura o el pecho (más altas = más fácil).","Toma una anilla en cada mano, brazos estirados al frente, cuerpo recto e inclinado hacia adelante como una plancha de pie.","Dobla SOLO los codos: las manos van hacia la frente y la cabeza pasa entre las anillas.","Empuja estirando los brazos hasta volver arriba."],
+    fij:["Codos apuntando hacia adelante, sin abrirse.","Cuerpo rígido: glúteos y abdomen apretados, la cadera no se hunde.","Regula con los pies: más atrás = más difícil, más cerca = más fácil.","Baja en 2-3 seg."],
+    err:["Abrir los codos hacia los lados.","Doblar la cadera en vez de los codos."],q:"ring triceps extension skull crusher técnica"},
+  "Flexiones cerradas (diamante)":{cat:"Calistenia",musc:"Tríceps y pecho",rec:{tipo:"reps",sets:2,val:"10-12",rest:60},
+    pasos:["Manos juntas bajo el pecho (los pulgares e índices pueden formar un diamante).","Cuerpo recto de cabeza a talones.","Baja con los codos pegados al cuerpo, apuntando hacia atrás.","Empuja hasta estirar los brazos."],
+    fij:["Si después del resto del empuje cuestan mucho, apoya las manos elevadas (cama, sillón o mesa firme) en vez de bajar las rodillas."],
+    err:["Abrir los codos hacia los lados.","Hundir la cadera."],q:"flexiones diamante técnica"},
+  "Fondos en anillas":{cat:"Calistenia",musc:"Tríceps, pecho y hombros (más estabilidad)",rec:{tipo:"reps",sets:3,val:"5",rest:120},
+    pasos:["Anillas a una altura en que puedas apoyar los pies en el suelo para ayudarte.","Sube a brazos estirados con las anillas pegadas al cuerpo y las palmas hacia adentro (o un poco hacia afuera).","Baja controlado hasta que el hombro quede a la altura del codo.","Empuja hasta estirar los brazos sin que las anillas se separen."],
+    fij:["Son bastante más inestables que las paralelas: hazlas solo si te sientes segura; si no, usa sillas.","Usa los pies para ayudarte si no completas las repeticiones."],
+    err:["Dejar que las anillas se abran hacia los lados.","Bajar más de lo que el hombro tolera."],q:"ring dips técnica principiante"},
+  "Fondos en sillas":{cat:"Calistenia",musc:"Tríceps, pecho y hombros",rec:{tipo:"reps",sets:3,val:"8",rest:90},
+    pasos:["Dos sillas firmes enfrentadas (o el borde de la cama o un banco detrás de ti).","Manos en los bordes, brazos estirados, piernas dobladas con los pies en el suelo.","Baja doblando los codos hacia atrás hasta unos 90°.","Empuja hasta estirar los brazos."],
+    fij:["Mientras más estiradas las piernas, más difícil.","Hombros lejos de las orejas."],
+    err:["Bajar demasiado y forzar el hombro.","Encoger los hombros."],q:"fondos en sillas técnica"},
   "Pantorrillas sentada":{v:"l5XRbpQwKF0",cat:"Piernas",musc:"Pantorrillas (sobre todo el sóleo)",rec:{tipo:"peso",sets:3,val:"15-20",rest:45},
     pasos:["Sentada en un banco, la punta de los pies sobre un disco o escalón y los talones en el aire.","Apoya el peso sobre las rodillas (mancuernas o un disco), rodillas en 90°.","Baja los talones lento y sube lo más alto que puedas.","Pausa 1 seg arriba."],
     fij:["Con las rodillas dobladas trabaja más el sóleo (el de abajo). La de la prensa trabaja más el gemelo.","No es el mismo peso que en la prensa: empieza con ~15-20 kg sobre las rodillas.","Úsala como reemplazo cuando la prensa esté ocupada."],
@@ -1327,7 +1343,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK=todayStr()>="2026-11-23"?{start:"2026-11-23",weeks:8,goal:32,n:2}:{start:"2026-10-05",weeks:8,goal:24,n:1};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 16 nov · bloque 2";
+const APP_VERSION="versión 17 nov · bloque 2";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1456,6 +1472,14 @@ function checkRoutinesUpdate(){
     if(data.libEdits){["Flexiones","L-sit"].forEach(n=>{if(data.libEdits[n])delete data.libEdits[n];});buildLib();}
     data.gymOrder=["gymA2","gymB2","gymC2","gymD2"];
     data.migB2=true;save();}
+  // 17 nov: "Jalón al pecho o dominada asistida" pasa a llamarse solo "Jalón al pecho" (rutinas, historial, borradores y niveles)
+  if(!data.migJalon){const a="Jalón al pecho o dominada asistida",b="Jalón al pecho";
+    Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(e=>{if(e.n===a)e.n=b;if(e.alt===a)e.alt=b;})));
+    data.sessions.forEach(x=>{(x.logs||[]).forEach(l=>{if(l.n===a)l.n=b;});if(x.done)x.done=x.done.map(n=>n===a?b:n);});
+    Object.values(data.drafts||{}).forEach(d=>{if(d&&d.draft&&d.draft[a]){d.draft[b]=d.draft[a];delete d.draft[a];}if(d&&d.activeEx===a)d.activeEx=b;});
+    data.skillLv=data.skillLv||{};if(data.skillLv[a]!=null){data.skillLv[b]=data.skillLv[a];delete data.skillLv[a];}
+    if(data.libEdits&&data.libEdits[a]!==undefined){if(data.libEdits[a]&&!data.libEdits[b])data.libEdits[b]=data.libEdits[a];delete data.libEdits[a];}
+    buildLib();data.migJalon=true;save();}
   // 19 oct: una sola polea en el gym (siempre ocupada) → tríceps sobre la cabeza con mancuerna, con ficha completa
   if(!data.migTri){const T="Extensión de tríceps sobre cabeza con mancuernas";
     Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(ex=>{if(ex.n==="Extensión de tríceps en polea"&&!exInRoutine(R,T)){ex.n=T;ex.d="3 × 10-12";ex.tipo="peso";ex.log=true;ex.rest=60;}})));
@@ -1894,7 +1918,7 @@ function setsHtml(ex,id,isAct){
 // Descanso recomendado entre series (segundos). Por defecto 90.
 const REST={
   "Fondos en paralelas":120,"Dominadas":120,"Pull-over":120,"Peso muerto con barra hexagonal":120,"Peso muerto con mancuernas":120,
-  "Flexiones":90,"Jalón al pecho o dominada asistida":90,"Prensa de piernas":90,"Hip thrust":90,"Peso muerto rumano con mancuernas":90,
+  "Flexiones":90,"Jalón al pecho":90,"Prensa de piernas":90,"Hip thrust":90,"Peso muerto rumano con mancuernas":90,
   "Flexiones inclinadas":60,"L-sit":60,"Handstand pecho a la pared":60,"Extensión de tríceps en polea":60,"Extensión de tríceps sobre cabeza con mancuernas":60,"Face pull":60,
   "Extensión de cuádriceps":60,"Abductores en máquina":60,"Curl femoral":60,"Step-up a cajón con mancuernas":60,
   "Crunch en polea":60,"Abdominal en banco declinado":60,"Elevación de piernas colgada":60,"Oblicuos colgada":60,
