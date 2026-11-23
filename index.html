@@ -1017,6 +1017,14 @@ const LIB_BASE={
     fij:["Solo se mueve el antebrazo: el brazo queda quieto.","Peso liviano: es mucho más débil que el tríceps sobre la cabeza (empieza con 3-4 kg por mano).","Cuando domines la técnica puedes hacerlo con los dos brazos a la vez (inclinada, de pie) para ahorrar tiempo."],
     err:["Balancear el brazo o usar impulso.","Bajar el codo mientras estiras."],
     codo:"Dobla el codo menos que el tríceps sobre la cabeza: más amable con el codo. Si aparece el hormigueo, baja el peso.",q:"patada de tríceps con mancuerna técnica"},
+  "Dominadas con banda":{cat:"Tirón",musc:"Dorsales, espalda media y bíceps",rec:{tipo:"reps",sets:3,val:"8-10",rest:90},
+    pasos:["Pasa la banda por la barra y tira de ella misma para que quede firme.","Mete un pie en la banda (o la rodilla, más estable) y cuélgate con las manos un poco más anchas que los hombros.","Primero baja los hombros; luego sube hasta que el mentón pase la barra.","Baja lento (2-3 seg) hasta estirar los brazos."],
+    fij:["Elige la banda con la que termines 8-10 reps sintiendo que te quedaban 1-2.","Cuando completes 3 × 10 con facilidad, pasa a una banda más delgada.","Anota el color de la banda en la nota 🩹.","Sirve para terminar el EMOM si ya no salen sin ayuda."],
+    err:["Balancearse o patear.","Dejar que la banda te dispare hacia abajo: controla la bajada.","Medio recorrido arriba o abajo."],q:"dominadas con banda elástica técnica"},
+  "Curl de bíceps en anillas":{cat:"Tirón",musc:"Bíceps y antebrazos",rec:{tipo:"reps",sets:3,val:"10-12",rest:60},
+    pasos:["Anillas a la altura del pecho. Tómalas con las palmas hacia arriba y camina con los pies hacia adelante, cuerpo recto inclinado hacia atrás y brazos estirados.","Sin mover los codos (quedan altos, apuntando al frente), dobla los brazos y lleva las manos hacia la frente.","Aprieta 1 seg arriba y baja lento hasta estirar los brazos."],
+    fij:["Regula con los pies: más adelante (cuerpo más horizontal) = más difícil.","Cuerpo rígido como tabla: glúteos y abdomen apretados."],
+    err:["Bajar los codos y convertirlo en un remo.","Doblar la cadera."],q:"ring bicep curl técnica"},
   "Extensión de tríceps en anillas":{cat:"Calistenia",musc:"Tríceps (y core)",rec:{tipo:"reps",sets:2,val:"10-12",rest:60},
     pasos:["Anillas a la altura de la cintura o el pecho (más altas = más fácil).","Toma una anilla en cada mano, brazos estirados al frente, cuerpo recto e inclinado hacia adelante como una plancha de pie.","Dobla SOLO los codos: las manos van hacia la frente y la cabeza pasa entre las anillas.","Empuja estirando los brazos hasta volver arriba."],
     fij:["Codos apuntando hacia adelante, sin abrirse.","Cuerpo rígido: glúteos y abdomen apretados, la cadera no se hunde.","Regula con los pies: más atrás = más difícil, más cerca = más fácil.","Baja en 2-3 seg."],
@@ -1389,7 +1397,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK=todayStr()>="2026-11-23"?{start:"2026-11-23",weeks:8,goal:32,n:2}:{start:"2026-10-05",weeks:8,goal:24,n:1};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 23 nov · bloque 2";
+const APP_VERSION="versión 23 nov (2) · bloque 2";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
