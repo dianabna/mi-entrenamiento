@@ -312,6 +312,17 @@
   select.full{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-size:14px;font-family:inherit;background:var(--cream);color:var(--ink);margin-bottom:10px}
   .chart{width:100%;height:auto;display:block;margin-top:6px}
   .mlist{font-size:12.5px;margin-top:8px}
+  .mbtns{display:flex;gap:6px;flex-shrink:0}
+  .mbtns button{border:1px solid var(--line);background:var(--cream);border-radius:8px;padding:3px 8px;font-size:13px}
+  .medit{display:block!important;background:var(--cream);border-radius:10px;padding:10px;margin:4px 0;border-top:0!important}
+  .medit input,.medit select{border:1px solid var(--line);border-radius:8px;padding:6px;font:inherit;font-size:14px;background:#fff;max-width:100%}
+  .srow{display:grid;grid-template-columns:128px 1fr;align-items:center;gap:6px;margin:6px 0;font-size:13px}
+  .strack{position:relative;height:12px;background:var(--line);border-radius:6px}
+  .strack i{position:absolute;top:0;bottom:0;border-radius:6px}
+  .strack b{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink,#333);opacity:.75}
+  .saxis{display:grid;grid-template-columns:128px 1fr;gap:6px;font-size:11px;color:var(--muted)}
+  .saxis>div:last-child{display:flex;justify-content:space-between}
+  .sphase{display:flex;height:8px;border-radius:4px;overflow:hidden}
   .mlist div{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px dashed var(--line)}
 
   .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
@@ -1378,7 +1389,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK=todayStr()>="2026-11-23"?{start:"2026-11-23",weeks:8,goal:32,n:2}:{start:"2026-10-05",weeks:8,goal:24,n:1};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 17 nov (2) · bloque 2";
+const APP_VERSION="versión 23 nov · bloque 2";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -2297,6 +2308,43 @@ const FASES={
     entreno:"Haz lo esencial (los 🔴) y mantén los pesos. Está bien no terminar o cambiar la sesión por yoga: no pierdes progreso.",
     comida:"La balanza puede marcar entre 0,5 y 2 kg más por retención de agua: no es grasa. Para los antojos: algo dulce con grasa y fibra (dátiles con almendras, chocolate 80%)."},
 };
+// Cuerpo por fase (piel, cuerpo, ánimo) para la tarjeta "tu cuerpo hoy"
+const CUERPO={
+  mens:{piel:"Los primeros 1-2 días pueden seguir saliendo granitos; después la piel se calma. Puede estar más seca y sensible: hidrata.",
+    cuerpo:"Cólicos por las prostaglandinas: calor en el vientre, moverte suave y el magnesio ayudan. Pueden aparecer deposiciones más sueltas y dolor de cabeza por la caída del estrógeno.",
+    animo:"Energía baja los primeros días; suele volver hacia el día 3 o 4."},
+  fol:{piel:"Suele estar en su mejor momento: el estrógeno la hidrata y baja la grasa.",
+    cuerpo:"Hacia el final de esta fase el flujo se vuelve transparente y elástico, como clara de huevo: señal de que se acerca la ovulación. Digestión tranquila.",
+    animo:"Energía y ánimo altos; recuperas mejor entre entrenos."},
+  ov:{piel:"Luminosa. Algunas mujeres notan un poco más de grasa por el alza leve de testosterona.",
+    cuerpo:"Flujo transparente y elástico. Puede aparecer una puntada en un lado del bajo vientre (dolor de ovulación) o un poco de manchado: es normal.",
+    animo:"Energía alta y la libido suele subir."},
+  lut1:{piel:"La progesterona empieza a aumentar la grasa de la piel: limpieza suave y no cargar con cremas pesadas.",
+    cuerpo:"Más calor al dormir y al entrenar, pechos más sensibles y digestión más lenta (estreñimiento): agua y fibra.",
+    animo:"Buena energía, con algo más de hambre."},
+  lut2:{piel:"🔴 Granitos: la progesterona aumenta la grasa de la piel y, al caer el estrógeno, los andrógenos pesan más. Suelen salir en mentón y mandíbula unos 7-10 días antes de la regla. Ayuda: limpieza suave, no reventarlos, y menos azúcar y lácteos si notas que te afectan.",
+    cuerpo:"Hinchazón y retención de líquido (0,5-2 kg en la balanza), pechos sensibles, sueño más liviano y a veces dolor de cabeza justo antes de que llegue.",
+    animo:"Más sensible o irritable, con antojos de dulce. Ejercicio suave, dormir bien y el magnesio pueden ayudar."}};
+// Síntomas probables por día del ciclo: rangos [desde,hasta] calculados con tu ciclo (L = duración, ov = ovulación, M = días de sangrado)
+function sintomas(c){const L=c.L,ov=c.ov,M=c.M;return [
+  ["🔴 Granitos, piel grasa",[[L-7,L],[1,2]]],["✨ Piel más luminosa",[[M+1,ov+1]]],["🎈 Hinchazón",[[L-5,L],[1,2]]],
+  ["🤕 Cólicos",[[L,L],[1,Math.min(3,M)]]],["📍 Puntada ovulación",[[ov-1,ov+1]]],["💧 Flujo elástico",[[ov-3,ov+1]]],
+  ["⚡ Energía alta",[[Math.min(M+1,ov-3),ov+2]]],["🍫 Antojos",[[L-7,L]]],["🌧️ Ánimo sensible",[[L-5,L]]],
+  ["🤍 Pechos sensibles",[[ov+4,L]]],["😴 Sueño liviano",[[L-5,L]]],["🤯 Dolor de cabeza",[[L-1,L],[1,2]]]];}
+function faseDe(c,day){return day<=c.cuts[0]?"mens":day<=c.cuts[1]?"fol":day<=c.cuts[2]?"ov":day<=c.cuts[3]?"lut1":"lut2";}
+function sintomasHtml(c){
+  const L=c.L,keys=["mens","fol","ov","lut1","lut2"],w=[c.cuts[0],c.cuts[1]-c.cuts[0],c.cuts[2]-c.cuts[1],c.cuts[3]-c.cuts[2],c.L-c.cuts[3]];
+  const today=Math.min(100,(Math.min(c.d,L)-0.5)/L*100),F=FASES[c.f],B=CUERPO[c.f];
+  return `<div class="card"><h3>🔎 Qué puede pasar en tu cuerpo</h3>
+    <div class="small">Según tu ciclo de ~${L} días. La línea es hoy (día ${c.d}).</div>
+    <div class="saxis" style="margin-top:8px"><div></div><div class="sphase">${keys.map((k,i)=>`<span style="width:${w[i]/L*100}%;background:${FASES[k].c}"></span>`).join("")}</div></div>
+    ${sintomas(c).map(([t,rs])=>`<div class="srow"><span>${t}</span><div class="strack">${rs.map(([a,b])=>{a=Math.max(1,a);b=Math.min(L,b);if(b<a)return "";
+      return `<i style="left:${(a-1)/L*100}%;width:${(b-a+1)/L*100}%;background:${FASES[faseDe(c,a)].c}"></i>`;}).join("")}<b style="left:${today}%"></b></div></div>`).join("")}
+    <div class="saxis"><div></div><div><span>día 1</span><span>${Math.round(L/2)}</span><span>${L}</span></div></div>
+    <p class="small" style="margin-top:8px">Es lo más común según estudios, no una regla: cada cuerpo es distinto.</p></div>
+  <div class="card"><h3>${F.e} Tu cuerpo hoy · ${F.n.toLowerCase()}</h3>
+    <p><b>🧴 Piel:</b> ${B.piel}</p><p><b>🩺 Cuerpo:</b> ${B.cuerpo}</p><p><b>💭 Energía y ánimo:</b> ${B.animo}</p></div>`;
+}
 function cicloInfo(ref){
   const st=[...new Set(((data.ciclo||{}).starts)||[])].sort();if(!st.length)return null;
   const D=x=>new Date(x+"T12:00:00"),days=(a,b)=>Math.round((D(b)-D(a))/86400000);
@@ -2304,11 +2352,14 @@ function cicloInfo(ref){
   const use=lens.slice(-8),avg=use.length?use.reduce((a,b)=>a+b,0)/use.length:28;
   const L=Math.round(avg),mn=use.length?Math.min(...use):L-2,mx=use.length?Math.max(...use):L+2;
   const last=st[st.length-1],today=ref||todayStr(),d=days(last,today)+1,ov=L-14;
-  let f=d<=5?"mens":d<=ov-2?"fol":d<=ov+1?"ov":d<=L-6?"lut1":"lut2";
+  // Días de sangrado: promedio de los últimos registrados (data.ciclo.ends = {día1: último día}); si no hay, 5
+  const ends=(data.ciclo&&data.ciclo.ends)||{},bl=st.map(x=>ends[x]?days(x,ends[x])+1:null).filter(x=>x>=1&&x<=10).slice(-6);
+  const M=bl.length?Math.round(bl.reduce((a,b)=>a+b,0)/bl.length):5,mensNow=ends[last]?days(last,ends[last])+1:M;
+  let f=d<=mensNow?"mens":d<=ov-2?"fol":d<=ov+1?"ov":d<=L-6?"lut1":"lut2";
   const add=(iso,n)=>{const x=D(iso);x.setDate(x.getDate()+n);return dstr(x);};
   const pred=[1,2,3].map(k=>({mid:add(last,L*k),lo:add(last,mn*k),hi:add(last,mx*k)}));
-  const cuts=[5,Math.max(6,ov-2),ov+1,Math.max(ov+2,L-6),L];
-  return {st,lens,use,avg,L,mn,mx,last,d,ov,f,pred,cuts,late:d>mx?d-mx:0};
+  const cuts=[mensNow,Math.max(mensNow+1,ov-2),ov+1,Math.max(ov+2,L-6),L];
+  return {st,lens,use,avg,L,mn,mx,last,d,ov,f,pred,cuts,M:mensNow,Mavg:M,bleed:bl,ends,late:d>mx?d-mx:0};
 }
 // Tarjeta del ciclo dentro de cada sesión: fase de hoy y qué significa para entrenar
 function cicloCard(){
@@ -2326,7 +2377,7 @@ function parseFechas(txt){
     else if((m=t.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/)))out.push(`${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`);});
   return out.filter(x=>!isNaN(new Date(x+"T12:00:00")));
 }
-let cicloList=false;
+let cicloList=false,cicloEdit=null;
 function renderCiclo(){
   data.ciclo=data.ciclo||{starts:[]};
   const c=cicloInfo(),fd=x=>fmtDate(x+"T12:00:00").replace(/ \d{4}$/,"");
@@ -2342,21 +2393,28 @@ function renderCiclo(){
     <div class="card"><h3>${F.e} Fase ${F.n.toLowerCase()}</h3>
       <p><b>🧪 Hormonas:</b> ${F.horm}</p><p><b>💭 Qué puedes sentir:</b> ${F.sentir}</p>
       <p><b>🏋️ Entrenamiento:</b> ${F.entreno}</p><p><b>🍲 Comida:</b> ${F.comida}</p></div>
+    ${sintomasHtml(c)}
     <div class="card"><h3>🔮 Próximas menstruaciones</h3>
       ${c.pred.map(p=>`<div class="wk"><span>≈ ${fd(p.mid)}</span><span class="small">entre ${fd(p.lo)} y ${fd(p.hi)}</span></div>`).join("")}
       <p class="small" style="margin-top:6px">Son estimaciones según tus ciclos anteriores. No sirven como método anticonceptivo.</p></div>`;
   }else html+=`<div class="card"><p>Registra el <b>día 1</b> de tu última menstruación para ver en qué fase estás. Con 2 o más registros la app calcula tu ciclo y predice los siguientes.</p></div>`;
   html+=`<div class="card"><h3>🩸 Registrar día 1</h3>
     <div class="daterow" style="box-shadow:none;margin-bottom:8px">📅 Fecha <input type="date" id="cDate" value="${todayStr()}" max="${todayStr()}"></div>
-    <div class="tile th-am" id="cAdd">🩸 Registrar día 1 de menstruación</div></div>`;
+    <div class="tile th-am" id="cAdd">🩸 Registrar día 1 de menstruación</div>
+    <div class="tile" id="cEnd" style="margin-top:8px;background:#c98a8a;color:#fff">💧 Registrar último día de sangrado</div>
+    <p class="small" style="margin-top:6px">Con el último día, la fase menstrual se ajusta a tus días reales${c?` (ahora: ${c.M} días${c.bleed.length||c.ends[c.last]?'':', valor por defecto'})`:''}.</p></div>`;
   if(c)html+=`<div class="card"><h3>📊 Tu ciclo</h3>
     <div class="wk"><span>Duración promedio</span><b>${String(Math.round(c.avg*10)/10).replace('.',',')} días</b></div>
     <div class="wk"><span>Rango</span><b>${c.mn}–${c.mx} días</b></div>
     <div class="wk"><span>Regularidad</span><b>${c.use.length<2?'faltan datos':(c.mx-c.mn<=5?'Muy regular ✅':c.mx-c.mn<=8?'Regular':'Variable')}</b></div>
-    <div class="wk"><span>Ovulación estimada</span><b>día ${c.ov} aprox.</b></div></div>`;
+    <div class="wk"><span>Ovulación estimada</span><b>día ${c.ov} aprox.</b></div>
+    <div class="wk"><span>Días de sangrado</span><b>${c.bleed.length?c.Mavg+' días (promedio)':'sin registrar'}</b></div></div>`;
   html+=`<div class="card"><button class="ulink" id="cTog" style="margin-top:0">Ver mis ciclos registrados ${cicloList?'▴':'▾'}</button>
-    ${cicloList?`<div class="mlist">${(c?[...c.st].reverse():[]).map((x,i,a)=>{const prev=a[i+1];const l=prev?Math.round((new Date(x)-new Date(prev))/86400000):null;
-        return `<div><span>${fmtDate(x+"T12:00:00")}</span><span>${l?l+' días':'—'}</span><button class="del" data-cdel="${x}">Borrar</button></div>`;}).join("")||'<p class="small">Aún no hay registros.</p>'}</div>
+    ${cicloList?`<div class="mlist">${(c?[...c.st].reverse():[]).map((x,i,a)=>{const nxt=i>0?a[i-1]:null;const l=nxt?Math.round((new Date(nxt)-new Date(x))/86400000):null;
+        const e=(data.ciclo.ends||{})[x],bd=e?Math.round((new Date(e)-new Date(x))/86400000)+1:null;
+        const row=`<div><span>${fmtDate(x+"T12:00:00")}<br><span class="small">${l?l+' días':'ciclo en curso'} · sangrado ${bd?bd+' días':'— (sin registrar)'}</span></span><span class="mbtns"><button data-cedit="${x}">✏️</button><button data-cdel="${x}">🗑️</button></span></div>`;
+        return row+(cicloEdit===x?`<div class="medit">✏️ Día 1 <input type="date" id="ceS" value="${x}" max="${todayStr()}"><br><span style="display:inline-block;margin-top:6px">Último día</span> <input type="date" id="ceE" value="${e||''}" max="${todayStr()}">
+          <div class="tile th-am" id="ceSave" style="margin-top:8px">Guardar</div><button class="ulink" id="ceCancel">cancelar</button></div>`:'');}).join("")||'<p class="small">Aún no hay registros.</p>'}</div>
       <p class="small" style="margin-top:10px">Agregar varias fechas de día 1 (una por línea, formato 17-09-2026):</p>
       <textarea id="cBulk" rows="4" style="width:100%;border:1px solid var(--line);border-radius:9px;padding:8px;font-family:inherit;font-size:14px;background:var(--cream)"></textarea>
       <div class="tile th-am" id="cBulkAdd" style="margin-top:6px">Agregar fechas</div>`:''}</div>
@@ -2366,7 +2424,23 @@ function renderCiclo(){
   const addDates=arr=>{const set=new Set(data.ciclo.starts);arr.forEach(x=>set.add(x));data.ciclo.starts=[...set].sort();save();};
   document.getElementById("cAdd").onclick=()=>{const v=document.getElementById("cDate").value||todayStr();addDates([v]);toast("🩸 Día 1 registrado: "+fmtShort(v));renderCiclo();};
   document.getElementById("cTog").onclick=()=>{cicloList=!cicloList;renderCiclo();};
-  main.querySelectorAll("[data-cdel]").forEach(b=>b.onclick=()=>{if(confirm("¿Borrar este registro?")){data.ciclo.starts=data.ciclo.starts.filter(x=>x!==b.dataset.cdel);save();renderCiclo();}});
+  main.querySelectorAll("[data-cdel]").forEach(b=>b.onclick=()=>{const x=b.dataset.cdel;if(confirm(`¿Borrar el ciclo del ${fmtShort(x)}?`)){data.ciclo.starts=data.ciclo.starts.filter(y=>y!==x);if(data.ciclo.ends)delete data.ciclo.ends[x];save();renderCiclo();}});
+  main.querySelectorAll("[data-cedit]").forEach(b=>b.onclick=()=>{cicloEdit=cicloEdit===b.dataset.cedit?null:b.dataset.cedit;renderCiclo();});
+  const ces=document.getElementById("ceSave");
+  if(ces)ces.onclick=()=>{const o=cicloEdit,ns=document.getElementById("ceS").value,ne=document.getElementById("ceE").value;
+    if(!ns){toast("Elige el día 1");return;}
+    const bd=ne?Math.round((new Date(ne)-new Date(ns))/86400000)+1:null;
+    if(ne&&(bd<1||bd>10)){toast("El último día debe estar entre 1 y 10 días después del día 1");return;}
+    if(ns!==o&&data.ciclo.starts.includes(ns)){toast("Ya hay un ciclo con ese día 1");return;}
+    data.ciclo.ends=data.ciclo.ends||{};delete data.ciclo.ends[o];
+    data.ciclo.starts=[...new Set(data.ciclo.starts.filter(y=>y!==o).concat([ns]))].sort();
+    if(ne)data.ciclo.ends[ns]=ne;cicloEdit=null;save();toast("Ciclo actualizado ✅");renderCiclo();};
+  const cec=document.getElementById("ceCancel");if(cec)cec.onclick=()=>{cicloEdit=null;renderCiclo();};
+  document.getElementById("cEnd").onclick=()=>{const v=document.getElementById("cDate").value||todayStr();
+    const st=[...(data.ciclo.starts||[])].sort().filter(x=>x<=v).pop();
+    const bd=st?Math.round((new Date(v)-new Date(st))/86400000)+1:0;
+    if(!st||bd>10){toast(st?"Esa fecha está a más de 10 días del último día 1: revisa la fecha 📅":"Primero registra el día 1 de esa menstruación 🩸");return;}
+    data.ciclo.ends=data.ciclo.ends||{};data.ciclo.ends[st]=v;save();toast(`💧 Sangrado registrado: ${bd} día${bd>1?'s':''}`);renderCiclo();};
   const ba=document.getElementById("cBulkAdd");
   if(ba)ba.onclick=()=>{const f=parseFechas(document.getElementById("cBulk").value);if(!f.length){toast("No reconocí fechas. Usa 17-09-2026");return;}addDates(f);toast(`Se agregaron ${f.length} fechas ✅`);renderCiclo();};
 }
@@ -2431,7 +2505,7 @@ const META={kcal:[1550,1750],p:[110,120],c:[130,170],g:[50,60]};
 function mondayOf(d){return dstr(weekStart(d));}
 function weekLabel(mon){const a=new Date(mon+'T12:00:00'),b=new Date(a);b.setDate(a.getDate()+6);
   return `lun ${a.getDate()}${a.getMonth()!==b.getMonth()?' '+MES[a.getMonth()]:''} – dom ${b.getDate()} ${MES[b.getMonth()]}`;}
-let fitiaWeek=null, fitiaHist=false;
+let fitiaWeek=null, fitiaHist=false, fitiaEdit=null;
 // Meta y gasto promedio de una semana (lun-dom), según los entrenamientos registrados. Solo cuenta días hasta hoy.
 function semanaKcal(mon){
   let m=0,g=0,n=0;
@@ -2859,10 +2933,23 @@ function renderComida(){
       <div class="wk"><span>Tu gasto real</span><span>~${nfmt(sk.gasto)} kcal</span></div></div>`:''}
     ${fb.length?`<div class="fb">${fb.map(([c,t])=>`<div class="${c}">${esc(t)}</div>`).join("")}</div>`:''}
     <button class="ulink" id="fHist">Historial ${fitiaHist?'▴':'▾'}</button>
-    ${fitiaHist?(hist.length?`<div style="margin-top:8px">${fitiaChart(hist)}<div class="mlist">${[...hist].reverse().map(h=>`<div><span>${weekLabel(h.mon)}</span><span>${h.v.kcal??'—'} kcal · ${h.v.p??'—'} P · ${h.v.c??'—'} C · ${h.v.g??'—'} G</span></div>`).join("")}</div></div>`:'<p class="small">Aún no guardas semanas.</p>'):''}
+    ${fitiaHist?(hist.length?`<div style="margin-top:8px">${fitiaChart(hist)}<div class="mlist">${[...hist].reverse().map(h=>`<div><span>${weekLabel(h.mon)}<br><span class="small">${h.v.kcal!=null?nfmt(h.v.kcal):'—'} kcal · ${h.v.p??'—'} P · ${h.v.c??'—'} C · ${h.v.g??'—'} G</span></span><span class="mbtns"><button data-fedit="${h.mon}">✏️</button><button data-fdel="${h.mon}">🗑️</button></span></div>`
+      +(fitiaEdit===h.mon?`<div class="medit">✏️ <b>Editando</b> · Semana <select id="feW">${[...new Set([...mons,h.mon])].sort().reverse().map(m=>`<option value="${m}" ${m===h.mon?'selected':''}>${weekLabel(m)}${data.fitia[m]&&m!==h.mon?' ✓':''}</option>`).join("")}</select>
+        <div class="form fgrid"><label>🔥 kcal<input type="text" inputmode="numeric" id="feK" value="${h.v.kcal??''}"></label><label>🥚 Proteína (g)<input type="text" inputmode="numeric" id="feP" value="${h.v.p??''}"></label>
+        <label>🍚 Carbos (g)<input type="text" inputmode="numeric" id="feC" value="${h.v.c??''}"></label><label>🥑 Grasa (g)<input type="text" inputmode="numeric" id="feG" value="${h.v.g??''}"></label></div>
+        <span class="small">Si cambias la semana, se mueve: se borra de la semana equivocada.</span>
+        <div class="tile th-am" id="feSave" style="margin-top:8px">Guardar</div><button class="ulink" id="feCancel">cancelar</button></div>`:'')).join("")}</div></div>`:'<p class="small">Aún no guardas semanas.</p>'):''}
   </div>`;
   document.getElementById("fWeek").onchange=e=>{fitiaWeek=e.target.value;renderComida();};
   document.getElementById("fHist").onclick=()=>{fitiaHist=!fitiaHist;renderComida();};
+  main.querySelectorAll("[data-fdel]").forEach(b=>b.onclick=()=>{const m=b.dataset.fdel;if(confirm(`¿Borrar la semana ${weekLabel(m)}?`)){delete data.fitia[m];if(fitiaEdit===m)fitiaEdit=null;save();toast("Semana borrada 🗑️");renderComida();}});
+  main.querySelectorAll("[data-fedit]").forEach(b=>b.onclick=()=>{fitiaEdit=fitiaEdit===b.dataset.fedit?null:b.dataset.fedit;renderComida();});
+  const fes=document.getElementById("feSave");
+  if(fes)fes.onclick=()=>{const o=fitiaEdit,w=document.getElementById("feW").value,v={kcal:numv("feK"),p:numv("feP"),c:numv("feC"),g:numv("feG")};
+    if(v.kcal==null&&v.p==null){toast("Anota al menos kcal o proteína ✏️");return;}
+    if(w!==o&&data.fitia[w]&&!confirm(`La semana ${weekLabel(w)} ya tiene datos. ¿Reemplazarlos?`))return;
+    if(w!==o)delete data.fitia[o];data.fitia[w]=v;fitiaEdit=null;fitiaWeek=w;save();toast(w!==o?"Semana movida ✅":"Semana guardada ✅");renderComida();};
+  const fec=document.getElementById("feCancel");if(fec)fec.onclick=()=>{fitiaEdit=null;renderComida();};
   document.getElementById("fSave").onclick=()=>{
     const v={kcal:numv("fK"),p:numv("fP"),c:numv("fC"),g:numv("fG")};
     if(v.kcal==null&&v.p==null){toast("Anota al menos kcal o proteína ✏️");return;}
