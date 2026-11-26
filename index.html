@@ -1403,7 +1403,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK=todayStr()>="2026-11-23"?{start:"2026-11-23",weeks:8,goal:32,n:2}:{start:"2026-10-05",weeks:8,goal:24,n:1};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 26 nov · nube";
+const APP_VERSION="versión 27 nov · nube";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -2646,7 +2646,7 @@ function kcalSheet(sess){
 /* ---------- NAVEGACIÓN Y LÍNEA DEL CICLO ---------- */
 const CARD_TABS=["caminata","natacion","clase","esc","yogaC"];
 // Página "padre" a la que vuelve la flecha ‹
-function parentOf(t){if(t==="hoy")return null;if(isGym(t))return "gym";if([...ROUTINE_TABS,...CARD_TABS,"hist","gym"].includes(t))return "entreno";return "hoy";}
+function parentOf(t){if(t==="hoy")return null;if(isGym(t))return "gym";if([...ROUTINE_TABS,...CARD_TABS,"hist","gym","lib"].includes(t))return "entreno";return "hoy";}
 function renderNav(){
   const nav=document.getElementById("nav"),p=parentOf(currentTab);
   nav.className=p?"back":"";
@@ -2704,7 +2704,6 @@ function renderHoy(){
     ${mrow("entreno","barbell","ic-coral","Entrenamiento",`${wkN} ${wkN===1?'sesión':'sesiones'} esta semana`)}
     ${mrow("comida","salad","ic-green","Alimentación",`Gasto hoy ~${nfmt(d.gasto)} · meta ~${nfmt(d.meta)} kcal`)}
     ${mrow("prog","chart-line","ic-teal","Progreso","Medidas, fotos y fuerza")}
-    ${mrow("lib","books","ic-gray","Biblioteca","Cómo se hace cada ejercicio")}
     ${mrow("ciclo","moon","ic-pink","Mi ciclo",ci?`Próxima ≈ ${fmtShort(ci.pred[0].mid)}`:'Registra tu día 1')}
   </div>`;
   main.querySelectorAll(".mrow[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
@@ -2744,7 +2743,8 @@ function renderEntreno(){
     <div class="wk"><span>${wi("swimming","ic-blue")}Natación</span><b>${n(s=>s.tipo==="natacion")}</b></div>
     ${n(s=>s.tipo==="casaMini")?`<div class="wk"><span>${wi("stretching","ic-gray")}Abdomen exprés</span><b>${n(s=>s.tipo==="casaMini")}</b></div>`:''}
     <p class="small" style="margin-top:6px">Metas: 4 gym + 1 casa. La escalada cuenta como Tirón.</p>
-  </div>`;
+  </div>
+  <div class="menu">${mrow("lib","books","ic-gray","Biblioteca","Cómo se hace cada ejercicio")}</div>`;
   main.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goTab(el.dataset.go));
   bindTop();
 }
