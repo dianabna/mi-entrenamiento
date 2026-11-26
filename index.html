@@ -312,6 +312,8 @@
   select.full{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-size:14px;font-family:inherit;background:var(--cream);color:var(--ink);margin-bottom:10px}
   .chart{width:100%;height:auto;display:block;margin-top:6px}
   .mlist{font-size:12.5px;margin-top:8px}
+  .cloudline{display:inline-block;margin-top:6px;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
+  .gbtn{display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:11px;font-weight:700;background:#fff;color:#333;margin-top:10px;width:100%;font-size:15px}
   .mbtns{display:flex;gap:6px;flex-shrink:0}
   .mbtns button{border:1px solid var(--line);background:var(--cream);border-radius:8px;padding:3px 8px;font-size:13px}
   .medit{display:block!important;background:var(--cream);border-radius:10px;padding:10px;margin:4px 0;border-top:0!important}
@@ -382,11 +384,15 @@
   .daterow input{border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:14px;font-family:inherit;background:var(--cream);color:var(--ink)}
   .daterow input:focus{outline:none;border-color:var(--terra);background:#fff}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <header>
   <h1>🏔️ Mi Entrenamiento</h1>
   <p>Diana · Gym + handstand · San Pedro · <span id="appver"></span></p>
+  <div id="cloudLine" class="cloudline" style="display:none"></div>
   <div class="progwrap">
     <div class="progbar"><div class="progfill" id="progfill" style="width:0%"></div></div>
     <div class="progtxt" id="progtxt"></div>
@@ -1397,7 +1403,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK=todayStr()>="2026-11-23"?{start:"2026-11-23",weeks:8,goal:32,n:2}:{start:"2026-10-05",weeks:8,goal:24,n:1};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 23 nov (2) · bloque 2";
+const APP_VERSION="versión 26 nov · nube";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1564,7 +1570,7 @@ function stash(){
   else delete data.drafts[currentTab];
 }
 function hasDraft(t){return !!(data.drafts&&data.drafts[t]);}
-function save(){stash();try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){toast("⚠️ No se pudo guardar");}}
+function save(){stash();try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){toast("⚠️ No se pudo guardar");}if(window.CLOUD)CLOUD.push();}
 
 const main=document.getElementById("main");
 const saveBtn=document.getElementById("saveBtn");
@@ -1612,7 +1618,7 @@ function render(){
   const fb=document.getElementById("timerFab");if(fb)fb.style.display=isRoutine||(window.TIMER&&TIMER.state.running)?"":"none";
   saveBtn.style.display="none";
   if(!isRoutine){editMode=false;}
-  if(currentTab==="hoy")return renderHoy();
+  if(currentTab==="hoy"){renderHoy();if(window.CLOUD)CLOUD.bind();return;}
   if(currentTab==="lib")return renderLib();
   if(currentTab==="prog")return renderProg();
   if(currentTab==="hist")return renderHist();
@@ -2693,7 +2699,7 @@ function hoyToca(){
 }
 function renderHoy(){
   const ci=cicloInfo(),d=diaKcal(),wkN=thisWeek().length;
-  main.innerHTML=`${cicloTop(false)}
+  main.innerHTML=`${window.CLOUD?CLOUD.invite():''}${cicloTop(false)}
   <div class="menu">
     ${mrow("entreno","barbell","ic-coral","Entrenamiento",`${wkN} ${wkN===1?'sesión':'sesiones'} esta semana`)}
     ${mrow("comida","salad","ic-green","Alimentación",`Gasto hoy ~${nfmt(d.gasto)} · meta ~${nfmt(d.meta)} kcal`)}
@@ -3134,9 +3140,10 @@ function renderProg(){
   let html=`<div class="seg">
     <button data-sub="medidas" class="${progSub==='medidas'?'active':''}">📏 Medidas</button>
     <button data-sub="fotos" class="${progSub==='fotos'?'active':''}">📸 Fotos</button>
-    <button data-sub="fuerza" class="${progSub==='fuerza'?'active':''}">🏋️ Fuerza</button></div><div id="progBody"></div>`;
+    <button data-sub="fuerza" class="${progSub==='fuerza'?'active':''}">🏋️ Fuerza</button></div><div id="progBody"></div>${window.CLOUD?CLOUD.card():''}`;
   main.innerHTML=html;
   main.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{progSub=b.dataset.sub;renderProg();});
+  if(window.CLOUD)CLOUD.bind();
   const body=document.getElementById("progBody");
   if(progSub==="medidas")renderMedidas(body);
   else if(progSub==="fotos")renderFotos(body);
@@ -3486,6 +3493,120 @@ function openInfo(n){const e=LIB[n],ex=ROUTINE_TABS.includes(currentTab)?exByNam
   draw();
 })();
 
+
+/* ---------- NUBE (Firebase): ver y anotar desde cualquier aparato ----------
+   users/{uid}/parts/{clave} = {v: JSON, ts, dev}  ·  users/{uid}/sessions/{id} = {v: JSON, ts, dev}
+   Lo de este aparato (borradores, sesión en curso, respaldos viejos de rutinas) no se sube. Las fotos tampoco. */
+window.CLOUD=(function(){
+  const CFG={apiKey:"AIzaSyBswJQKM0UE1qCtWkmtEWlktb-cHSS7jQs",authDomain:"mi-entrenamiento-3114e.firebaseapp.com",projectId:"mi-entrenamiento-3114e",
+    storageBucket:"mi-entrenamiento-3114e.firebasestorage.app",messagingSenderId:"257073423126",appId:"1:257073423126:web:0dccff95b543bbfbb96637"};
+  const SK="entreno_sync";               // estado de sincronización de ESTE aparato (no se sube)
+  const LOCAL=k=>k==="sessions"||k==="drafts"||k==="curStart"||k==="lastFoto"||k==="lastBackup"||/^routinesBackup/.test(k);
+  let st={};try{st=JSON.parse(localStorage.getItem(SK))||{};}catch(e){}
+  st.dev=st.dev||("d"+Date.now().toString(36)+Math.random().toString(36).slice(2,6));st.ts=st.ts||{};st.h=st.h||{};st.sh=st.sh||{};
+  const keep=()=>{try{localStorage.setItem(SK,JSON.stringify(st));}catch(e){}};keep();
+  let ok=false,auth=null,db=null,user=null,ready=false,busy=false,timer=null,unsub=[],lastOk=st.lastOk||null,err=null;
+  try{if(window.firebase){firebase.initializeApp(CFG);auth=firebase.auth();db=firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(()=>{});ok=true;}}catch(e){err=String(e);}
+  // Partes: cada clave de data va en su propio documento; las banderas de migración van juntas en "flags"
+  function parts(){const o={},fl={};Object.keys(data).forEach(k=>{if(LOCAL(k))return;if(/^mig/.test(k)||k==="routinesVersion")fl[k]=data[k];else o[k]=data[k];});o.flags=fl;return o;}
+  function setPart(k,v){if(k==="flags"){Object.assign(data,v);}else data[k]=v;}
+  const sid=x=>String(x.id);
+  const col=n=>db.collection("users").doc(user.uid).collection(n);
+  function line(){const el=document.getElementById("cloudLine");if(!el)return;
+    if(!ok){el.style.display="none";return;}el.style.display="";
+    el.textContent=!user?"☁️ Sin conectar":!navigator.onLine?"📴 Sin conexión · se sube al volver":busy?"☁️ Sincronizando…":lastOk?"☁️ Sincronizado · "+hace(lastOk):"☁️ Conectada";
+    el.onclick=()=>goTab(user?"prog":"hoy");}
+  function hace(t){const m=Math.round((Date.now()-t)/60000);return m<1?"recién":m<60?`hace ${m} min`:m<1440?`hace ${Math.round(m/60)} h`:fmtShort(dstr(new Date(t)));}
+  setInterval(line,30000);window.addEventListener("online",()=>{line();push();});window.addEventListener("offline",line);
+  // Guardar local sin volver a subir
+  function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}}
+  function refresh(){buildLib();refreshTabs();updateStats();
+    if(ROUTINE_TABS.includes(currentTab)||libForm)return;   // no interrumpir una sesión o formulario en curso
+    render();}
+  // Subir lo que cambió (se llama en cada save, con un pequeño retraso)
+  function push(){if(!user||!ready)return;clearTimeout(timer);timer=setTimeout(doPush,1200);}
+  async function doPush(){
+    if(!user||!ready)return;const now=Date.now(),b=db.batch();let n=0;
+    Object.entries(parts()).forEach(([k,v])=>{const j=JSON.stringify(v);if(st.h[k]!==j){b.set(col("parts").doc(k),{v:j,ts:now,dev:st.dev});st.h[k]=j;st.ts[k]=now;n++;}});
+    const here=new Set();
+    (data.sessions||[]).forEach(x=>{if(x.id==null)x.id=Date.now()+Math.floor(Math.random()*1000);const id=sid(x),j=JSON.stringify(x);here.add(id);
+      if(st.sh[id]!==j){b.set(col("sessions").doc(id),{v:j,ts:now,dev:st.dev});st.sh[id]=j;n++;}});
+    Object.keys(st.sh).forEach(id=>{if(!here.has(id)){b.delete(col("sessions").doc(id));delete st.sh[id];n++;}});
+    if(!n){lastOk=st.lastOk=Date.now();keep();line();return;}
+    busy=true;line();keep();
+    try{await b.commit();lastOk=st.lastOk=Date.now();}catch(e){err=e.message;toast("⚠️ No se pudo subir a la nube");}
+    busy=false;keep();line();
+  }
+  // Primera conexión en este aparato: juntar lo local con lo de la nube
+  async function firstSync(){
+    busy=true;line();
+    const [pS,sS]=await Promise.all([col("parts").get(),col("sessions").get()]);
+    const remP={},remS={};pS.forEach(d=>{remP[d.id]=d.data();});sS.forEach(d=>{remS[d.id]=d.data();});
+    const nLoc=(data.sessions||[]).length,nRem=Object.keys(remS).length,hasRem=Object.keys(remP).length>0;
+    const known=st.uid===user.uid;   // este aparato ya estaba sincronizado con esta cuenta
+    if(hasRem&&!known){try{localStorage.setItem("entreno_presync",JSON.stringify(data));}catch(e){}}
+    // Partes: si es la primera vez, gana el lado con más sesiones (así un aparato nuevo y vacío no pisa tu historial)
+    const remoteWins=k=>{const r=remP[k];if(!r)return false;if(!known)return nRem>=nLoc;return (r.ts||0)>(st.ts[k]||0);};
+    Object.keys(remP).forEach(k=>{if(remoteWins(k)){try{setPart(k,JSON.parse(remP[k].v));st.h[k]=remP[k].v;st.ts[k]=remP[k].ts||0;}catch(e){}}});
+    if(!known){st.h={};Object.keys(remP).forEach(k=>{if(remoteWins(k))st.h[k]=remP[k].v;});}
+    // Sesiones: se juntan las de ambos lados (no se pierde ninguna).
+    if(!known)st.sh={};
+    const loc={};(data.sessions||[]).forEach(x=>{loc[sid(x)]=x;});
+    Object.entries(remS).forEach(([id,r])=>{let x;try{x=JSON.parse(r.v);}catch(e){return;}
+      if(!loc[id]){if(known&&st.sh[id]!==undefined)return;   // la borraste aquí sin internet: se borra de la nube al subir
+        loc[id]=x;st.sh[id]=r.v;return;}
+      const lj=JSON.stringify(loc[id]);
+      if(lj!==r.v&&known&&st.sh[id]===lj)loc[id]=x;          // aquí no cambió y en otro aparato sí: gana la nube
+      st.sh[id]=r.v;});                                        // si aquí cambió, se sube al comparar
+    if(known)Object.keys(loc).forEach(id=>{if(!remS[id]&&st.sh[id]!==undefined){delete loc[id];delete st.sh[id];}});  // borrada en otro aparato
+    data.sessions=Object.values(loc).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    st.uid=user.uid;ready=true;saveLocal();keep();busy=false;
+    await doPush();refresh();listen();
+    if(!known)toast(hasRem?"☁️ Listo: bajaron tus datos de la nube":"☁️ Listo: tus datos quedaron guardados en la nube");
+  }
+  // Cambios desde otro aparato, en vivo
+  function listen(){unsub.forEach(f=>f());unsub=[];
+    unsub.push(col("parts").onSnapshot(q=>{let ch=false;q.docChanges().forEach(c=>{const r=c.doc.data();if(c.type==="removed"||r.dev===st.dev||c.doc.metadata.hasPendingWrites)return;
+      if((r.ts||0)>(st.ts[c.doc.id]||0)&&r.v!==st.h[c.doc.id]){try{setPart(c.doc.id,JSON.parse(r.v));st.h[c.doc.id]=r.v;st.ts[c.doc.id]=r.ts;ch=true;}catch(e){}}});
+      if(ch){saveLocal();keep();refresh();}lastOk=st.lastOk=Date.now();line();},()=>{}));
+    unsub.push(col("sessions").onSnapshot(q=>{let ch=false;q.docChanges().forEach(c=>{if(c.doc.metadata.hasPendingWrites)return;const id=c.doc.id,r=c.doc.data();
+      const i=data.sessions.findIndex(x=>sid(x)===id);
+      if(c.type==="removed"){if(i>=0&&st.sh[id]!==undefined){data.sessions.splice(i,1);delete st.sh[id];ch=true;}return;}
+      if(r.dev===st.dev||st.sh[id]===r.v)return;
+      try{const x=JSON.parse(r.v);if(i>=0)data.sessions[i]=x;else data.sessions.push(x);st.sh[id]=r.v;ch=true;}catch(e){}});
+      if(ch){data.sessions.sort((a,b)=>new Date(a.date)-new Date(b.date));saveLocal();keep();refresh();}},()=>{}));
+  }
+  async function login(){if(!ok){toast("No se pudo cargar la nube: revisa tu internet");return;}
+    const pr=new firebase.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:"select_account"});
+    try{await auth.signInWithPopup(pr);}catch(e){
+      if(/popup-blocked|operation-not-supported|popup-closed-by-browser/.test(e.code||""))return auth.signInWithRedirect(pr);
+      if(/unauthorized-domain/.test(e.code||""))return toast("Falta agregar dianabna.github.io en Firebase → Dominios autorizados");
+      if(!/popup-closed-by-user|cancelled-popup/.test(e.code||""))toast("No se pudo entrar: "+(e.code||e.message));}}
+  async function logout(){if(!confirm("¿Cerrar sesión en este aparato? Tus datos quedan aquí y en la nube."))return;
+    unsub.forEach(f=>f());unsub=[];ready=false;await auth.signOut();render();}
+  if(ok){auth.getRedirectResult().catch(()=>{});
+    auth.onAuthStateChanged(u=>{user=u;ready=false;line();if(u)firstSync().catch(e=>{busy=false;err=e.message;line();toast("⚠️ Nube: "+(e.code||e.message));});else render&&currentTab==="hoy"&&render();});}
+  line();
+  return {push,login,logout,
+    invite(){if(!ok||user||localStorage.getItem("cloudSkip"))return "";
+      return `<div class="card"><h3>☁️ Guarda tu progreso en la nube</h3><p class="small" style="margin:0">Para ver y anotar desde el teléfono o el computador. Solo tú puedes ver tus datos.</p>
+        <button class="gbtn" data-cloudin="1"><span style="font-weight:900;color:#4285F4">G</span> Entrar con Google</button>
+        <button class="ulink" data-cloudskip="1">ahora no</button></div>`;},
+    card(){if(!ok)return "";
+      if(!user)return `<div class="card"><h3>☁️ Nube</h3><p class="small">Entra con Google para ver y anotar tu progreso desde cualquier aparato.</p><button class="gbtn" data-cloudin="1"><span style="font-weight:900;color:#4285F4">G</span> Entrar con Google</button></div>`;
+      return `<div class="card"><h3>☁️ Nube</h3>
+        <div class="wk"><span>Cuenta</span><span>${esc(user.email||"")}</span></div>
+        <div class="wk"><span>Último guardado</span><b>${lastOk?hace(lastOk)+" ✓":"—"}</b></div>
+        <div class="wk"><span>Fotos de progreso</span><span>solo en este teléfono</span></div>
+        <div class="tile th-am" data-cloudnow="1" style="margin-top:8px">🔄 Sincronizar ahora</div>
+        <button class="ulink" data-cloudout="1">cerrar sesión</button></div>`;},
+    bind(){main.querySelectorAll("[data-cloudin]").forEach(b=>b.onclick=login);
+      main.querySelectorAll("[data-cloudskip]").forEach(b=>b.onclick=()=>{try{localStorage.setItem("cloudSkip","1");}catch(e){}render();});
+      main.querySelectorAll("[data-cloudout]").forEach(b=>b.onclick=logout);
+      main.querySelectorAll("[data-cloudnow]").forEach(b=>b.onclick=async()=>{if(!user)return;ready=false;await firstSync().catch(e=>toast("⚠️ "+(e.code||e.message)));toast("☁️ Sincronizado");if(currentTab==="prog")renderProg();});},
+    line};
+})();
 document.getElementById("appver").textContent=APP_VERSION;
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 checkRoutinesUpdate();
