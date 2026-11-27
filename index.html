@@ -8,7 +8,7 @@
 <style>
   :root{
     --terra:#c1663f; --terra-dark:#9e4f2f; --sand:#f4ece2; --cream:#fbf7f1;
-    --teal:#2f7d78; --teal-light:#e0efed; --ink:#2c2723; --muted:#8a7f74;
+    --teal:#c4507e; --teal-light:#fbe7ef; --pur:#7d5aa8; --pur-light:#efe8f8; --ink:#2c2723; --muted:#8a7f74;
     --line:#e6dccf; --ok:#4a8f5a; --blue:#3b6ea5; --green:#4a8f5a; --shadow:0 2px 10px rgba(80,55,35,.08);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -63,7 +63,7 @@
   .rhead .rm{font-size:12.5px;margin-top:6px;line-height:1.55;opacity:.9}
   /* Home y Entrenamiento: menú en lista */
   .hdate{font-size:13px;color:var(--muted);font-weight:600;margin:2px 2px 2px;text-transform:none}
-  .hcic{font-size:12.5px;color:#993556;font-weight:600;margin:0 2px 12px;cursor:pointer}
+  .hcic{font-size:12.5px;color:var(--pur);font-weight:600;margin:0 2px 12px;cursor:pointer}
   .menu{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
   .mrow{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--line);cursor:pointer}
   .mrow:first-child{border-top:none}
@@ -312,6 +312,36 @@
   select.full{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-size:14px;font-family:inherit;background:var(--cream);color:var(--ink);margin-bottom:10px}
   .chart{width:100%;height:auto;display:block;margin-top:6px}
   .mlist{font-size:12.5px;margin-top:8px}
+  .pzleft{font-size:12.5px;color:#5b4f66;background:var(--teal-light);border:1px solid #eab0c8;border-radius:9px;padding:6px 9px;margin:8px 0 4px}
+  .pzleft b{color:var(--ink)} .pzleft .neg{color:#c0392b}
+  .pzrow{border-top:1px solid var(--line);padding:10px 0}
+  .pzh{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}
+  .pzh b{font-size:14.5px;white-space:nowrap} .pzh .v{font-size:13px;color:var(--muted);text-align:right}
+  .pzh .v.on{color:var(--ink);font-weight:700}
+  .pzlist{margin-top:6px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .pzopt{display:flex;justify-content:space-between;gap:8px;padding:9px 10px;border-top:1px solid var(--line);font-size:14px;cursor:pointer;background:#fff}
+  .pzopt:first-child{border-top:0} .pzopt small{color:var(--muted);font-size:12px;white-space:nowrap}
+  .pzopt.s{background:var(--pur-light)} .pzopt.on{background:var(--terra);color:#fff} .pzopt.on small{color:#fff}
+  .pzsub{font-size:11.5px;color:var(--muted);margin:8px 2px 4px;font-weight:800;text-transform:uppercase;letter-spacing:.3px}
+  .pzhint{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .pzhint span{border:1px solid #c7b4e6;background:var(--pur-light);border-radius:999px;padding:4px 10px;font-size:12.5px;cursor:pointer}
+  .pzseg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:6px 0 2px}
+  .pzseg span{padding:3px 12px;font-size:12.5px;cursor:pointer} .pzseg span.on{background:var(--pur);color:#fff}
+  .pzdone{font-size:13px;margin:4px 2px} .pzlink{font-size:12.5px;color:var(--muted);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0}
+  .prio{font-size:11px;color:#e07a2f;border:1px solid #e07a2f;border-radius:6px;padding:0 5px;margin-left:6px;vertical-align:middle;font-weight:700}
+  .fsum1{font-size:13px;margin-top:8px;background:var(--cream);border-radius:10px;padding:8px 10px}
+  .frem{font-size:12px;color:var(--muted);border-top:1px dashed var(--line);margin-top:10px;padding-top:8px}
+  .plhero{background:linear-gradient(135deg,var(--pur),#5e3f8a);color:#fff;border-radius:16px;padding:14px;margin-bottom:12px}
+  .plhero .t{font-size:20px;font-weight:800} .plhero .s{font-size:12.5px;opacity:.9}
+  .pltl{display:flex;height:30px;border-radius:8px;overflow:hidden;font-size:10.5px;color:#fff;font-weight:700;margin:8px 0 4px}
+  .pltl div{display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1}
+  .pltl .cur{box-shadow:inset 0 0 0 3px rgba(255,255,255,.85)}
+  .plticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+  .plgoal{margin:10px 0} .plgoal .t{display:flex;justify-content:space-between;font-size:14px}
+  .plbar{height:9px;background:var(--line);border-radius:5px;margin-top:4px;position:relative;overflow:hidden}
+  .plbar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+  .plph{border-top:1px solid var(--line);padding:10px 0} .plph:first-of-type{border-top:0} .plph p{margin:3px 0;font-size:13.5px}
+  .plchk{font-size:14px;margin:5px 0}
   .cloudline{display:inline-block;margin-top:6px;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
   .gbtn{display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:11px;font-weight:700;background:#fff;color:#333;margin-top:10px;width:100%;font-size:15px}
   .mbtns{display:flex;gap:6px;flex-shrink:0}
@@ -1039,7 +1069,8 @@ const LIB_BASE={
     pasos:["Manos juntas bajo el pecho (los pulgares e índices pueden formar un diamante).","Cuerpo recto de cabeza a talones.","Baja con los codos pegados al cuerpo, apuntando hacia atrás.","Empuja hasta estirar los brazos."],
     fij:["Si después del resto del empuje cuestan mucho, apoya las manos elevadas (cama, sillón o mesa firme) en vez de bajar las rodillas."],
     err:["Abrir los codos hacia los lados.","Hundir la cadera."],q:"flexiones diamante técnica"},
-  "Fondos en anillas":{cat:"Calistenia",musc:"Tríceps, pecho y hombros (más estabilidad)",rec:{tipo:"reps",sets:3,val:"5",rest:120},
+  "Fondos en anillas":{cat:"Calistenia",musc:"Tríceps, pecho y hombros (más estabilidad)",skill:true,lvlDefault:1,rec:{tipo:"skill",rest:120},
+    niveles:[{n:"Con apoyo de pies",d:"3 × 8"},{n:"Mixtos: los completos que salgan + negativas hasta 5",d:"3 × 5",mix:["completos","negativas"]},{n:"Completos",d:"3 × 5-8"}],
     pasos:["Anillas a una altura en que puedas apoyar los pies en el suelo para ayudarte.","Sube a brazos estirados con las anillas pegadas al cuerpo y las palmas hacia adentro (o un poco hacia afuera).","Baja controlado hasta que el hombro quede a la altura del codo.","Empuja hasta estirar los brazos sin que las anillas se separen."],
     fij:["Son bastante más inestables que las paralelas: hazlas solo si te sientes segura; si no, usa sillas.","Usa los pies para ayudarte si no completas las repeticiones."],
     err:["Dejar que las anillas se abran hacia los lados.","Bajar más de lo que el hombro tolera."],q:"ring dips técnica principiante"},
@@ -1403,7 +1434,7 @@ const KEY="entreno_diana_v1";
 // Bloque de entrenamiento actual: 8 semanas desde el lunes 5 oct 2026, meta 3 gym/semana. Al terminar, toca actualizar la rutina.
 const BLOCK=todayStr()>="2026-11-23"?{start:"2026-11-23",weeks:8,goal:32,n:2}:{start:"2026-10-05",weeks:8,goal:24,n:1};
 const ROUTINES_VERSION=7;   // el plan v8 se aplica con la migración migV8 (cambios puntuales)
-const APP_VERSION="versión 27 nov · nube";
+const APP_VERSION="versión 28 nov · planificación";
 function todayStr(){return dstr(new Date());}
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 let data=load();
@@ -1532,6 +1563,9 @@ function checkRoutinesUpdate(){
     if(data.libEdits){["Flexiones","L-sit"].forEach(n=>{if(data.libEdits[n])delete data.libEdits[n];});buildLib();}
     data.gymOrder=["gymA2","gymB2","gymC2","gymD2"];
     data.migB2=true;save();}
+  // 27 nov: fondos en anillas pasan a skill con niveles (en las rutinas donde estén)
+  if(!data.migFondosA){const N="Fondos en anillas";Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(e=>{if(e.n===N){e.skill=true;e.log=true;delete e.tipo;delete e.d;}})));
+    if(data.libEdits&&data.libEdits[N])delete data.libEdits[N];buildLib();data.migFondosA=true;save();}
   // 17 nov: "Jalón al pecho o dominada asistida" pasa a llamarse solo "Jalón al pecho" (rutinas, historial, borradores y niveles)
   if(!data.migJalon){const a="Jalón al pecho o dominada asistida",b="Jalón al pecho";
     Object.values(data.routines).forEach(R=>R.blocks.forEach(bl=>bl.ex.forEach(e=>{if(e.n===a)e.n=b;if(e.alt===a)e.alt=b;})));
@@ -1626,6 +1660,7 @@ function render(){
   if(currentTab==="entreno")return renderEntreno();
   if(currentTab==="gym")return renderGym();
   if(currentTab==="comida")return renderComida();
+  if(currentTab==="plan")return renderPlan();
   if(currentTab==="caminata")return renderCaminata();
   if(currentTab==="natacion")return renderNatacion();
   if(currentTab==="clase")return renderClase();
@@ -2515,11 +2550,17 @@ function quickLog(tipo){
 }
 
 /* Fitia: promedios semanales (lunes a domingo) guardados en data.fitia[lunes] = {kcal,p,c,g} */
-const META={kcal:[1550,1750],p:[110,120],c:[130,170],g:[50,60]};
+// Planificación por fases (data.plan.fase): las metas de comida cambian solas con la fase. Las metas de cuerpo se fijan en la app (no van en el código).
+const META_F1={kcal:[1550,1750],p:[110,120],c:[130,170],g:[50,60]};
+function planFase(){return (data.plan&&data.plan.fase)||1;}
+function kcalF2(){const m=String((data.plan&&data.plan.kcalF2)||"2100-2300").match(/(\d[\d.]*)\D+(\d[\d.]*)/);const a=m?parseInt(m[1].replace(/\./g,""),10):2100,b=m?parseInt(m[2].replace(/\./g,""),10):2300;return [a,b];}
+function metaFase(){return planFase()===2?{kcal:kcalF2(),p:[110,120],c:[180,240],g:[55,70]}:META_F1;}
+let META=META_F1;
+function applyFase(){META=metaFase();}
 function mondayOf(d){return dstr(weekStart(d));}
 function weekLabel(mon){const a=new Date(mon+'T12:00:00'),b=new Date(a);b.setDate(a.getDate()+6);
   return `lun ${a.getDate()}${a.getMonth()!==b.getMonth()?' '+MES[a.getMonth()]:''} – dom ${b.getDate()} ${MES[b.getMonth()]}`;}
-let fitiaWeek=null, fitiaHist=false, fitiaEdit=null;
+let fitiaWeek=null, fitiaHist=false, fitiaEdit=null, fitiaFb=false;
 // Meta y gasto promedio de una semana (lun-dom), según los entrenamientos registrados. Solo cuenta días hasta hoy.
 function semanaKcal(mon){
   let m=0,g=0,n=0;
@@ -2576,7 +2617,7 @@ function fitiaChart(weeks){
 }
 
 /* ---------- ÍCONOS DEL MENÚ (Tabler Icons, licencia MIT) ---------- */
-const ICO={"barbell":"<path d=\"M2 12h1\"/><path d=\"M6 8h-2a1 1 0 0 0 -1 1v6a1 1 0 0 0 1 1h2\"/><path d=\"M6 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1z\"/><path d=\"M9 12h6\"/><path d=\"M15 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1z\"/><path d=\"M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2\"/><path d=\"M22 12h-1\"/>","books":"<path d=\"M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\"/><path d=\"M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\"/><path d=\"M5 8h4\"/><path d=\"M9 16h4\"/><path d=\"M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z\"/><path d=\"M14 9l4 -1\"/><path d=\"M16 16l3.923 -.98\"/>","bulb":"<path d=\"M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7\"/><path d=\"M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3\"/><path d=\"M9.7 17l4.6 0\"/>","chart-line":"<path d=\"M4 19l16 0\"/><path d=\"M4 15l4 -6l4 2l4 -5l4 4\"/>","hand-stop":"<path d=\"M8 13v-7.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M11 5.5v-2a1.5 1.5 0 1 1 3 0v8.5\"/><path d=\"M14 5.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M17 7.5a1.5 1.5 0 0 1 3 0v8.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7a69.74 69.74 0 0 1 -.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47\"/>","home":"<path d=\"M5 12l-2 0l9 -9l9 9l-2 0\"/><path d=\"M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7\"/><path d=\"M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6\"/>","moon":"<path d=\"M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z\"/>","mountain":"<path d=\"M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612z\"/><path d=\"M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2\"/>","salad":"<path d=\"M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1z\"/><path d=\"M18.5 11c.351 -1.017 .426 -2.236 .5 -3.714v-1.286h-2.256c-2.83 0 -4.616 .804 -5.64 2.076\"/><path d=\"M5.255 11.008a12.204 12.204 0 0 1 -.255 -2.008v-1h1.755c.98 0 1.801 .124 2.479 .35\"/><path d=\"M8 8l1 -4l4 2.5\"/><path d=\"M13 11v-.5a2.5 2.5 0 1 0 -5 0v.5\"/>","stretching":"<path d=\"M16 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M5 20l5 -.5l1 -2\"/><path d=\"M18 20v-5h-5.5l2.5 -6.5l-5.5 1l1.5 2\"/>","swimming":"<path d=\"M16 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M6 11l4 -2l3.5 3l-1.5 2\"/><path d=\"M3 16.75a2.4 2.4 0 0 0 1 .25a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 1 -.25\"/>","trekking":"<path d=\"M12 4m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 21l2 -4\"/><path d=\"M13 21v-4l-3 -3l1 -6l3 4l3 2\"/><path d=\"M10 14l-1.827 -1.218a2 2 0 0 1 -.831 -2.15l.28 -1.117a2 2 0 0 1 1.939 -1.515h1.439l4 1l3 -2\"/><path d=\"M17 12v9\"/><path d=\"M16 20h2\"/>","yoga":"<path d=\"M12 4m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M4 20h4l1.5 -3\"/><path d=\"M17 20l-1 -5h-5l1 -7\"/><path d=\"M4 10l4 -1l4 -1l4 1.5l4 1.5\"/>"};
+const ICO={"map":"<path d=\"M3 7l6 -3l6 3l6 -3v13l-6 3l-6 -3l-6 3v-13\"/><path d=\"M9 4v13\"/><path d=\"M15 7v13\"/>","barbell":"<path d=\"M2 12h1\"/><path d=\"M6 8h-2a1 1 0 0 0 -1 1v6a1 1 0 0 0 1 1h2\"/><path d=\"M6 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1z\"/><path d=\"M9 12h6\"/><path d=\"M15 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1z\"/><path d=\"M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2\"/><path d=\"M22 12h-1\"/>","books":"<path d=\"M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\"/><path d=\"M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z\"/><path d=\"M5 8h4\"/><path d=\"M9 16h4\"/><path d=\"M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z\"/><path d=\"M14 9l4 -1\"/><path d=\"M16 16l3.923 -.98\"/>","bulb":"<path d=\"M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7\"/><path d=\"M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3\"/><path d=\"M9.7 17l4.6 0\"/>","chart-line":"<path d=\"M4 19l16 0\"/><path d=\"M4 15l4 -6l4 2l4 -5l4 4\"/>","hand-stop":"<path d=\"M8 13v-7.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M11 5.5v-2a1.5 1.5 0 1 1 3 0v8.5\"/><path d=\"M14 5.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M17 7.5a1.5 1.5 0 0 1 3 0v8.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7a69.74 69.74 0 0 1 -.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47\"/>","home":"<path d=\"M5 12l-2 0l9 -9l9 9l-2 0\"/><path d=\"M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7\"/><path d=\"M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6\"/>","moon":"<path d=\"M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z\"/>","mountain":"<path d=\"M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612z\"/><path d=\"M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2\"/>","salad":"<path d=\"M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1z\"/><path d=\"M18.5 11c.351 -1.017 .426 -2.236 .5 -3.714v-1.286h-2.256c-2.83 0 -4.616 .804 -5.64 2.076\"/><path d=\"M5.255 11.008a12.204 12.204 0 0 1 -.255 -2.008v-1h1.755c.98 0 1.801 .124 2.479 .35\"/><path d=\"M8 8l1 -4l4 2.5\"/><path d=\"M13 11v-.5a2.5 2.5 0 1 0 -5 0v.5\"/>","stretching":"<path d=\"M16 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M5 20l5 -.5l1 -2\"/><path d=\"M18 20v-5h-5.5l2.5 -6.5l-5.5 1l1.5 2\"/>","swimming":"<path d=\"M16 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M6 11l4 -2l3.5 3l-1.5 2\"/><path d=\"M3 16.75a2.4 2.4 0 0 0 1 .25a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 1 -.25\"/>","trekking":"<path d=\"M12 4m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 21l2 -4\"/><path d=\"M13 21v-4l-3 -3l1 -6l3 4l3 2\"/><path d=\"M10 14l-1.827 -1.218a2 2 0 0 1 -.831 -2.15l.28 -1.117a2 2 0 0 1 1.939 -1.515h1.439l4 1l3 -2\"/><path d=\"M17 12v9\"/><path d=\"M16 20h2\"/>","yoga":"<path d=\"M12 4m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M4 20h4l1.5 -3\"/><path d=\"M17 20l-1 -5h-5l1 -7\"/><path d=\"M4 10l4 -1l4 -1l4 1.5l4 1.5\"/>"};
 function ico(n){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO[n]||""}</svg>`;}
 function mrow(go,icon,cls,title,sub,id){
   return `<div class="mrow" ${go?`data-go="${go}"`:''} ${id?`id="${id}"`:''}><div class="mic ${cls}">${ico(icon)}</div>
@@ -2624,7 +2665,8 @@ function diaKcal(ds){
   const ss=data.sessions.filter(s=>dstr(new Date(s.date))===ds);
   const ej=ss.reduce((a,s)=>a+kcalOf(s),0),net=ss.reduce((a,s)=>a+netOf(s),0);
   const {base,lut}=baseDia(ds);
-  return {ss,ej,net,base,lut,gasto:r10(base+net),meta:Math.max(1400,r10(base+0.8*net-350))};
+  // Fase 2 (Construir): se come lo que se gasta (mantención). Fases 1 y 3: déficit suave.
+  return {ss,ej,net,base,lut,gasto:r10(base+net),meta:planFase()===2?r10(base+net):Math.max(1400,r10(base+0.8*net-350))};
 }
 // Resumen que aparece al guardar una sesión
 function kcalSheet(sess){
@@ -2703,6 +2745,7 @@ function renderHoy(){
   <div class="menu">
     ${mrow("entreno","barbell","ic-coral","Entrenamiento",`${wkN} ${wkN===1?'sesión':'sesiones'} esta semana`)}
     ${mrow("comida","salad","ic-green","Alimentación",`Gasto hoy ~${nfmt(d.gasto)} · meta ~${nfmt(d.meta)} kcal`)}
+    ${mrow("plan","map","ic-purple","Planificación",`${PLAN_F[planFase()].e} Fase ${planFase()} · ${PLAN_F[planFase()].n}${planFase()!==2&&BLOCK.n===2?` · semana ${Math.max(1,Math.min(BLOCK.weeks,Math.floor((new Date(todayStr())-new Date(BLOCK.start))/(7*86400000))+1))} de ${BLOCK.weeks}`:''}`)}
     ${mrow("prog","chart-line","ic-teal","Progreso","Medidas, fotos y fuerza")}
     ${mrow("ciclo","moon","ic-pink","Mi ciclo",ci?`Próxima ≈ ${fmtShort(ci.pred[0].mid)}`:'Registra tu día 1')}
   </div>`;
@@ -2910,6 +2953,136 @@ function renderNatacion(){
 }
 
 /* ---------- ALIMENTACIÓN ---------- */
+
+/* ---------- PAUTA: "¿Qué como hoy?" · ayuda opcional, no guarda nada ----------
+   Opciones = tus comidas más frecuentes en Fitia (jun–nov 2026). [nombre, kcal, prot, carbos, grasa], aproximado. */
+const PZ_PLATO={
+  P:{n:"Proteína",o:[["Pollo",250,40,0,9],["Pescado",200,32,0,7],["Carne de vacuno",280,35,0,15],["Cerdo",300,32,0,18],["Legumbres",230,15,38,2],["Huevo (2)",150,12,1,10]]},
+  C:{n:"Carbo",o:[["Arroz",200,4,44,1],["Papas cocidas",150,4,33,0],["Fideos",220,8,43,1],["Puré",220,4,30,9],["Papas fritas",300,4,38,15],["Sin carbo",0,0,0,0]]},
+  E:{n:"Ensalada",o:[["Ensalada con aceite",80,1,5,6],["Ensalada sola",25,1,5,0],["Ensalada con mayo",150,1,5,14],["Sin ensalada",0,0,0,0]]}};
+const PZ={
+  D:{n:"🥣 Desayuno",o:[["Avena especiada + ½ scoop",390,24,52,11],["Avena especiada",330,11,50,11],["Tostada + atún + tomate",280,28,30,5],["Tostada + 2 huevos",300,16,28,13],["Yogur proteico + fruta",210,18,32,2]]},
+  A:{n:"🍛 Almuerzo",lugar:"hotel",casa:[["Tortillas + pollo + palta",500,30,40,22],["Fideos con soya y tomate",450,30,60,8],["Salteado de pollo y verduras",400,35,25,15],["Lentejas o garbanzos guisados",450,22,65,10],["Atún + arroz + ensalada",420,32,48,9]]},
+  O:{n:"🍊 Once",o:[["Pan + jamón de pavo + quesillo",290,20,30,9],["Pan + huevo",270,13,28,11],["Pan + palta + tomate",280,7,32,14],["Yogur proteico",130,15,12,2],["Fruta + almendras",180,4,22,8],["Nada",0,0,0,0]]},
+  C:{n:"🍲 Cena",prio:1,lugar:"casa",casa:[["Fideos con soya y tomate",450,30,60,8],["Tortillas + pollo + palta",500,30,40,22],["Atún o choritos + pan + ensalada",400,32,35,12],["Salteado de pollo y verduras",400,35,25,15],["Omelette 3 huevos + verduras",320,21,8,22],["Sopa o dal de lentejas",400,20,55,10],["Pizza de lentejas rojas",500,28,55,18],["Casa rico (hamburguesa + papas)",850,35,75,45]]},
+  S:{n:"🍪 Snack",o:[["Yogur o Protein+",130,15,12,2],["Huevo duro",75,6,1,5],["Fruta",90,1,22,0],["Puñito de almendras",90,3,3,8],["2 bolitas de dátiles",150,3,20,7],["Algo dulce",200,3,25,10]]}};
+let pz={sel:{},open:null,lugar:{A:"hotel",C:"casa"}},pzMeta=null;
+const pzPlato=s=>!!PZ[s].lugar&&pz.lugar[s]==="hotel";
+const pzOpts=s=>PZ[s].lugar?(pzPlato(s)?null:PZ[s].casa):PZ[s].o;
+function pzVal(s){const v=pz.sel[s];if(v==null)return null;
+  if(typeof v==="object"){const t=[0,0,0,0];Object.entries(v).forEach(([p,i])=>{const o=PZ_PLATO[p].o[i];for(let k=0;k<4;k++)t[k]+=o[k+1];});return t;}
+  const o=pzOpts(s)[v];return [o[1],o[2],o[3],o[4]];}
+const pzDone=s=>{const v=pz.sel[s];if(v==null)return false;return typeof v==="object"?["P","C","E"].every(p=>v[p]!=null):true;};
+function pzTot(){const t=[0,0,0,0];Object.keys(PZ).forEach(s=>{const v=pzVal(s);if(v)for(let k=0;k<4;k++)t[k]+=v[k];});return t;}
+// La cena tiene prioridad: pesa más al repartir lo que queda, así once y snack le dejan espacio
+const PZ_W={D:1,A:1.4,O:.55,C:1.6,S:.35};
+function pzBudget(s){const t=pzTot(),m=pzMeta,left=[m.k-t[0],m.p-t[1],m.c-t[2],m.g-t[3]];
+  const free=Object.keys(PZ).filter(x=>!pzDone(x)),tw=free.reduce((a,x)=>a+PZ_W[x],0)||1;return left.map(v=>Math.max(0,v)*PZ_W[s]/tw);}
+function pzRank(list,b){return list.map((o,i)=>{const dk=Math.abs(o[1]-b[0])/Math.max(b[0],80),dp=Math.max(0,b[1]-o[2])/Math.max(b[1],5),dg=Math.max(0,o[4]-b[3])/Math.max(b[3],5);return [dk+dp*1.5+dg*.8,i];})
+  .sort((a,c)=>a[0]-c[0]).slice(0,2).map(x=>x[1]);}
+const pzOpt=(attr,o,i,on,sug)=>`<div class="pzopt ${on?'on':sug?'s':''}" ${attr} data-i="${i}"><span>${esc(o[0])}</span><small>${o[1]} kcal · ${o[2]} P</small></div>`;
+function pautaCard(d){
+  pzMeta={k:d.meta,p:Math.round((META.p[0]+META.p[1])/2),c:Math.round((META.c[0]+META.c[1])/2),g:Math.round((META.g[0]+META.g[1])/2)};
+  const t=pzTot(),any=Object.keys(pz.sel).length,m=pzMeta,L=[[m.k-t[0],"kcal"],[m.p-t[1],"g prot"],[m.c-t[2],"g carbos"],[m.g-t[3],"g grasa"]];
+  let h=`<div class="card" id="pzCard"><div style="display:flex;justify-content:space-between;align-items:baseline"><h3>🍽️ ¿Qué como hoy?</h3>${any?'<button class="pzlink" data-pzreset="1">empezar de nuevo</button>':''}</div>
+    <div class="pzleft">${any?"Te quedan ":"Meta de hoy: "}${L.map(([v,n])=>`<span class="${v<0?'neg':''}"><b>${nfmt(v)}</b> ${n}</span>`).join(" · ")}</div>`;
+  Object.entries(PZ).forEach(([s,M])=>{
+    const v=pz.sel[s];let shown="elegir ›";
+    if(v!=null)shown=typeof v==="object"?["P","C","E"].filter(p=>v[p]!=null).map(p=>PZ_PLATO[p].o[v[p]][0]).join(" + "):pzOpts(s)[v][0];
+    h+=`<div class="pzrow"><div class="pzh" data-pzopen="${s}"><b>${M.n}${M.prio?'<span class="prio">prioridad</span>':''}</b><span class="v ${v!=null?'on':''}">${esc(shown)}</span></div>`;
+    const sugOn=any&&!pzDone(s);
+    if(pz.open===s){
+      if(M.lugar)h+=`<div class="pzseg">${["hotel","casa"].map(l=>`<span class="${pz.lugar[s]===l?'on':''}" data-pzlugar="${s}|${l}">${l==="hotel"?"🏨 Hotel":"🏠 Casa"}</span>`).join("")}</div>`;
+      if(pzPlato(s)){
+        // plato del hotel paso a paso: proteína → carbo → ensalada (se abre solo lo que toca)
+        const cur=typeof v==="object"?v:{},next=["P","C","E"].find(p=>cur[p]==null);
+        ["P","C","E"].forEach(p=>{if(cur[p]!=null)h+=`<div class="pzdone">✓ ${PZ_PLATO[p].n}: <b>${esc(PZ_PLATO[p].o[cur[p]][0])}</b> <button class="pzlink" data-pzredo="${s}|${p}">cambiar</button></div>`;});
+        if(next){const pp=PZ_PLATO[next],sg=sugOn?pzRank(pp.o,pzBudget(s).map(x=>x*(next==="P"?.55:next==="C"?.35:.1))):[];
+          h+=`<div class="pzsub">${pp.n}</div><div class="pzlist">${pp.o.map((o,i)=>pzOpt(`data-pzpart="${s}|${next}"`,o,i,false,sg.includes(i))).join("")}</div>`;}
+      }else{const list=pzOpts(s),sg=sugOn?pzRank(list,pzBudget(s)):[];
+        h+=`<div class="pzlist">${[...sg,...list.map((_,i)=>i).filter(i=>!sg.includes(i))].map(i=>pzOpt(`data-pzk="${s}"`,list[i],i,v===i,sg.includes(i))).join("")}</div>`;}
+    }else if(sugOn&&(s==="O"||s==="C"||s==="S")&&!pzPlato(s)){const list=pzOpts(s);
+      h+=`<div class="pzhint">${pzRank(list,pzBudget(s)).map(i=>`<span data-pzk="${s}" data-i="${i}">💡 ${esc(list[i][0])}</span>`).join("")}</div>`;}
+    h+=`</div>`;});
+  return h+`<p class="small" style="margin-top:6px">Ayuda para cuando no sabes qué comer: no guarda nada. Las calorías son aproximadas.</p></div>`;
+}
+function bindPauta(){
+  const re=()=>{const y=window.scrollY;renderComida();window.scrollTo(0,y);};
+  main.querySelectorAll("[data-pzopen]").forEach(e=>e.onclick=()=>{pz.open=pz.open===e.dataset.pzopen?null:e.dataset.pzopen;re();});
+  main.querySelectorAll("[data-pzlugar]").forEach(e=>e.onclick=()=>{const [s,l]=e.dataset.pzlugar.split("|");if(pz.lugar[s]!==l){pz.lugar[s]=l;delete pz.sel[s];}re();});
+  main.querySelectorAll("[data-pzk]").forEach(e=>e.onclick=()=>{const s=e.dataset.pzk,i=+e.dataset.i;if(pz.sel[s]===i)delete pz.sel[s];else pz.sel[s]=i;pz.open=null;re();});
+  main.querySelectorAll("[data-pzpart]").forEach(e=>e.onclick=()=>{const [s,p]=e.dataset.pzpart.split("|");const cur=typeof pz.sel[s]==="object"?pz.sel[s]:{};cur[p]=+e.dataset.i;pz.sel[s]=cur;if(pzDone(s))pz.open=null;re();});
+  main.querySelectorAll("[data-pzredo]").forEach(e=>e.onclick=ev=>{ev.stopPropagation();const [s,p]=e.dataset.pzredo.split("|");delete pz.sel[s][p];re();});
+  main.querySelectorAll("[data-pzreset]").forEach(e=>e.onclick=()=>{pz.sel={};pz.open=null;re();});
+}
+
+/* ---------- PLANIFICACIÓN: fases Revelar → Construir → Revelar 2 ----------
+   data.plan = {fase, metaCintura, metaGrasa, kcalF2, revision, desde}. Las metas de cuerpo las fija Diana en la app. */
+const PLAN_F={1:{n:"Revelar",e:"🟠",d:"Bajar grasa para que se vea el músculo que ya tienes",
+    comida:"Déficit suave: 1.550–1.750 kcal en un día normal (más en días de terreno) · 110–120 g prot · ~55 g grasa",
+    entreno:"Bloque actual: calistenia primero + 2 días de pierna cerca del fallo"},
+  2:{n:"Construir",e:"🟤",d:"Hacer crecer pierna y glúteo",
+    comida:"Mantención, sin déficit · proteína igual de alta",
+    entreno:"2 días de pierna/glúteo pesados y progresivos · un poco menos de escalada y caminata",extra:"⚖️ La grasa se pausa o sube un poco: es normal y necesario."},
+  3:{n:"Revelar 2",e:"🟣",d:"Déficit corto para que se vea el músculo nuevo",comida:"Déficit suave, igual que la Fase 1",entreno:"Mantener las cargas"}};
+let planEdit=false;
+function planMedidas(){const M=data.medidas.filter(m=>m.cintura).sort((a,b)=>a.date.localeCompare(b.date));if(!M.length)return null;
+  const last=M[M.length-1],lim=new Date(last.date+"T12:00:00");lim.setDate(lim.getDate()-28);
+  const rec=M.filter(m=>new Date(m.date+"T12:00:00")>=lim);  // promedio de las últimas 4 semanas
+  const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length*10)/10:null;
+  const bf=rec.map(navyBF).filter(x=>x!=null),bf0=M.map(navyBF).filter(x=>x!=null);
+  return {c0:M[0].cintura,c:avg(rec.map(m=>m.cintura)),g0:bf0.length?Math.round(bf0[0]*10)/10:null,g:bf.length?avg(bf):null};}
+function renderPlan(){
+  data.plan=data.plan||{fase:1};const P=data.plan,f=planFase(),F=PLAN_F[f],med=planMedidas();
+  const wkN=Math.max(1,Math.floor((new Date(todayStr())-new Date(BLOCK.start))/(7*86400000))+1);
+  const rev=P.revision||"2027-01-17",dec=x=>String(x).replace('.',',');
+  const goal=(lbl,start,cur,target,unit,col)=>{
+    if(cur==null)return `<div class="plgoal"><div class="t"><span>${lbl}</span></div><div class="small">Registra tus medidas en Progreso.</div></div>`;
+    if(!target)return `<div class="plgoal"><div class="t"><span>${lbl}</span><b>${dec(cur)} ${unit}</b></div><div class="small">Toca ✏️ abajo para fijar tu meta.</div></div>`;
+    const pct=start>target?Math.max(0,Math.min(100,Math.round((start-cur)/(start-target)*100))):0,falta=Math.round((cur-target)*10)/10;
+    return `<div class="plgoal"><div class="t"><span>${lbl}</span><b>${dec(cur)} → ${dec(target)} ${unit}</b></div><div class="plbar"><i style="width:${pct}%;background:${col}"></i></div>
+      <div class="small">${dec(start)} al empezar · ${falta>0?`te faltan ${dec(falta)} ${unit}`:'¡meta cumplida! ✅'}</div></div>`;};
+  const mon=mondayOf(new Date()),prevMon=(()=>{const x=new Date(mon+"T12:00:00");x.setDate(x.getDate()-7);return dstr(x);})(),mes1=todayStr().slice(0,8)+"01";
+  const chk=[[data.medidas.some(m=>m.date>=mon),"Medir cintura y cadera (en ayunas, mismo día)"],[!!(data.fitia||{})[prevMon],"Registrar Fitia de la semana pasada"],[!!(data.lastFoto&&data.lastFoto>=mes1),"Foto del mes"]];
+  let html=`<div class="plhero"><div class="s">Estás en</div><div class="t">${F.e} Fase ${f} · ${F.n}</div>
+    <div class="s">${F.d} · Bloque ${BLOCK.n} · semana ${Math.min(wkN,BLOCK.weeks)} de ${BLOCK.weeks} · revisión ${fmtShort(rev)}</div></div>
+  <div class="card"><h3>📅 Tu camino</h3>
+    <div class="pltl"><div style="width:22%;background:#9b8f84">Bloque 1<br>✓</div><div class="${f===1?'cur':''}" style="width:30%;background:var(--terra)">Fase 1<br>Revelar</div>
+      <div class="${f===2?'cur':''}" style="width:34%;background:#8a5a44">Fase 2<br>Construir</div><div class="${f===3?'cur':''}" style="width:14%;background:var(--pur)">F3</div></div>
+    <div class="plticks"><span>oct</span><span>23 nov</span><span>~feb</span><span>~abr</span></div>
+    <p class="small" style="margin-top:6px">La Fase 2 empieza cuando cumplas las señales, no por fecha.</p></div>`;
+  if(f!==2)html+=`<div class="card"><h3>🎯 Señales para pasar a Construir</h3>
+    ${goal("📏 Cintura (promedio 4 sem.)",med&&med.c0,med&&med.c,P.metaCintura,"cm","var(--terra)")}
+    ${goal("💧 % grasa estimado",med&&med.g0,med&&med.g,P.metaGrasa,"%","var(--pur)")}
+    <div class="plgoal"><div class="t"><span style="color:var(--teal)">📸 Fotos</span><b>se nota más forma</b></div><div class="small">Lo decides tú al comparar fotos (1 por mes).</div></div>
+    <p class="small">Se calculan solas con tus medidas de Progreso. El % de grasa es estimado (±3-4 puntos): mira sobre todo la tendencia.</p></div>`;
+  html+=`<div class="card"><h3>📋 Qué significa cada fase</h3>${[1,2,3].map(k=>{const X=PLAN_F[k];return `<div class="plph"><b>${X.e} Fase ${k} · ${X.n}${k===f?' (ahora)':''}</b>
+      <p>🍽️ ${k===2?`Mantención (~${kcalF2().map(nfmt).join("–")} kcal) · proteína igual de alta`:X.comida}</p><p>🏋️ ${X.entreno}</p>${X.extra?`<p>${X.extra}</p>`:''}</div>`;}).join("")}</div>
+  <div class="card"><h3>✅ Esta semana</h3>${chk.map(([ok,t])=>`<div class="plchk">${ok?'☑️':'⬜'} ${t}</div>`).join("")}
+    <p class="small">Se marcan solos cuando lo registras en la app.</p></div>
+  <div class="card"><h3>⚙️ Ajustes</h3>
+    ${planEdit?`<div class="form fgrid">
+      <label>📏 Meta cintura (cm)<input type="text" inputmode="decimal" id="plC" value="${P.metaCintura??''}"></label>
+      <label>💧 Meta % grasa<input type="text" inputmode="decimal" id="plG" value="${P.metaGrasa??''}"></label>
+      <label>🍽️ kcal Fase 2<input type="text" id="plK" value="${esc(P.kcalF2||'2100-2300')}"></label>
+      <label>📅 Revisión<input type="date" id="plR" value="${rev}"></label></div>
+      <div class="tile th-am" id="plSave" style="margin-top:10px">Guardar</div><button class="ulink" id="plCancel">cancelar</button>`
+    :`<div class="wk"><span>Meta cintura</span><b>${P.metaCintura?dec(P.metaCintura)+' cm':'—'}</b></div><div class="wk"><span>Meta % grasa</span><b>${P.metaGrasa?dec(P.metaGrasa)+' %':'—'}</b></div>
+      <div class="wk"><span>kcal Fase 2</span><b>${kcalF2().map(nfmt).join("–")}</b></div><button class="ulink" id="plEdit">✏️ editar</button>`}
+    <div style="margin-top:12px">${f<3?`<div class="tile th-am" id="plNext">Pasar a Fase ${f+1} · ${PLAN_F[f+1].n}</div>`:''}
+      ${f>1?`<button class="ulink" id="plPrev">volver a la Fase ${f-1}</button>`:''}</div>
+    <p class="small" style="margin-top:6px">Al cambiar de fase cambian solas las metas de Alimentación.</p></div>`;
+  main.innerHTML=html;
+  const num=id=>{const v=parseFloat(String(document.getElementById(id).value).replace(',','.'));return isNaN(v)?null:v;};
+  const ed=document.getElementById("plEdit");if(ed)ed.onclick=()=>{planEdit=true;renderPlan();};
+  const cc=document.getElementById("plCancel");if(cc)cc.onclick=()=>{planEdit=false;renderPlan();};
+  const sv=document.getElementById("plSave");if(sv)sv.onclick=()=>{P.metaCintura=num("plC");P.metaGrasa=num("plG");P.kcalF2=document.getElementById("plK").value.trim()||"2100-2300";
+    P.revision=document.getElementById("plR").value||rev;planEdit=false;applyFase();save();toast("Guardado ✅");renderPlan();};
+  const setF=n=>{if(!confirm(`¿Pasar a la Fase ${n} · ${PLAN_F[n].n}? Las metas de comida cambian desde hoy.`))return;P.fase=n;P.desde=todayStr();applyFase();save();toast(`${PLAN_F[n].e} Fase ${n} · ${PLAN_F[n].n}`);renderPlan();};
+  const nx=document.getElementById("plNext");if(nx)nx.onclick=()=>setF(f+1);
+  const pv=document.getElementById("plPrev");if(pv)pv.onclick=()=>setF(f-1);
+  bindTop&&bindTop();
+}
 function renderComida(){
   const d=diaKcal();
   // Semanas para el selector de Fitia: la actual y 11 anteriores
@@ -2930,10 +3103,9 @@ function renderComida(){
     ${d.lut?`<p class="small" style="margin-top:6px">🌕 Fase lútea: el gasto y el hambre suben un poco. Es normal.</p>`:''}
     <p class="small" style="margin-top:6px">Estimación con tu último peso (${fmtKg(pesoActual())} kg). Los días con mucho ejercicio o terreno la meta sube para que no pases hambre.</p>
   </div>
+  ${pautaCard(d)}
   <div class="card">
-    <h3>🎯 Metas diarias de comida</h3>
-    <p><span class="macro">🔥 1.550–1.750 kcal (día normal)</span><span class="macro">🥚 110–120 g prot</span><span class="macro">🍚 130–170 g carbos</span><span class="macro">🥑 50–60 g grasa</span><span class="macro">💧 2 L agua</span></p>
-    <p class="small" style="margin-top:10px">🥗 Promedio semanal (Fitia)</p>
+    <h3>🥗 Registro semanal <span class="small" style="font-weight:400">· promedios de Fitia</span></h3>
     <select class="full" id="fWeek">${mons.map(m=>`<option value="${m}" ${m===fitiaWeek?'selected':''}>Semana ${weekLabel(m)}${data.fitia[m]?' ✓':''}</option>`).join("")}</select>
     <div class="form fgrid">
       <label>🔥 kcal<input type="text" inputmode="numeric" id="fK" value="${fv.kcal??''}"></label>
@@ -2945,7 +3117,8 @@ function renderComida(){
     ${sk?`<div class="fsum"><div class="wk"><span>Comiste (Fitia)</span><b>${fv.kcal?nfmt(fv.kcal)+' kcal':'—'}</b></div>
       <div class="wk"><span>Tu meta según lo que entrenaste</span><span>~${nfmt(sk.meta)} kcal</span></div>
       <div class="wk"><span>Tu gasto real</span><span>~${nfmt(sk.gasto)} kcal</span></div></div>`:''}
-    ${fb.length?`<div class="fb">${fb.map(([c,t])=>`<div class="${c}">${esc(t)}</div>`).join("")}</div>`:''}
+    ${fb.length?`<div class="fsum1">${fb.map(([c,t])=>esc(t.split(":")[0].replace(/ ✅$/," ✅"))).join(" · ")} <button class="pzlink" id="fbTog">${fitiaFb?'ocultar ▴':'detalle ▾'}</button></div>
+      ${fitiaFb?`<div class="fb">${fb.map(([c,t])=>`<div class="${c}">${esc(t)}</div>`).join("")}</div>`:''}`:''}
     <button class="ulink" id="fHist">Historial ${fitiaHist?'▴':'▾'}</button>
     ${fitiaHist?(hist.length?`<div style="margin-top:8px">${fitiaChart(hist)}<div class="mlist">${[...hist].reverse().map(h=>`<div><span>${weekLabel(h.mon)}<br><span class="small">${h.v.kcal!=null?nfmt(h.v.kcal):'—'} kcal · ${h.v.p??'—'} P · ${h.v.c??'—'} C · ${h.v.g??'—'} G</span></span><span class="mbtns"><button data-fedit="${h.mon}">✏️</button><button data-fdel="${h.mon}">🗑️</button></span></div>`
       +(fitiaEdit===h.mon?`<div class="medit">✏️ <b>Editando</b> · Semana <select id="feW">${[...new Set([...mons,h.mon])].sort().reverse().map(m=>`<option value="${m}" ${m===h.mon?'selected':''}>${weekLabel(m)}${data.fitia[m]&&m!==h.mon?' ✓':''}</option>`).join("")}</select>
@@ -2953,9 +3126,12 @@ function renderComida(){
         <label>🍚 Carbos (g)<input type="text" inputmode="numeric" id="feC" value="${h.v.c??''}"></label><label>🥑 Grasa (g)<input type="text" inputmode="numeric" id="feG" value="${h.v.g??''}"></label></div>
         <span class="small">Si cambias la semana, se mueve: se borra de la semana equivocada.</span>
         <div class="tile th-am" id="feSave" style="margin-top:8px">Guardar</div><button class="ulink" id="feCancel">cancelar</button></div>`:'')).join("")}</div></div>`:'<p class="small">Aún no guardas semanas.</p>'):''}
+    <div class="frem">🎯 Metas diarias · Fase ${planFase()} ${PLAN_F[planFase()].n}: ${META.kcal.map(nfmt).join("–")} kcal · ${META.p.join("–")} g prot · ${META.c.join("–")} g carbos · ${META.g.join("–")} g grasa · 💧 2 L agua</div>
   </div>`;
   document.getElementById("fWeek").onchange=e=>{fitiaWeek=e.target.value;renderComida();};
   document.getElementById("fHist").onclick=()=>{fitiaHist=!fitiaHist;renderComida();};
+  const fbt=document.getElementById("fbTog");if(fbt)fbt.onclick=()=>{fitiaFb=!fitiaFb;renderComida();};
+  bindPauta();
   main.querySelectorAll("[data-fdel]").forEach(b=>b.onclick=()=>{const m=b.dataset.fdel;if(confirm(`¿Borrar la semana ${weekLabel(m)}?`)){delete data.fitia[m];if(fitiaEdit===m)fitiaEdit=null;save();toast("Semana borrada 🗑️");renderComida();}});
   main.querySelectorAll("[data-fedit]").forEach(b=>b.onclick=()=>{fitiaEdit=fitiaEdit===b.dataset.fedit?null:b.dataset.fedit;renderComida();});
   const fes=document.getElementById("feSave");
@@ -3521,7 +3697,7 @@ window.CLOUD=(function(){
   setInterval(line,30000);window.addEventListener("online",()=>{line();push();});window.addEventListener("offline",line);
   // Guardar local sin volver a subir
   function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}}
-  function refresh(){buildLib();refreshTabs();updateStats();
+  function refresh(){buildLib();applyFase();refreshTabs();updateStats();
     if(ROUTINE_TABS.includes(currentTab)||libForm)return;   // no interrumpir una sesión o formulario en curso
     render();}
   // Subir lo que cambió (se llama en cada save, con un pequeño retraso)
@@ -3610,6 +3786,7 @@ window.CLOUD=(function(){
 document.getElementById("appver").textContent=APP_VERSION;
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 checkRoutinesUpdate();
+applyFase();
 refreshTabs();
 updateStats();
 render();
